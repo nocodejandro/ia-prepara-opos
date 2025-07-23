@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      preguntas: {
+        Row: {
+          area: string
+          created_at: string
+          id: string
+          justificacion: string
+          opciones: Json
+          pregunta: string
+          respuesta_correcta: string
+          tema: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          area: string
+          created_at?: string
+          id?: string
+          justificacion: string
+          opciones: Json
+          pregunta: string
+          respuesta_correcta: string
+          tema: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string
+          created_at?: string
+          id?: string
+          justificacion?: string
+          opciones?: Json
+          pregunta?: string
+          respuesta_correcta?: string
+          tema?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
