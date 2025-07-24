@@ -1,127 +1,136 @@
 import { useState } from 'react';
-import { FiltrosTest } from '@/components/FiltrosTest';
+import { Sidebar } from '@/components/Sidebar';
+import { AreaSelector } from '@/components/AreaSelector';
+import { TemaSelector } from '@/components/TemaSelector';
 import { TestInteractivo } from '@/components/TestInteractivo';
 import { ResultadosTest } from '@/components/ResultadosTest';
-import { usePreguntas } from '@/hooks/usePreguntas';
-import { Brain, BookOpen, Target } from 'lucide-react';
+import { usePreguntas, useAreasYTemas } from '@/hooks/usePreguntas';
 
-type Estado = 'filtros' | 'test' | 'resultados';
+type Vista = 'menu' | 'areas' | 'temas' | 'test' | 'resultados';
 
 const Index = () => {
-  const [estado, setEstado] = useState<Estado>('filtros');
+  const [vista, setVista] = useState<Vista>('menu');
+  const [menuActivo, setMenuActivo] = useState<string>('test-temas');
   const [areaSeleccionada, setAreaSeleccionada] = useState<string>('');
   const [temaSeleccionado, setTemaSeleccionado] = useState<string>('');
   const [respuestasTest, setRespuestasTest] = useState<{ [preguntaId: string]: string }>({});
 
-  const { preguntas, loading } = usePreguntas({
+  const { areas, temas, loading: areasLoading } = useAreasYTemas();
+  const { preguntas, loading: preguntasLoading } = usePreguntas({
     area: areaSeleccionada || undefined,
     tema: temaSeleccionado || undefined
   });
 
-  const handleIniciarTest = () => {
-    if (preguntas.length > 0) {
-      setEstado('test');
+  const handleMenuSelect = (menu: string) => {
+    setMenuActivo(menu);
+    if (menu === 'test-temas') {
+      setVista('areas');
+    } else {
+      setVista('menu');
     }
+  };
+
+  const handleAreaSelect = (area: string) => {
+    setAreaSeleccionada(area);
+    setVista('temas');
+  };
+
+  const handleTemaSelect = (tema: string) => {
+    setTemaSeleccionado(tema);
+    setVista('test');
   };
 
   const handleFinalizarTest = (respuestas: { [preguntaId: string]: string }) => {
     setRespuestasTest(respuestas);
-    setEstado('resultados');
+    setVista('resultados');
   };
 
   const handleNuevoTest = () => {
     setRespuestasTest({});
-    setEstado('filtros');
+    setVista('menu');
+    setAreaSeleccionada('');
+    setTemaSeleccionado('');
   };
 
   const handleVolver = () => {
-    setEstado('filtros');
+    if (vista === 'temas') {
+      setVista('areas');
+    } else if (vista === 'areas') {
+      setVista('menu');
+    } else if (vista === 'test') {
+      setVista('temas');
+    } else if (vista === 'resultados') {
+      setVista('menu');
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-12 h-12 bg-primary text-primary-foreground rounded-xl">
-                <Brain className="h-6 w-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Aprueba con IA</h1>
-                <p className="text-sm text-muted-foreground">Plataforma de estudio para opositores</p>
-              </div>
-            </div>
-            
-            {estado !== 'filtros' && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <BookOpen className="h-4 w-4" />
-                  Área {areaSeleccionada} - {temaSeleccionado}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Contenido principal */}
-      <main className="container mx-auto px-4 py-8">
-        {estado === 'filtros' && !loading && (
-          <div className="max-w-2xl mx-auto space-y-8">
-            {/* Hero section */}
-            <div className="text-center space-y-4">
-              <div className="flex justify-center mb-4">
-                <div className="flex items-center justify-center w-20 h-20 bg-primary/10 text-primary rounded-2xl">
-                  <Target className="h-10 w-10" />
-                </div>
-              </div>
-              <h2 className="text-3xl font-bold text-foreground">
-                Practica con preguntas tipo test
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <Sidebar onMenuSelect={handleMenuSelect} activeMenu={menuActivo} />
+      
+      {/* Main Content */}
+      <div className="flex-1 grid-background">
+        {vista === 'menu' && (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Bienvenido a Aprueba con IA
               </h2>
-              <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                Selecciona el área y tema que quieres estudiar. Las preguntas se generan automáticamente con IA.
+              <p className="text-lg text-gray-600">
+                Selecciona una opción del menú lateral para comenzar
               </p>
             </div>
+          </div>
+        )}
 
-            <FiltrosTest
-              areaSeleccionada={areaSeleccionada}
-              temaSeleccionado={temaSeleccionado}
-              onAreaChange={setAreaSeleccionada}
-              onTemaChange={setTemaSeleccionado}
-              onIniciarTest={handleIniciarTest}
-              cantidadPreguntas={preguntas.length}
+        {vista === 'areas' && !areasLoading && (
+          <AreaSelector
+            areas={areas}
+            onAreaSelect={handleAreaSelect}
+            onBack={() => setVista('menu')}
+          />
+        )}
+
+        {vista === 'temas' && areaSeleccionada && (
+          <TemaSelector
+            area={areaSeleccionada}
+            temas={temas[areaSeleccionada] || []}
+            onTemaSelect={handleTemaSelect}
+            onBack={handleVolver}
+          />
+        )}
+
+        {vista === 'test' && preguntas.length > 0 && (
+          <div className="p-6">
+            <TestInteractivo
+              preguntas={preguntas}
+              onFinalizarTest={handleFinalizarTest}
+              onVolver={handleVolver}
             />
           </div>
         )}
 
-        {estado === 'test' && (
-          <TestInteractivo
-            preguntas={preguntas}
-            onFinalizarTest={handleFinalizarTest}
-            onVolver={handleVolver}
-          />
+        {vista === 'resultados' && (
+          <div className="p-6">
+            <ResultadosTest
+              preguntas={preguntas}
+              respuestas={respuestasTest}
+              onNuevoTest={handleNuevoTest}
+              onVolver={handleVolver}
+            />
+          </div>
         )}
 
-        {estado === 'resultados' && (
-          <ResultadosTest
-            preguntas={preguntas}
-            respuestas={respuestasTest}
-            onNuevoTest={handleNuevoTest}
-            onVolver={handleVolver}
-          />
-        )}
-
-        {loading && (
-          <div className="flex items-center justify-center py-12">
+        {(areasLoading || preguntasLoading) && (
+          <div className="flex items-center justify-center min-h-screen">
             <div className="text-center space-y-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="text-muted-foreground">Cargando preguntas...</p>
+              <p className="text-gray-600">Cargando...</p>
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };
