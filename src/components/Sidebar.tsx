@@ -10,7 +10,7 @@ import {
   Calendar, 
   Brain 
 } from 'lucide-react';
-const logo = '/lovable-uploads/e4e7a721-2505-47bc-8d8d-9cb7b8f4ebb7.png';
+const logo = '/lovable-uploads/bb92976f-fdc0-4d4b-b72b-fd93c4e09350.png';
 
 interface SidebarProps {
   onMenuSelect: (menu: string) => void;
