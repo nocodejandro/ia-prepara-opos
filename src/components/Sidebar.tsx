@@ -32,14 +32,8 @@ export const Sidebar = ({ onMenuSelect, activeMenu }: SidebarProps) => {
   return (
     <div className="w-80 bg-white border-r border-gray-200 h-screen flex flex-col">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <img src={logo} alt="Logo" className="w-12 h-12" />
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">Aprueba con IA</h1>
-            <p className="text-sm text-gray-600">Plataforma de estudio</p>
-          </div>
-        </div>
+      <div className="p-6 border-b border-gray-100 flex justify-center">
+        <img src={logo} alt="Logo" className="w-48 h-auto" />
       </div>
 
       {/* Menu Items */}
