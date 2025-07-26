@@ -8,7 +8,8 @@ import {
   Scale, 
   PenTool, 
   Calendar, 
-  Brain 
+  Brain,
+  BarChart3
 } from 'lucide-react';
 const logo = '/lovable-uploads/1a938380-f406-4c24-8abf-67ffe4505203.png';
 
@@ -25,6 +26,7 @@ const menuItems = [
   { id: 'test-leyes', label: 'Test por Leyes', icon: Scale },
   { id: 'ejercicios', label: 'Ejercicios prácticos', icon: PenTool },
   { id: 'calendario', label: 'Calendario', icon: Calendar },
+  { id: 'estadisticas', label: 'Estadísticas', icon: BarChart3 },
   { id: 'mentor-ia', label: 'Mentor IA', icon: Brain },
 ];
 

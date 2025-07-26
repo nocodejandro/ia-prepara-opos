@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle, RotateCcw, Home } from "lucide-react";
 import { Pregunta } from "@/hooks/usePreguntas";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ResultadosTestProps {
   preguntas: Pregunta[];
@@ -15,6 +17,56 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
   const aciertos = preguntas.filter(p => respuestas[p.id] === p.respuesta_correcta).length;
   const fallos = preguntas.length - aciertos;
   const porcentaje = Math.round((aciertos / preguntas.length) * 100);
+
+  // Guardar resultados en la base de datos cuando se cargan los resultados
+  useEffect(() => {
+    const guardarResultados = async () => {
+      if (preguntas.length === 0) return;
+
+      // Agrupar por área/tema
+      const resultadosPorTema = preguntas.reduce((acc, pregunta) => {
+        const clave = `${pregunta.area}-${pregunta.tema}`;
+        if (!acc[clave]) {
+          acc[clave] = {
+            area: pregunta.area,
+            tema: pregunta.tema,
+            bloque: pregunta.bloque,
+            total: 0,
+            correctas: 0
+          };
+        }
+        acc[clave].total++;
+        if (respuestas[pregunta.id] === pregunta.respuesta_correcta) {
+          acc[clave].correctas++;
+        }
+        return acc;
+      }, {} as Record<string, any>);
+
+      // Insertar cada resultado por tema
+      for (const resultado of Object.values(resultadosPorTema)) {
+        const porcentajeTema = Math.round((resultado.correctas / resultado.total) * 100);
+        
+        try {
+          await supabase
+            .from('resultados_tests')
+            .insert({
+              user_id: null, // Por ahora sin autenticación
+              area: resultado.area,
+              tema: resultado.tema,
+              bloque: resultado.bloque,
+              total_preguntas: resultado.total,
+              respuestas_correctas: resultado.correctas,
+              respuestas_incorrectas: resultado.total - resultado.correctas,
+              porcentaje_acierto: porcentajeTema
+            });
+        } catch (error) {
+          console.error('Error guardando resultado:', error);
+        }
+      }
+    };
+
+    guardarResultados();
+  }, [preguntas, respuestas]);
 
   const getEstadoColor = (esCorrecta: boolean) => {
     return esCorrecta ? "success" : "destructive";

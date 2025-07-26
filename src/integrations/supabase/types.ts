@@ -146,6 +146,48 @@ export type Database = {
         }
         Relationships: []
       }
+      resultados_tests: {
+        Row: {
+          area: string
+          bloque: string | null
+          created_at: string
+          fecha_test: string
+          id: string
+          porcentaje_acierto: number
+          respuestas_correctas: number
+          respuestas_incorrectas: number
+          tema: string
+          total_preguntas: number
+          user_id: string | null
+        }
+        Insert: {
+          area: string
+          bloque?: string | null
+          created_at?: string
+          fecha_test?: string
+          id?: string
+          porcentaje_acierto: number
+          respuestas_correctas: number
+          respuestas_incorrectas: number
+          tema: string
+          total_preguntas: number
+          user_id?: string | null
+        }
+        Update: {
+          area?: string
+          bloque?: string | null
+          created_at?: string
+          fecha_test?: string
+          id?: string
+          porcentaje_acierto?: number
+          respuestas_correctas?: number
+          respuestas_incorrectas?: number
+          tema?: string
+          total_preguntas?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       transcriptions: {
         Row: {
           created_at: string

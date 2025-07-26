@@ -4,9 +4,10 @@ import { AreaSelector } from '@/components/AreaSelector';
 import { TemaSelector } from '@/components/TemaSelector';
 import { TestInteractivo } from '@/components/TestInteractivo';
 import { ResultadosTest } from '@/components/ResultadosTest';
+import { Estadisticas } from '@/components/Estadisticas';
 import { usePreguntas, useAreasYTemas } from '@/hooks/usePreguntas';
 
-type Vista = 'menu' | 'areas' | 'temas' | 'test' | 'resultados';
+type Vista = 'menu' | 'areas' | 'temas' | 'test' | 'resultados' | 'estadisticas';
 
 const Index = () => {
   const [vista, setVista] = useState<Vista>('menu');
@@ -25,6 +26,8 @@ const Index = () => {
     setMenuActivo(menu);
     if (menu === 'test-temas') {
       setVista('areas');
+    } else if (menu === 'estadisticas') {
+      setVista('estadisticas');
     } else {
       setVista('menu');
     }
@@ -60,6 +63,8 @@ const Index = () => {
     } else if (vista === 'test') {
       setVista('temas');
     } else if (vista === 'resultados') {
+      setVista('menu');
+    } else if (vista === 'estadisticas') {
       setVista('menu');
     }
   };
@@ -120,6 +125,10 @@ const Index = () => {
               onVolver={handleVolver}
             />
           </div>
+        )}
+
+        {vista === 'estadisticas' && (
+          <Estadisticas onVolver={handleVolver} />
         )}
 
         {(areasLoading || preguntasLoading) && (

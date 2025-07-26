@@ -15,6 +15,8 @@ export interface Pregunta {
   };
   respuesta_correcta: string;
   justificacion: string;
+  bloque?: string;
+  nivel?: string;
 }
 
 export interface FiltrosPreguntas {
