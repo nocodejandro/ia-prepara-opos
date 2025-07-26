@@ -21,41 +21,76 @@ serve(async (req) => {
     
     const { sessionId, action, chatInput } = requestData;
     
+    // Preparar el payload para n8n
+    const n8nPayload = {
+      sessionId,
+      action,
+      chatInput
+    };
+    
+    console.log('Payload para n8n:', JSON.stringify(n8nPayload, null, 2));
+    
     // Llamar al webhook de n8n
     console.log('Llamando a n8n webhook...');
-    const n8nResponse = await fetch('https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/e47786e9-4d0f-410b-b702-7645a4214f91/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sessionId,
-        action,
-        chatInput
-      }),
-    });
+    console.log('URL:', 'https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/e47786e9-4d0f-410b-b702-7645a4214f91/chat');
+    
+    try {
+      const n8nResponse = await fetch('https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/e47786e9-4d0f-410b-b702-7645a4214f91/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Supabase-Edge-Function',
+        },
+        body: JSON.stringify(n8nPayload),
+      });
 
-    console.log('n8n response status:', n8nResponse.status);
+      console.log('n8n response status:', n8nResponse.status);
+      console.log('n8n response headers:', Object.fromEntries(n8nResponse.headers.entries()));
+      
+      if (!n8nResponse.ok) {
+        const errorText = await n8nResponse.text();
+        console.error('n8n error response:', errorText);
+        console.error('n8n error status:', n8nResponse.status);
+        
+        // Si n8n falla, devolvemos una respuesta de fallback
+        return new Response(JSON.stringify({
+          output: `Lo siento, el servicio de IA no está disponible en este momento (Status: ${n8nResponse.status}). Como alternativa, puedo decirte que sobre "${chatInput}" necesitarías consultar los materiales de estudio específicos. ¿Podrías ser más específico sobre qué tema necesitas ayuda?`,
+          status: 'fallback',
+          debug: {
+            n8nStatus: n8nResponse.status,
+            error: errorText
+          }
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    if (!n8nResponse.ok) {
-      console.error('Error de n8n:', n8nResponse.status);
-      // Si n8n falla, devolvemos una respuesta de fallback
+      const responseData = await n8nResponse.json();
+      console.log('n8n response data:', responseData);
+
+      return new Response(JSON.stringify(responseData), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+      
+    } catch (fetchError) {
+      console.error('Error al hacer fetch a n8n:', fetchError);
+      console.error('Fetch error message:', fetchError.message);
+      console.error('Fetch error stack:', fetchError.stack);
+      
       return new Response(JSON.stringify({
-        output: `Lo siento, el servicio de IA no está disponible en este momento. Como alternativa, puedo decirte que sobre "${chatInput}" necesitarías consultar los materiales de estudio específicos. ¿Podrías ser más específico sobre qué tema necesitas ayuda?`,
-        status: 'fallback'
+        output: `Error de conectividad con n8n: ${fetchError.message}. Sobre "${chatInput}" te recomiendo consultar los materiales de estudio específicos.`,
+        status: 'connection_error',
+        debug: {
+          error: fetchError.message,
+          type: 'fetch_error'
+        }
       }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    const responseData = await n8nResponse.json();
-    console.log('n8n response data:', responseData);
-
-    return new Response(JSON.stringify(responseData), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
 
   } catch (error) {
     console.error('=== ERROR EN MENTOR IA ===');
