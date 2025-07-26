@@ -20,7 +20,7 @@ interface SidebarProps {
 
 const menuItems = [
   { id: 'test-temas', label: 'Test por temas', icon: BookOpen },
-  { id: 'test-bloques', label: 'Hacer test por bloques', icon: FileText },
+  { id: 'test-bloques-gc', label: 'Test por bloques Guardia Civil', icon: FileText },
   { id: 'test-oficiales', label: 'Hacer test Oficiales', icon: Award },
   { id: 'simulacros', label: 'Simulacros', icon: Target },
   { id: 'test-leyes', label: 'Test por Leyes', icon: Scale },

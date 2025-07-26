@@ -160,15 +160,23 @@ export function useBloquesGuardiaCivil() {
     fetchBloques();
   }, []);
 
-  // Agrupar por bloques
+  // Agrupar por bloques con estructura completa
   const bloquesAgrupados = bloques.reduce((acc, item) => {
-    const bloqueKey = `${item.bloque_numero}. ${item.bloque_nombre}`;
+    const bloqueKey = item.bloque_numero.toString();
     if (!acc[bloqueKey]) {
-      acc[bloqueKey] = [];
+      acc[bloqueKey] = {
+        nombre: item.bloque_nombre,
+        numero: item.bloque_numero,
+        temas: []
+      };
     }
-    acc[bloqueKey].push(`${item.tema_codigo}. ${item.tema_nombre}`);
+    acc[bloqueKey].temas.push({
+      tema_codigo: item.tema_codigo,
+      tema_nombre: item.tema_nombre,
+      tema_numero: item.tema_numero
+    });
     return acc;
-  }, {} as { [bloque: string]: string[] });
+  }, {} as { [bloque: string]: { nombre: string; numero: number; temas: Array<{ tema_codigo: string; tema_nombre: string; tema_numero: number }> } });
 
   const nombresBloques = Object.keys(bloquesAgrupados);
 

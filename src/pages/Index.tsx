@@ -2,30 +2,36 @@ import { useState } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { AreaSelector } from '@/components/AreaSelector';
 import { TemaSelector } from '@/components/TemaSelector';
+import { BloqueGuardiaCivilSelector } from '@/components/BloqueGuardiaCivilSelector';
+import { TemaBloqueSelector } from '@/components/TemaBloqueSelector';
 import { TestInteractivo } from '@/components/TestInteractivo';
 import { ResultadosTest } from '@/components/ResultadosTest';
 import { Estadisticas } from '@/components/Estadisticas';
 import { usePreguntas, useAreasYTemas } from '@/hooks/usePreguntas';
 
-type Vista = 'menu' | 'areas' | 'temas' | 'test' | 'resultados' | 'estadisticas';
+type Vista = 'menu' | 'areas' | 'temas' | 'bloques-gc' | 'temas-bloque' | 'test' | 'resultados' | 'estadisticas';
 
 const Index = () => {
   const [vista, setVista] = useState<Vista>('menu');
   const [menuActivo, setMenuActivo] = useState<string>('test-temas');
   const [areaSeleccionada, setAreaSeleccionada] = useState<string>('');
   const [temaSeleccionado, setTemaSeleccionado] = useState<string>('');
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<number>(0);
   const [respuestasTest, setRespuestasTest] = useState<{ [preguntaId: string]: string }>({});
 
   const { areas, temas, loading: areasLoading } = useAreasYTemas();
   const { preguntas, loading: preguntasLoading } = usePreguntas({
     area: areaSeleccionada || undefined,
-    tema: temaSeleccionado || undefined
+    tema: temaSeleccionado || undefined,
+    bloque: bloqueSeleccionado > 0 ? `Bloque ${bloqueSeleccionado}` : undefined
   });
 
   const handleMenuSelect = (menu: string) => {
     setMenuActivo(menu);
     if (menu === 'test-temas') {
       setVista('areas');
+    } else if (menu === 'test-bloques-gc') {
+      setVista('bloques-gc');
     } else if (menu === 'estadisticas') {
       setVista('estadisticas');
     } else {
@@ -38,9 +44,17 @@ const Index = () => {
     setVista('temas');
   };
 
-  const handleTemaSelect = (tema: string) => {
+  const handleTemaSelect = (tema: string, bloque?: string) => {
     setTemaSeleccionado(tema);
+    if (bloque) {
+      setAreaSeleccionada(bloque);
+    }
     setVista('test');
+  };
+
+  const handleBloqueSelect = (bloque: number) => {
+    setBloqueSeleccionado(bloque);
+    setVista('temas-bloque');
   };
 
   const handleFinalizarTest = (respuestas: { [preguntaId: string]: string }) => {
@@ -53,6 +67,7 @@ const Index = () => {
     setVista('menu');
     setAreaSeleccionada('');
     setTemaSeleccionado('');
+    setBloqueSeleccionado(0);
   };
 
   const handleVolver = () => {
@@ -60,8 +75,16 @@ const Index = () => {
       setVista('areas');
     } else if (vista === 'areas') {
       setVista('menu');
+    } else if (vista === 'temas-bloque') {
+      setVista('bloques-gc');
+    } else if (vista === 'bloques-gc') {
+      setVista('menu');
     } else if (vista === 'test') {
-      setVista('temas');
+      if (bloqueSeleccionado > 0) {
+        setVista('temas-bloque');
+      } else {
+        setVista('temas');
+      }
     } else if (vista === 'resultados') {
       setVista('menu');
     } else if (vista === 'estadisticas') {
@@ -101,6 +124,21 @@ const Index = () => {
           <TemaSelector
             area={areaSeleccionada}
             temas={temas[areaSeleccionada] || []}
+            onTemaSelect={(tema) => handleTemaSelect(tema)}
+            onBack={handleVolver}
+          />
+        )}
+
+        {vista === 'bloques-gc' && (
+          <BloqueGuardiaCivilSelector
+            onBloqueSelect={handleBloqueSelect}
+            onBack={handleVolver}
+          />
+        )}
+
+        {vista === 'temas-bloque' && bloqueSeleccionado > 0 && (
+          <TemaBloqueSelector
+            bloqueNumero={bloqueSeleccionado}
             onTemaSelect={handleTemaSelect}
             onBack={handleVolver}
           />
