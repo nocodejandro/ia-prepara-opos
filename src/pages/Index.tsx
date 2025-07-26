@@ -7,9 +7,10 @@ import { TemaBloqueSelector } from '@/components/TemaBloqueSelector';
 import { TestInteractivo } from '@/components/TestInteractivo';
 import { ResultadosTest } from '@/components/ResultadosTest';
 import { Estadisticas } from '@/components/Estadisticas';
+import { MentorIA } from '@/components/MentorIA';
 import { usePreguntas, useAreasYTemas } from '@/hooks/usePreguntas';
 
-type Vista = 'menu' | 'areas' | 'temas' | 'bloques-gc' | 'temas-bloque' | 'test' | 'resultados' | 'estadisticas';
+type Vista = 'menu' | 'areas' | 'temas' | 'bloques-gc' | 'temas-bloque' | 'test' | 'resultados' | 'estadisticas' | 'mentor-ia';
 
 const Index = () => {
   const [vista, setVista] = useState<Vista>('menu');
@@ -34,6 +35,8 @@ const Index = () => {
       setVista('bloques-gc');
     } else if (menu === 'estadisticas') {
       setVista('estadisticas');
+    } else if (menu === 'mentor-ia') {
+      setVista('mentor-ia');
     } else {
       setVista('menu');
     }
@@ -88,6 +91,8 @@ const Index = () => {
     } else if (vista === 'resultados') {
       setVista('menu');
     } else if (vista === 'estadisticas') {
+      setVista('menu');
+    } else if (vista === 'mentor-ia') {
       setVista('menu');
     }
   };
@@ -167,6 +172,10 @@ const Index = () => {
 
         {vista === 'estadisticas' && (
           <Estadisticas onVolver={handleVolver} />
+        )}
+
+        {vista === 'mentor-ia' && (
+          <MentorIA onVolver={handleVolver} />
         )}
 
         {(areasLoading || preguntasLoading) && (
