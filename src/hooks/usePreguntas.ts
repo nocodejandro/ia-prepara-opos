@@ -20,6 +20,16 @@ export interface Pregunta {
 export interface FiltrosPreguntas {
   area?: string;
   tema?: string;
+  bloque?: string;
+}
+
+export interface BloqueGuardiaCivil {
+  id: string;
+  bloque_numero: number;
+  bloque_nombre: string;
+  tema_numero: number;
+  tema_codigo: string;
+  tema_nombre: string;
 }
 
 export function usePreguntas(filtros?: FiltrosPreguntas) {
@@ -43,6 +53,10 @@ export function usePreguntas(filtros?: FiltrosPreguntas) {
           query = query.eq('tema', filtros.tema);
         }
 
+        if (filtros?.bloque) {
+          query = query.eq('bloque', filtros.bloque);
+        }
+
         const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) {
@@ -63,7 +77,7 @@ export function usePreguntas(filtros?: FiltrosPreguntas) {
     };
 
     fetchPreguntas();
-  }, [filtros?.area, filtros?.tema]);
+  }, [filtros?.area, filtros?.tema, filtros?.bloque]);
 
   return { preguntas, loading, error };
 }
@@ -115,4 +129,46 @@ export function useAreasYTemas() {
   }, []);
 
   return { areas, temas, loading };
+}
+
+export function useBloquesGuardiaCivil() {
+  const [bloques, setBloques] = useState<BloqueGuardiaCivil[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchBloques = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('bloques_guardia_civil')
+          .select('*')
+          .order('bloque_numero')
+          .order('tema_numero');
+
+        if (error) throw error;
+
+        setBloques(data || []);
+      } catch (err) {
+        console.error('Error al cargar bloques:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBloques();
+  }, []);
+
+  // Agrupar por bloques
+  const bloquesAgrupados = bloques.reduce((acc, item) => {
+    const bloqueKey = `${item.bloque_numero}. ${item.bloque_nombre}`;
+    if (!acc[bloqueKey]) {
+      acc[bloqueKey] = [];
+    }
+    acc[bloqueKey].push(`${item.tema_codigo}. ${item.tema_nombre}`);
+    return acc;
+  }, {} as { [bloque: string]: string[] });
+
+  const nombresBloques = Object.keys(bloquesAgrupados);
+
+  return { bloques, bloquesAgrupados, nombresBloques, loading };
 }

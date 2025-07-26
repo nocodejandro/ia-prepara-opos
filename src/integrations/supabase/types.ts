@@ -14,9 +14,40 @@ export type Database = {
   }
   public: {
     Tables: {
+      bloques_guardia_civil: {
+        Row: {
+          bloque_nombre: string
+          bloque_numero: number
+          created_at: string
+          id: string
+          tema_codigo: string
+          tema_nombre: string
+          tema_numero: number
+        }
+        Insert: {
+          bloque_nombre: string
+          bloque_numero: number
+          created_at?: string
+          id?: string
+          tema_codigo: string
+          tema_nombre: string
+          tema_numero: number
+        }
+        Update: {
+          bloque_nombre?: string
+          bloque_numero?: number
+          created_at?: string
+          id?: string
+          tema_codigo?: string
+          tema_nombre?: string
+          tema_numero?: number
+        }
+        Relationships: []
+      }
       preguntas: {
         Row: {
           area: string
+          bloque: string | null
           created_at: string
           id: string
           justificacion: string
@@ -29,6 +60,7 @@ export type Database = {
         }
         Insert: {
           area: string
+          bloque?: string | null
           created_at?: string
           id?: string
           justificacion: string
@@ -41,6 +73,7 @@ export type Database = {
         }
         Update: {
           area?: string
+          bloque?: string | null
           created_at?: string
           id?: string
           justificacion?: string
