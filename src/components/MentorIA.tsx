@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Send, Bot, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MentorIAProps {
   onVolver: () => void;
@@ -57,29 +58,27 @@ export const MentorIA = ({ onVolver }: MentorIAProps) => {
     setCargando(true);
 
     try {
-      const response = await fetch('/functions/v1/mentor-ia-chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      console.log('Enviando mensaje a Mentor IA:', mensaje);
+      
+      const { data, error } = await supabase.functions.invoke('mentor-ia-chat', {
+        body: {
           sessionId: sessionId,
           action: 'sendMessage',
           chatInput: mensaje
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
+      console.log('Respuesta de edge function:', { data, error });
+
+      if (error) {
+        throw new Error(error.message || 'Error en la edge function');
       }
 
-      const data = await response.json();
-      
       // Asumiendo que la respuesta viene en data.output o similar
       const respuestaIA: Mensaje = {
         id: (Date.now() + 1).toString(),
         tipo: 'ia',
-        contenido: data.output || data.response || data.message || 'Lo siento, no pude procesar tu consulta.',
+        contenido: data?.output || data?.response || data?.message || 'Lo siento, no pude procesar tu consulta.',
         timestamp: new Date()
       };
 
