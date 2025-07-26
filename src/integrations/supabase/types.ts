@@ -146,6 +146,48 @@ export type Database = {
         }
         Relationships: []
       }
+      respuestas_usuario: {
+        Row: {
+          acertada: boolean
+          area: string
+          created_at: string
+          fecha_respuesta: string
+          id: string
+          origen: string
+          pregunta_id: string
+          subtema: string | null
+          tema: string
+          tiempo_respuesta: number | null
+          user_id: string | null
+        }
+        Insert: {
+          acertada: boolean
+          area: string
+          created_at?: string
+          fecha_respuesta?: string
+          id?: string
+          origen?: string
+          pregunta_id: string
+          subtema?: string | null
+          tema: string
+          tiempo_respuesta?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          acertada?: boolean
+          area?: string
+          created_at?: string
+          fecha_respuesta?: string
+          id?: string
+          origen?: string
+          pregunta_id?: string
+          subtema?: string | null
+          tema?: string
+          tiempo_respuesta?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       resultados_tests: {
         Row: {
           area: string
