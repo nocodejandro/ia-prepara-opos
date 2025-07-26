@@ -57,7 +57,7 @@ export const MentorIA = ({ onVolver }: MentorIAProps) => {
     setCargando(true);
 
     try {
-      const response = await fetch('https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/e47786e9-4d0f-410b-b702-7645a4214f91/chat', {
+      const response = await fetch('/functions/v1/mentor-ia-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
