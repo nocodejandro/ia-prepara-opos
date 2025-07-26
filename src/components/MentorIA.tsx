@@ -58,20 +58,30 @@ export const MentorIA = ({ onVolver }: MentorIAProps) => {
     setCargando(true);
 
     try {
-      console.log('Enviando mensaje a Mentor IA:', mensaje);
+      console.log('=== INICIO DEBUG MENTOR IA ===');
+      console.log('Mensaje a enviar:', mensaje);
+      console.log('SessionId:', sessionId);
+      console.log('Supabase client:', supabase);
       
+      const payload = {
+        sessionId: sessionId,
+        action: 'sendMessage',
+        chatInput: mensaje
+      };
+      console.log('Payload completo:', payload);
+      
+      console.log('Intentando llamar a edge function...');
       const { data, error } = await supabase.functions.invoke('mentor-ia-chat', {
-        body: {
-          sessionId: sessionId,
-          action: 'sendMessage',
-          chatInput: mensaje
-        },
+        body: payload,
       });
 
-      console.log('Respuesta de edge function:', { data, error });
+      console.log('Respuesta de edge function - data:', data);
+      console.log('Respuesta de edge function - error:', error);
+      console.log('=== FIN DEBUG MENTOR IA ===');
 
       if (error) {
-        throw new Error(error.message || 'Error en la edge function');
+        console.error('Error específico de edge function:', error);
+        throw new Error(`Edge Function Error: ${error.message || JSON.stringify(error)}`);
       }
 
       // Asumiendo que la respuesta viene en data.output o similar
@@ -84,10 +94,17 @@ export const MentorIA = ({ onVolver }: MentorIAProps) => {
 
       setMensajes(prev => [...prev, respuestaIA]);
     } catch (error) {
+      console.error('=== ERROR COMPLETO ===');
       console.error('Error al enviar mensaje:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
+      console.error('=== FIN ERROR ===');
+      
       toast({
-        title: "Error",
-        description: "No se pudo conectar con el Mentor IA. Inténtalo de nuevo.",
+        title: "Error de Debug",
+        description: `Error: ${error?.message || 'Error desconocido'}. Revisa la consola para más detalles.`,
         variant: "destructive",
       });
     } finally {
