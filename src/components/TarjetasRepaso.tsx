@@ -80,8 +80,8 @@ export const TarjetasRepaso = ({ onRefresh }: TarjetasRepasoProps) => {
         const ultimoFallo = new Date(Math.max(...tema.errores.map((e: any) => new Date(e.fecha_respuesta).getTime())));
         const diasDesdeUltimoFallo = Math.floor((Date.now() - ultimoFallo.getTime()) / (1000 * 60 * 60 * 24));
         
-        // Lógica de curva de olvido: mostrar a los 3, 7, 14, 30 días
-        const debeRepasar = [3, 7, 14, 30].some(dias => diasDesdeUltimoFallo >= dias);
+        // Lógica de curva de olvido: mostrar inmediatamente para testing
+        const debeRepasar = diasDesdeUltimoFallo >= 0; // Mostrar errores inmediatamente para testing
         
         return {
           tema: tema.tema,
