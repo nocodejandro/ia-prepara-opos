@@ -55,9 +55,107 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
               acertada: esCorrecta,
               origen: 'test'
             });
+
+          // Si la respuesta es incorrecta, manejar la tabla mentoria
+          if (!esCorrecta) {
+            await manejarMentoria(pregunta);
+          }
         } catch (error) {
           console.error('Error guardando resultado:', error);
         }
+      }
+    };
+
+    // Función para manejar la lógica de mentoría
+    const manejarMentoria = async (pregunta: Pregunta) => {
+      try {
+        // Verificar si ya existe un registro para esta pregunta
+        const { data: existente, error: errorConsulta } = await supabase
+          .from('mentoria')
+          .select('*')
+          .eq('pregunta_id', pregunta.id)
+          .eq('user_id', null) // Por ahora sin autenticación
+          .single();
+
+        if (errorConsulta && errorConsulta.code !== 'PGRST116') {
+          console.error('Error consultando mentoría:', errorConsulta);
+          return;
+        }
+
+        if (existente) {
+          // Actualizar contador de fallos
+          const nuevosFallos = existente.fallos + 1;
+          
+          const { error: errorUpdate } = await supabase
+            .from('mentoria')
+            .update({ 
+              fallos: nuevosFallos,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existente.id);
+
+          if (errorUpdate) {
+            console.error('Error actualizando mentoría:', errorUpdate);
+            return;
+          }
+
+          // Si alcanza 3 fallos y no se ha enviado, enviar a n8n
+          if (nuevosFallos >= 3 && !existente.ya_enviado) {
+            await enviarAMentorIA(existente.id, pregunta, nuevosFallos);
+          }
+        } else {
+          // Crear nuevo registro
+          const { data: nuevoRegistro, error: errorInsert } = await supabase
+            .from('mentoria')
+            .insert({
+              user_id: null, // Por ahora sin autenticación
+              pregunta_id: pregunta.id,
+              pregunta_texto: pregunta.pregunta,
+              justificacion: pregunta.justificacion,
+              fallos: 1,
+              ya_enviado: false
+            })
+            .select()
+            .single();
+
+          if (errorInsert) {
+            console.error('Error creando registro mentoría:', errorInsert);
+          }
+        }
+      } catch (error) {
+        console.error('Error en manejarMentoria:', error);
+      }
+    };
+
+    // Función para enviar datos a n8n
+    const enviarAMentorIA = async (mentoriaId: string, pregunta: Pregunta, fallos: number) => {
+      try {
+        const { data, error } = await supabase.functions.invoke('mentor-ia-chat', {
+          body: {
+            sessionId: `mentoria-${mentoriaId}`,
+            action: 'sendMentoriaData',
+            pregunta_id: pregunta.id,
+            pregunta_texto: pregunta.pregunta,
+            justificacion: pregunta.justificacion,
+            fallos: fallos,
+            user_id: null
+          }
+        });
+
+        if (error) {
+          console.error('Error enviando a Mentor IA:', error);
+          return;
+        }
+
+        // Marcar como enviado
+        await supabase
+          .from('mentoria')
+          .update({ ya_enviado: true })
+          .eq('id', mentoriaId);
+
+        console.log('Datos enviados exitosamente a n8n:', data);
+      } catch (error) {
+        console.error('Error en enviarAMentorIA:', error);
       }
     };
 
