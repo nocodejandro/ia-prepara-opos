@@ -22,10 +22,21 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
   useEffect(() => {
     const guardarResultados = async () => {
       if (preguntas.length === 0) return;
+      
+      console.log('🔍 Iniciando guardado de resultados...', { 
+        totalPreguntas: preguntas.length,
+        respuestas: Object.keys(respuestas).length 
+      });
 
       // Guardar resultado individual por cada pregunta
       for (const pregunta of preguntas) {
         const esCorrecta = respuestas[pregunta.id] === pregunta.respuesta_correcta;
+        
+        console.log(`📝 Procesando pregunta ${pregunta.id}:`, {
+          esCorrecta,
+          respuestaUsuario: respuestas[pregunta.id],
+          respuestaCorrecta: pregunta.respuesta_correcta
+        });
         
         try {
           // Guardar en resultados_tests
@@ -58,33 +69,42 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
 
           // Si la respuesta es incorrecta, manejar la tabla mentoria
           if (!esCorrecta) {
+            console.log('❌ Respuesta incorrecta, manejando mentoría para:', pregunta.id);
             await manejarMentoria(pregunta);
+          } else {
+            console.log('✅ Respuesta correcta, no se envía a mentoría');
           }
         } catch (error) {
-          console.error('Error guardando resultado:', error);
+          console.error('❌ Error guardando resultado:', error);
         }
       }
     };
 
     // Función para manejar la lógica de mentoría
     const manejarMentoria = async (pregunta: Pregunta) => {
+      console.log('🧠 Iniciando manejarMentoria para pregunta:', pregunta.id);
+      
       try {
         // Verificar si ya existe un registro para esta pregunta
+        console.log('🔍 Consultando registro existente en mentoria...');
         const { data: existente, error: errorConsulta } = await supabase
           .from('mentoria')
           .select('*')
           .eq('pregunta_id', pregunta.id)
           .eq('user_id', null) // Por ahora sin autenticación
-          .single();
+          .maybeSingle(); // Cambiado de .single() a .maybeSingle() para evitar errores
 
-        if (errorConsulta && errorConsulta.code !== 'PGRST116') {
-          console.error('Error consultando mentoría:', errorConsulta);
+        console.log('📊 Resultado consulta mentoria:', { existente, errorConsulta });
+
+        if (errorConsulta) {
+          console.error('❌ Error consultando mentoría:', errorConsulta);
           return;
         }
 
         if (existente) {
           // Actualizar contador de fallos
           const nuevosFallos = existente.fallos + 1;
+          console.log(`🔄 Actualizando fallos de ${existente.fallos} a ${nuevosFallos}`);
           
           const { error: errorUpdate } = await supabase
             .from('mentoria')
@@ -95,35 +115,46 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
             .eq('id', existente.id);
 
           if (errorUpdate) {
-            console.error('Error actualizando mentoría:', errorUpdate);
+            console.error('❌ Error actualizando mentoría:', errorUpdate);
             return;
           }
+          
+          console.log('✅ Fallos actualizados correctamente');
 
           // Si alcanza 3 fallos y no se ha enviado, enviar a n8n
           if (nuevosFallos >= 3 && !existente.ya_enviado) {
+            console.log('🚀 Enviando a n8n (3+ fallos alcanzados)');
             await enviarAMentorIA(existente.id, pregunta, nuevosFallos);
           }
         } else {
           // Crear nuevo registro
-          const { data: nuevoRegistro, error: errorInsert } = await supabase
+          console.log('➕ Creando nuevo registro en mentoria');
+          const nuevoRegistro = {
+            user_id: null, // Por ahora sin autenticación
+            pregunta_id: pregunta.id,
+            pregunta_texto: pregunta.pregunta,
+            justificacion: pregunta.justificacion,
+            fallos: 1,
+            ya_enviado: false
+          };
+          
+          console.log('📝 Datos del nuevo registro:', nuevoRegistro);
+          
+          const { data: registroCreado, error: errorInsert } = await supabase
             .from('mentoria')
-            .insert({
-              user_id: null, // Por ahora sin autenticación
-              pregunta_id: pregunta.id,
-              pregunta_texto: pregunta.pregunta,
-              justificacion: pregunta.justificacion,
-              fallos: 1,
-              ya_enviado: false
-            })
+            .insert(nuevoRegistro)
             .select()
             .single();
 
           if (errorInsert) {
-            console.error('Error creando registro mentoría:', errorInsert);
+            console.error('❌ Error creando registro mentoría:', errorInsert);
+            return;
           }
+          
+          console.log('✅ Registro creado exitosamente:', registroCreado);
         }
       } catch (error) {
-        console.error('Error en manejarMentoria:', error);
+        console.error('❌ Error en manejarMentoria:', error);
       }
     };
 
