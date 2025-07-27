@@ -59,29 +59,46 @@ export const TarjetasRepaso = ({ onRefresh }: TarjetasRepasoProps) => {
 
       if (error) throw error;
 
-      // Agrupar por tema y calcular estadísticas
-      const temasFallos = respuestasIncorrectas?.reduce((acc, respuesta) => {
-        const clave = `${respuesta.area}-${respuesta.tema}`;
+      // Agrupar respuestas incorrectas por pregunta específica
+      const preguntasFallos = respuestasIncorrectas?.reduce((acc, respuesta) => {
+        const clave = respuesta.pregunta_id;
         if (!acc[clave]) {
           acc[clave] = {
+            preguntaId: respuesta.pregunta_id,
             tema: respuesta.tema,
             area: respuesta.area,
-            bloque: respuesta.subtema,
+            bloque: respuesta.subtema || null,
             errores: [],
-            conceptos: new Set()
           };
         }
         acc[clave].errores.push(respuesta);
         return acc;
       }, {} as Record<string, any>) || {};
 
-      // Convertir a array y aplicar lógica de curva de olvido
+      // Filtrar preguntas que tienen 3 o más errores
+      const preguntasConMuchosFallos = Object.values(preguntasFallos).filter((pregunta: any) => pregunta.errores.length >= 3);
+      
+      // Agrupar por tema las preguntas que necesitan repaso
+      const temasFallos = preguntasConMuchosFallos.reduce((acc, pregunta: any) => {
+        const clave = `${pregunta.area}-${pregunta.tema}`;
+        if (!acc[clave]) {
+          acc[clave] = {
+            tema: pregunta.tema,
+            area: pregunta.area,
+            bloque: pregunta.bloque,
+            errores: [],
+            preguntasProblematicas: []
+          };
+        }
+        acc[clave].errores.push(...pregunta.errores);
+        acc[clave].preguntasProblematicas.push(pregunta.preguntaId);
+        return acc;
+      }, {} as Record<string, any>) || {};
+
+      // Convertir a array para mostrar tarjetas de repaso
       const temasArray: TemaConFallos[] = Object.values(temasFallos).map((tema: any) => {
         const ultimoFallo = new Date(Math.max(...tema.errores.map((e: any) => new Date(e.fecha_respuesta).getTime())));
         const diasDesdeUltimoFallo = Math.floor((Date.now() - ultimoFallo.getTime()) / (1000 * 60 * 60 * 24));
-        
-        // Lógica de curva de olvido: mostrar inmediatamente para testing
-        const debeRepasar = diasDesdeUltimoFallo >= 0; // Mostrar errores inmediatamente para testing
         
         return {
           tema: tema.tema,
@@ -91,10 +108,10 @@ export const TarjetasRepaso = ({ onRefresh }: TarjetasRepasoProps) => {
           porcentajeError: Math.round((tema.errores.length / (tema.errores.length + 1)) * 100),
           ultimoFallo,
           diasDesdeUltimoFallo,
-          debeRepasar,
-          conceptosEspecificos: []
+          debeRepasar: true, // Si llegó aquí es porque tiene preguntas con 3+ errores
+          conceptosEspecificos: tema.preguntasProblematicas
         };
-      }).filter(tema => tema.debeRepasar);
+      });
 
       setTemasConFallos(temasArray);
     } catch (error) {
