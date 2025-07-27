@@ -31,6 +31,10 @@ serve(async (req) => {
     
     if (action === 'generateReviewExercises') {
       webhookUrl = 'https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/dc3ac130-f224-43af-bfb1-8f3c2810acad';
+      console.log('=== GENERANDO EJERCICIOS DE REPASO ===');
+      console.log('Tema:', tema);
+      console.log('Area:', area);
+      console.log('Total Errores:', totalErrores);
     }
 
     // Preparar el payload para n8n
