@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      mentoria: {
+        Row: {
+          created_at: string
+          fallos: number
+          id: string
+          justificacion: string
+          pregunta_id: string
+          pregunta_texto: string
+          updated_at: string
+          user_id: string | null
+          ya_enviado: boolean
+        }
+        Insert: {
+          created_at?: string
+          fallos?: number
+          id?: string
+          justificacion: string
+          pregunta_id: string
+          pregunta_texto: string
+          updated_at?: string
+          user_id?: string | null
+          ya_enviado?: boolean
+        }
+        Update: {
+          created_at?: string
+          fallos?: number
+          id?: string
+          justificacion?: string
+          pregunta_id?: string
+          pregunta_texto?: string
+          updated_at?: string
+          user_id?: string | null
+          ya_enviado?: boolean
+        }
+        Relationships: []
+      }
       preguntas: {
         Row: {
           area: string
