@@ -23,41 +23,23 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
     const guardarResultados = async () => {
       if (preguntas.length === 0) return;
 
-      // Agrupar por área/tema
-      const resultadosPorTema = preguntas.reduce((acc, pregunta) => {
-        const clave = `${pregunta.area}-${pregunta.tema}`;
-        if (!acc[clave]) {
-          acc[clave] = {
-            area: pregunta.area,
-            tema: pregunta.tema,
-            bloque: pregunta.bloque,
-            total: 0,
-            correctas: 0
-          };
-        }
-        acc[clave].total++;
-        if (respuestas[pregunta.id] === pregunta.respuesta_correcta) {
-          acc[clave].correctas++;
-        }
-        return acc;
-      }, {} as Record<string, any>);
-
-      // Insertar cada resultado por tema
-      for (const resultado of Object.values(resultadosPorTema)) {
-        const porcentajeTema = Math.round((resultado.correctas / resultado.total) * 100);
+      // Guardar resultado individual por cada pregunta
+      for (const pregunta of preguntas) {
+        const esCorrecta = respuestas[pregunta.id] === pregunta.respuesta_correcta;
         
         try {
           await supabase
             .from('resultados_tests')
             .insert({
               user_id: null, // Por ahora sin autenticación
-              area: resultado.area,
-              tema: resultado.tema,
-              bloque: resultado.bloque,
-              total_preguntas: resultado.total,
-              respuestas_correctas: resultado.correctas,
-              respuestas_incorrectas: resultado.total - resultado.correctas,
-              porcentaje_acierto: porcentajeTema
+              area: pregunta.area,
+              tema: pregunta.tema,
+              bloque: pregunta.bloque,
+              total_preguntas: 1, // Cada fila representa una pregunta individual
+              respuestas_correctas: esCorrecta ? 1 : 0,
+              respuestas_incorrectas: esCorrecta ? 0 : 1,
+              porcentaje_acierto: esCorrecta ? 100 : 0,
+              acierto: esCorrecta
             });
         } catch (error) {
           console.error('Error guardando resultado:', error);
