@@ -30,7 +30,7 @@ serve(async (req) => {
     let webhookUrl = 'https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/e47786e9-4d0f-410b-b702-7645a4214f91/chat';
     
     if (action === 'generateReviewExercises') {
-      webhookUrl = 'https://automatizaciones-n8n.dgkviv.easypanel.host/webhook-test/dc3ac130-f224-43af-bfb1-8f3c2810acad';
+      webhookUrl = 'https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/dc3ac130-f224-43af-bfb1-8f3c2810acad';
     }
 
     // Preparar el payload para n8n
