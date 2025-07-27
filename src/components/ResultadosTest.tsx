@@ -51,7 +51,7 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
               pregunta_id: pregunta.id,
               area: pregunta.area,
               tema: pregunta.tema,
-              subtema: pregunta.bloque,
+              subtema: pregunta.bloque, // bloque de la pregunta va a subtema en respuestas_usuario
               acertada: esCorrecta,
               origen: 'test'
             });
