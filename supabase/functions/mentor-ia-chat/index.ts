@@ -6,14 +6,19 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('=== MENTOR IA CHAT - FUNCIÓN INICIADA ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Headers:', Object.fromEntries(req.headers.entries()));
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Returning CORS preflight response');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('=== MENTOR IA CHAT INICIADO ===');
-    console.log('Method:', req.method);
+    console.log('=== PROCESANDO REQUEST ===');
     
     // Obtener los datos del request
     const requestData = await req.json();
