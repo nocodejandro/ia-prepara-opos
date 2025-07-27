@@ -1,0 +1,1 @@
+ALTER TABLE public.resultados_tests ADD COLUMN acierto BOOLEAN;

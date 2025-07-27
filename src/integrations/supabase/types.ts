@@ -190,6 +190,7 @@ export type Database = {
       }
       resultados_tests: {
         Row: {
+          acierto: boolean | null
           area: string
           bloque: string | null
           created_at: string
@@ -203,6 +204,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          acierto?: boolean | null
           area: string
           bloque?: string | null
           created_at?: string
@@ -216,6 +218,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          acierto?: boolean | null
           area?: string
           bloque?: string | null
           created_at?: string
