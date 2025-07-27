@@ -28,6 +28,7 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
         const esCorrecta = respuestas[pregunta.id] === pregunta.respuesta_correcta;
         
         try {
+          // Guardar en resultados_tests
           await supabase
             .from('resultados_tests')
             .insert({
@@ -40,6 +41,19 @@ export function ResultadosTest({ preguntas, respuestas, onNuevoTest, onVolver }:
               respuestas_incorrectas: esCorrecta ? 0 : 1,
               porcentaje_acierto: esCorrecta ? 100 : 0,
               acierto: esCorrecta
+            });
+
+          // Guardar en respuestas_usuario para el sistema de repaso
+          await supabase
+            .from('respuestas_usuario')
+            .insert({
+              user_id: null, // Por ahora sin autenticación
+              pregunta_id: pregunta.id,
+              area: pregunta.area,
+              tema: pregunta.tema,
+              subtema: pregunta.bloque,
+              acertada: esCorrecta,
+              origen: 'test'
             });
         } catch (error) {
           console.error('Error guardando resultado:', error);
