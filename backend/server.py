@@ -425,18 +425,25 @@ async def n8n_flashcards_webhook(data: dict):
         document_id = data.get('document_id', 'unknown')
         flashcard_text = data.get('flashcard', data.get('output', ''))
         
-        # Crear una flashcard simple con el contenido
-        flashcard = FlashCard(
-            document_id=document_id,
-            question="Pregunta generada por IA",
-            answer=flashcard_text,
-            difficulty="medium"
-        )
+        # Parsear flashcards individuales
+        flashcards = parse_flashcards(flashcard_text)
         
-        await db.flashcards.insert_one(flashcard.dict())
-        logging.info(f"Saved flashcard for document {document_id}")
+        saved_flashcards = []
+        for flashcard_data in flashcards:
+            flashcard = FlashCard(
+                document_id=document_id,
+                question=flashcard_data['question'],
+                answer=flashcard_data['answer'],
+                difficulty=flashcard_data.get('difficulty', 'medium'),
+                category=flashcard_data.get('category', 'General')
+            )
+            
+            await db.flashcards.insert_one(flashcard.dict())
+            saved_flashcards.append(flashcard.dict())
         
-        return {"status": "success", "message": "Flashcard guardada correctamente"}
+        logging.info(f"Saved {len(saved_flashcards)} flashcards for document {document_id}")
+        
+        return {"status": "success", "message": f"Se guardaron {len(saved_flashcards)} flashcards correctamente"}
     except Exception as e:
         logging.error(f"Error in flashcards webhook: {e}")
         return {"status": "error", "message": str(e)}
