@@ -168,6 +168,54 @@ def parse_test_questions(text: str):
     
     return questions
 
+def parse_flashcards(text: str):
+    """Parsea las flashcards que vienen de n8n"""
+    flashcards = []
+    
+    # Buscar patrones tipo "1. Pregunta: ... - Respuesta: ..."
+    pattern = r'(\d+)\.\s*([^-]+?)\s*-\s*(.*?)(?=\n\d+\.|\Z)'
+    matches = re.findall(pattern, text, re.DOTALL)
+    
+    for match in matches:
+        number = match[0]
+        question = match[1].strip()
+        answer = match[2].strip()
+        
+        flashcards.append({
+            'question': question,
+            'answer': answer,
+            'difficulty': 'medium',
+            'category': 'IA'
+        })
+    
+    # Si no encuentra el patrón, intentar otro formato
+    if not flashcards:
+        # Buscar patrón "¿...? - ..."
+        alt_pattern = r'(¿[^?]+\?)\s*-\s*([^\n]+)'
+        alt_matches = re.findall(alt_pattern, text)
+        
+        for match in alt_matches:
+            question = match[0].strip()
+            answer = match[1].strip()
+            
+            flashcards.append({
+                'question': question,
+                'answer': answer,
+                'difficulty': 'medium',
+                'category': 'IA'
+            })
+    
+    # Fallback: si no se puede parsear, crear una flashcard con todo
+    if not flashcards and text:
+        flashcards.append({
+            'question': 'Contenido generado por IA',
+            'answer': text,
+            'difficulty': 'medium',
+            'category': 'IA'
+        })
+    
+    return flashcards
+
 
 # ==================== BASIC ROUTES ====================
 @api_router.get("/")
