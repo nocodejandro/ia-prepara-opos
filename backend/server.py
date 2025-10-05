@@ -243,9 +243,11 @@ async def get_document_content(document_id: str):
         resumenes = await db.resumenes.find({"document_id": document_id}).to_list(100)
         preguntas = await db.preguntas_test.find({"document_id": document_id}).to_list(100)
         casos = await db.casos_practicos.find({"document_id": document_id}).to_list(100)
+        basicos = await db.conceptos_basicos.find({"document_id": document_id}).to_list(100)
+        testdos = await db.test_dos.find({"document_id": document_id}).to_list(100)
         
         # Remove MongoDB ObjectId fields
-        for content_list in [flashcards, esquemas, resumenes, preguntas, casos]:
+        for content_list in [flashcards, esquemas, resumenes, preguntas, casos, basicos, testdos]:
             for item in content_list:
                 if "_id" in item:
                     del item["_id"]
@@ -256,7 +258,9 @@ async def get_document_content(document_id: str):
             "esquemas": esquemas,
             "resumenes": resumenes,
             "preguntas_test": preguntas,
-            "casos_practicos": casos
+            "casos_practicos": casos,
+            "conceptos_basicos": basicos,
+            "test_dos": testdos
         }
     except Exception as e:
         logging.error(f"Error fetching content: {e}")
