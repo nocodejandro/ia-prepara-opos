@@ -11,6 +11,9 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
 import json
+import tempfile
+import base64
+import aiohttp
 
 
 ROOT_DIR = Path(__file__).parent
