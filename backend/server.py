@@ -448,18 +448,26 @@ async def n8n_basicos_webhook(data: dict):
         document_id = data.get('document_id', 'unknown')
         basicos_text = data.get('basicos', data.get('output', ''))
         
-        concepto = ConceptoBasico(
-            document_id=document_id,
-            title="Conceptos básicos",
-            definition=basicos_text,
-            examples=[],
-            importance_level="medium"
-        )
+        # Parsear conceptos básicos individuales
+        conceptos = parse_conceptos_basicos(basicos_text)
         
-        await db.conceptos_basicos.insert_one(concepto.dict())
-        logging.info(f"Saved basicos for document {document_id}")
+        saved_conceptos = []
+        for concepto_data in conceptos:
+            concepto = ConceptoBasico(
+                document_id=document_id,
+                title=concepto_data['title'],
+                definition=concepto_data['definition'],
+                examples=concepto_data.get('examples', []),
+                importance_level=concepto_data.get('importance_level', 'medium'),
+                category=concepto_data.get('category', 'IA')
+            )
+            
+            await db.conceptos_basicos.insert_one(concepto.dict())
+            saved_conceptos.append(concepto.dict())
         
-        return {"status": "success", "message": "Conceptos básicos guardados correctamente"}
+        logging.info(f"Saved {len(saved_conceptos)} conceptos for document {document_id}")
+        
+        return {"status": "success", "message": f"Se guardaron {len(saved_conceptos)} conceptos correctamente"}
     except Exception as e:
         logging.error(f"Error in basicos webhook: {e}")
         return {"status": "error", "message": str(e)}
