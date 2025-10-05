@@ -432,18 +432,29 @@ async def n8n_testdos_webhook(data: dict):
         document_id = data.get('document_id', 'unknown')
         testdos_text = data.get('testdos', data.get('output', ''))
         
-        test_dos = TestDos(
-            document_id=document_id,
-            question="Pregunta avanzada generada por IA",
-            question_type="short_answer",
-            options=[],
-            correct_answer=testdos_text
-        )
+        # Parsear las preguntas del texto estructurado
+        questions = parse_test_questions(testdos_text)
         
-        await db.test_dos.insert_one(test_dos.dict())
-        logging.info(f"Saved testdos for document {document_id}")
+        saved_questions = []
+        for i, question_data in enumerate(questions):
+            test_dos = TestDos(
+                document_id=document_id,
+                question=question_data['question'],
+                question_type="multiple_choice",
+                options=question_data['options'],
+                correct_answer=question_data['correct_answer'],
+                correct_index=question_data['correct_index'],
+                explanation=question_data['explanation'],
+                difficulty="medium",
+                points=2
+            )
+            
+            await db.test_dos.insert_one(test_dos.dict())
+            saved_questions.append(test_dos.dict())
         
-        return {"status": "success", "message": "Test dos guardado correctamente"}
+        logging.info(f"Saved {len(saved_questions)} testdos questions for document {document_id}")
+        
+        return {"status": "success", "message": f"Se guardaron {len(saved_questions)} preguntas correctamente"}
     except Exception as e:
         logging.error(f"Error in testdos webhook: {e}")
         return {"status": "error", "message": str(e)}
