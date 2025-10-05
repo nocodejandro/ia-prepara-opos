@@ -318,27 +318,36 @@ async def receive_esquema(webhook_data: WebhookData):
         logging.error(f"Error processing esquema webhook: {e}")
         raise HTTPException(status_code=500, detail="Error procesando esquema")
 
-@api_router.post("/webhooks/resumen")
-async def receive_resumen(webhook_data: WebhookData):
+@api_router.post("/webhooks/resumen") 
+async def receive_resumen(data: dict):
     """Receive summary from n8n"""
     try:
-        resumen_data = webhook_data.data.get('resumen', {})
+        # n8n puede enviar el resultado de diferentes formas
+        # Intentamos extraer document_id y el contenido del resumen
         
+        document_id = data.get('document_id') or data.get('body', {}).get('document_id')
+        resumen_content = data.get('resumen') or data.get('output') or data.get('text', '')
+        
+        if not document_id:
+            logging.error(f"No document_id found in resumen webhook data: {data}")
+            raise HTTPException(status_code=400, detail="document_id requerido")
+        
+        # Crear el resumen
         resumen = Resumen(
-            document_id=webhook_data.document_id,
-            title=resumen_data.get('title', 'Resumen generado'),
-            content=resumen_data.get('content', ''),
-            key_points=resumen_data.get('key_points', [])
+            document_id=document_id,
+            title="Resumen generado por IA",
+            content=resumen_content,
+            key_points=[]  # n8n puede no enviar puntos clave estructurados
         )
         
         await db.resumenes.insert_one(resumen.dict())
         
-        logging.info(f"Saved resumen for document {webhook_data.document_id}")
-        return {"message": "Resumen guardado correctamente"}
+        logging.info(f"Saved resumen for document {document_id}")
+        return {"message": "Resumen guardado correctamente", "status": "success"}
         
     except Exception as e:
         logging.error(f"Error processing resumen webhook: {e}")
-        raise HTTPException(status_code=500, detail="Error procesando resumen")
+        return {"message": f"Error procesando resumen: {str(e)}", "status": "error"}
 
 @api_router.post("/webhooks/preguntas_test")
 async def receive_preguntas_test(webhook_data: WebhookData):
