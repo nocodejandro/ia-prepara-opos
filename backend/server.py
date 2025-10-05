@@ -142,10 +142,6 @@ async def upload_document(file: UploadFile = File(...)):
         await db.documents.insert_one(document.dict())
         document_id = document.id
         
-        # Save file temporarily
-        import tempfile
-        import base64
-        
         # Read file content
         file_content = await file.read()
         file_base64 = base64.b64encode(file_content).decode('utf-8')
