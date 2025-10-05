@@ -126,6 +126,9 @@ async def upload_document(file: UploadFile = File(...)):
         if not file.filename.lower().endswith('.pdf'):
             raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF")
         
+        if file.size > 50 * 1024 * 1024:  # 50MB limit
+            raise HTTPException(status_code=400, detail="El archivo es demasiado grande. Máximo 50MB.")
+        
         # Create document record
         document = DocumentUpload(
             filename=file.filename,
@@ -136,17 +139,55 @@ async def upload_document(file: UploadFile = File(...)):
         result = await db.documents.insert_one(document.dict())
         document_id = document.id
         
-        # TODO: Here you would normally save the file and send to n8n
-        # For now, we'll simulate the process
+        # Save file temporarily
+        import tempfile
+        import base64
         
-        # Update status to completed (simulate)
-        await db.documents.update_one(
-            {"id": document_id}, 
-            {"$set": {"processing_status": "completed"}}
-        )
+        # Read file content
+        file_content = await file.read()
+        file_base64 = base64.b64encode(file_content).decode('utf-8')
+        
+        # Prepare payload for n8n
+        payload = {
+            "document_id": document_id,
+            "filename": file.filename,
+            "file_content": file_base64,
+            "callback_url": "https://github-enhancer.preview.emergentagent.com/api/webhooks/"
+        }
+        
+        # Send to all n8n webhooks
+        import aiohttp
+        n8n_webhooks = {
+            "resumen": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/861efbc1-9b19-4cc2-9848-888ea7cdb161",
+            "esquema": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/0e1d975f-672a-4363-8a3c-4739d9e5c784", 
+            "test": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook-test/cb578689-1dd2-4182-9c09-69dc86a2646b",
+            "basicos": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook-test/8020a54f-a54a-4e99-94c4-0c141f933110",
+            "flashcard": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/4a0cc8e5-23c4-49f9-b6a9-b6103354ca89",
+            "casos": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/edb291c9-587d-448b-b036-3f5fcc7fa47d",
+            "testdos": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/7da011c7-14b4-4702-aa7f-e37faa8cc3c1"
+        }
+        
+        # Send to n8n webhooks asynchronously
+        async with aiohttp.ClientSession() as session:
+            for webhook_name, webhook_url in n8n_webhooks.items():
+                try:
+                    async with session.post(
+                        webhook_url,
+                        json=payload,
+                        headers={"Content-Type": "application/json"},
+                        timeout=aiohttp.ClientTimeout(total=30)
+                    ) as response:
+                        if response.status == 200:
+                            logging.info(f"Successfully sent to {webhook_name} webhook")
+                        else:
+                            logging.error(f"Failed to send to {webhook_name} webhook: {response.status}")
+                except Exception as e:
+                    logging.error(f"Error sending to {webhook_name} webhook: {e}")
+        
+        logging.info(f"Document {document_id} sent to all n8n webhooks for processing")
         
         return {
-            "message": "Documento subido correctamente",
+            "message": "Documento enviado a procesamiento con IA",
             "document_id": document_id,
             "filename": file.filename,
             "status": "processing"
