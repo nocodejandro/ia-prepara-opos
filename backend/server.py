@@ -351,11 +351,16 @@ async def upload_document(file: UploadFile = File(...)):
         
         logging.info(f"Document {document_id} sent to all n8n webhooks for processing")
         
+        # Programar actualización de estado después de 2 minutos si no llegan respuestas
+        import asyncio
+        asyncio.create_task(update_document_status_after_delay(document_id))
+        
         return {
             "message": "Documento enviado a procesamiento con IA",
             "document_id": document_id,
             "filename": file.filename,
-            "status": "processing"
+            "status": "processing",
+            "instructions": "Configura HTTP Request en n8n para enviar resultados de vuelta"
         }
         
     except Exception as e:
