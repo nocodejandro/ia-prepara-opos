@@ -5,6 +5,8 @@ import Esquemas from './content/Esquemas';
 import Resumenes from './content/Resumenes';
 import PreguntasTest from './content/PreguntasTest';
 import CasosPracticos from './content/CasosPracticos';
+import ConceptosBasicos from './content/ConceptosBasicos';
+import TestDos from './content/TestDos';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
