@@ -125,6 +125,49 @@ class WebhookData(BaseModel):
     type: str  # flashcards, esquema, resumen, preguntas_test, caso_practico
     data: Dict[Any, Any]
 
+def parse_test_questions(text: str):
+    """Parsea las preguntas estructuradas que vienen de n8n"""
+    questions = []
+    
+    # Buscar preguntas usando regex
+    question_pattern = r'\*\*Pregunta \d+:\*\*\n(.*?)\n\na\)(.*?)\nb\)(.*?)\nc\)(.*?)\nd\)(.*?)\n\n\*\*Respuesta correcta:\*\* ([a-d])\)(.*?)\n\n\*\*Justificación:\*\*(.*?)(?=\*\*Pregunta|\Z)'
+    
+    matches = re.findall(question_pattern, text, re.DOTALL)
+    
+    for i, match in enumerate(matches):
+        question = match[0].strip()
+        option_a = match[1].strip()
+        option_b = match[2].strip() 
+        option_c = match[3].strip()
+        option_d = match[4].strip()
+        correct_letter = match[5].strip()
+        correct_answer_text = match[6].strip()
+        justification = match[7].strip()
+        
+        # Determinar el índice de la respuesta correcta
+        correct_index = ord(correct_letter.lower()) - ord('a')
+        
+        questions.append({
+            'question': question,
+            'options': [option_a, option_b, option_c, option_d],
+            'correct_answer': correct_answer_text,
+            'correct_index': correct_index,
+            'explanation': justification
+        })
+    
+    # Si no se pudieron parsear con regex, intentar parseo simple
+    if not questions and text:
+        # Fallback: crear una pregunta simple con todo el texto
+        questions.append({
+            'question': 'Pregunta de análisis completo',
+            'options': ['Verdadero', 'Falso'],
+            'correct_answer': 'Respuesta completa en explicación',
+            'correct_index': 0,
+            'explanation': text
+        })
+    
+    return questions
+
 
 # ==================== BASIC ROUTES ====================
 @api_router.get("/")
