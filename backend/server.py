@@ -136,7 +136,7 @@ async def upload_document(file: UploadFile = File(...)):
         )
         
         # Save to database
-        result = await db.documents.insert_one(document.dict())
+        await db.documents.insert_one(document.dict())
         document_id = document.id
         
         # Save file temporarily
