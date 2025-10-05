@@ -161,6 +161,10 @@ async def get_documents():
     """Get all uploaded documents"""
     try:
         documents = await db.documents.find().sort("upload_timestamp", -1).to_list(100)
+        # Convert ObjectId to string to make it JSON serializable
+        for doc in documents:
+            if "_id" in doc:
+                del doc["_id"]  # Remove MongoDB ObjectId field
         return {"documents": documents}
     except Exception as e:
         logging.error(f"Error fetching documents: {e}")
