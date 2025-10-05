@@ -181,6 +181,12 @@ async def get_document_content(document_id: str):
         preguntas = await db.preguntas_test.find({"document_id": document_id}).to_list(100)
         casos = await db.casos_practicos.find({"document_id": document_id}).to_list(100)
         
+        # Remove MongoDB ObjectId fields
+        for content_list in [flashcards, esquemas, resumenes, preguntas, casos]:
+            for item in content_list:
+                if "_id" in item:
+                    del item["_id"]
+        
         return {
             "document_id": document_id,
             "flashcards": flashcards,
