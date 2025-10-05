@@ -269,7 +269,186 @@ async def get_document_content(document_id: str):
         raise HTTPException(status_code=500, detail="Error obteniendo contenido")
 
 # ==================== N8N WEBHOOK ROUTES ====================
+# Estos endpoints coinciden exactamente con las URLs de tu n8n
 
+@api_router.post("/webhook/861efbc1-9b19-4cc2-9848-888ea7cdb161")
+async def n8n_resumen_webhook(data: dict):
+    """Webhook para resumen desde n8n"""
+    try:
+        logging.info(f"Received resumen webhook: {data}")
+        
+        # Extraer el contenido del resumen desde la estructura de n8n
+        document_id = data.get('document_id', 'unknown')
+        resumen_text = data.get('resumen', data.get('output', ''))
+        
+        # Guardar en base de datos
+        resumen = Resumen(
+            document_id=document_id,
+            title="Resumen generado por IA",
+            content=resumen_text,
+            key_points=[]
+        )
+        
+        await db.resumenes.insert_one(resumen.dict())
+        logging.info(f"Saved resumen for document {document_id}")
+        
+        return {"status": "success", "message": "Resumen guardado correctamente"}
+    except Exception as e:
+        logging.error(f"Error in resumen webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api_router.post("/webhook/0e1d975f-672a-4363-8a3c-4739d9e5c784")
+async def n8n_esquema_webhook(data: dict):
+    """Webhook para esquema desde n8n"""
+    try:
+        logging.info(f"Received esquema webhook: {data}")
+        
+        document_id = data.get('document_id', 'unknown')
+        esquema_text = data.get('esquema', data.get('output', ''))
+        
+        esquema = Esquema(
+            document_id=document_id,
+            title="Esquema generado por IA",
+            content=esquema_text,
+            schema_type="outline"
+        )
+        
+        await db.esquemas.insert_one(esquema.dict())
+        logging.info(f"Saved esquema for document {document_id}")
+        
+        return {"status": "success", "message": "Esquema guardado correctamente"}
+    except Exception as e:
+        logging.error(f"Error in esquema webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api_router.post("/webhook-test/cb578689-1dd2-4182-9c09-69dc86a2646b")
+async def n8n_test_webhook(data: dict):
+    """Webhook para preguntas test desde n8n"""
+    try:
+        logging.info(f"Received test webhook: {data}")
+        
+        document_id = data.get('document_id', 'unknown')
+        test_text = data.get('test', data.get('output', ''))
+        
+        # Procesar texto de preguntas (asumiendo formato simple por ahora)
+        pregunta = PreguntaTest(
+            document_id=document_id,
+            question="Pregunta generada por IA",
+            options=["Opción A", "Opción B", "Opción C", "Opción D"],
+            correct_answer=0,
+            explanation=test_text
+        )
+        
+        await db.preguntas_test.insert_one(pregunta.dict())
+        logging.info(f"Saved test for document {document_id}")
+        
+        return {"status": "success", "message": "Test guardado correctamente"}
+    except Exception as e:
+        logging.error(f"Error in test webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api_router.post("/webhook-test/8020a54f-a54a-4e99-94c4-0c141f933110")
+async def n8n_basicos_webhook(data: dict):
+    """Webhook para conceptos básicos desde n8n"""
+    try:
+        logging.info(f"Received basicos webhook: {data}")
+        
+        document_id = data.get('document_id', 'unknown')
+        basicos_text = data.get('basicos', data.get('output', ''))
+        
+        concepto = ConceptoBasico(
+            document_id=document_id,
+            title="Conceptos básicos",
+            definition=basicos_text,
+            examples=[],
+            importance_level="medium"
+        )
+        
+        await db.conceptos_basicos.insert_one(concepto.dict())
+        logging.info(f"Saved basicos for document {document_id}")
+        
+        return {"status": "success", "message": "Conceptos básicos guardados correctamente"}
+    except Exception as e:
+        logging.error(f"Error in basicos webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api_router.post("/webhook/4a0cc8e5-23c4-49f9-b6a9-b6103354ca89")
+async def n8n_flashcards_webhook(data: dict):
+    """Webhook para flashcards desde n8n"""
+    try:
+        logging.info(f"Received flashcards webhook: {data}")
+        
+        document_id = data.get('document_id', 'unknown')
+        flashcard_text = data.get('flashcard', data.get('output', ''))
+        
+        # Crear una flashcard simple con el contenido
+        flashcard = FlashCard(
+            document_id=document_id,
+            question="Pregunta generada por IA",
+            answer=flashcard_text,
+            difficulty="medium"
+        )
+        
+        await db.flashcards.insert_one(flashcard.dict())
+        logging.info(f"Saved flashcard for document {document_id}")
+        
+        return {"status": "success", "message": "Flashcard guardada correctamente"}
+    except Exception as e:
+        logging.error(f"Error in flashcards webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api_router.post("/webhook/edb291c9-587d-448b-b036-3f5fcc7fa47d")
+async def n8n_casos_webhook(data: dict):
+    """Webhook para casos prácticos desde n8n"""
+    try:
+        logging.info(f"Received casos webhook: {data}")
+        
+        document_id = data.get('document_id', 'unknown')
+        casos_text = data.get('casos', data.get('output', ''))
+        
+        caso = CasoPractico(
+            document_id=document_id,
+            title="Caso práctico generado por IA",
+            scenario=casos_text,
+            questions=["¿Cómo resolverías este caso?"],
+            solution="Solución pendiente de análisis",
+            key_concepts=[]
+        )
+        
+        await db.casos_practicos.insert_one(caso.dict())
+        logging.info(f"Saved caso for document {document_id}")
+        
+        return {"status": "success", "message": "Caso práctico guardado correctamente"}
+    except Exception as e:
+        logging.error(f"Error in casos webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api_router.post("/webhook/7da011c7-14b4-4702-aa7f-e37faa8cc3c1")
+async def n8n_testdos_webhook(data: dict):
+    """Webhook para test dos desde n8n"""
+    try:
+        logging.info(f"Received testdos webhook: {data}")
+        
+        document_id = data.get('document_id', 'unknown')
+        testdos_text = data.get('testdos', data.get('output', ''))
+        
+        test_dos = TestDos(
+            document_id=document_id,
+            question="Pregunta avanzada generada por IA",
+            question_type="short_answer",
+            options=[],
+            correct_answer=testdos_text
+        )
+        
+        await db.test_dos.insert_one(test_dos.dict())
+        logging.info(f"Saved testdos for document {document_id}")
+        
+        return {"status": "success", "message": "Test dos guardado correctamente"}
+    except Exception as e:
+        logging.error(f"Error in testdos webhook: {e}")
+        return {"status": "error", "message": str(e)}
+
+# Mantenemos los endpoints originales por compatibilidad
 @api_router.post("/webhooks/flashcards")
 async def receive_flashcards(webhook_data: WebhookData):
     """Receive flashcards from n8n"""
