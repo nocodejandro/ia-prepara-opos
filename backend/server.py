@@ -49,6 +49,30 @@ class DocumentUpload(BaseModel):
     file_path: Optional[str] = None
     user_id: Optional[str] = None
 
+class ConceptoBasico(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    document_id: str
+    title: str
+    definition: str
+    examples: List[str] = []
+    importance_level: str = "medium"  # low, medium, high
+    category: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TestDos(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    document_id: str
+    question: str
+    question_type: str = "multiple_choice"  # multiple_choice, true_false, short_answer
+    options: List[str] = []
+    correct_answer: Optional[str] = None
+    correct_index: Optional[int] = None
+    explanation: Optional[str] = None
+    difficulty: str = "medium"
+    points: int = 1
+    time_limit: Optional[int] = None  # in seconds
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class FlashCard(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     document_id: str
