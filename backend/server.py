@@ -216,6 +216,55 @@ def parse_flashcards(text: str):
     
     return flashcards
 
+def parse_conceptos_basicos(text: str):
+    """Parsea conceptos básicos que vienen de n8n"""
+    conceptos = []
+    
+    # Buscar patrones tipo "Concepto - Definición"
+    lines = text.split('\n')
+    current_concept = None
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+            
+        # Buscar patrón "Concepto - Definición"
+        if ' - ' in line:
+            parts = line.split(' - ', 1)
+            if len(parts) == 2:
+                title = parts[0].strip()
+                definition = parts[1].strip()
+                
+                conceptos.append({
+                    'title': title,
+                    'definition': definition,
+                    'examples': [],
+                    'importance_level': 'medium',
+                    'category': 'IA'
+                })
+        # Si no hay guión, considerar toda la línea como definición
+        elif current_concept is None and line:
+            conceptos.append({
+                'title': 'Concepto extraído por IA',
+                'definition': line,
+                'examples': [],
+                'importance_level': 'medium',
+                'category': 'IA'
+            })
+    
+    # Fallback: si no se puede parsear
+    if not conceptos and text:
+        conceptos.append({
+            'title': 'Conceptos básicos extraídos',
+            'definition': text,
+            'examples': [],
+            'importance_level': 'medium',
+            'category': 'IA'
+        })
+    
+    return conceptos
+
 
 # ==================== BASIC ROUTES ====================
 @api_router.get("/")
