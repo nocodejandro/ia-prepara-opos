@@ -388,6 +388,62 @@ async def receive_caso_practico(webhook_data: WebhookData):
         logging.error(f"Error processing caso practico webhook: {e}")
         raise HTTPException(status_code=500, detail="Error procesando caso práctico")
 
+@api_router.post("/webhooks/conceptos_basicos")
+async def receive_conceptos_basicos(webhook_data: WebhookData):
+    """Receive basic concepts from n8n"""
+    try:
+        conceptos_data = webhook_data.data.get('conceptos', [])
+        
+        saved_conceptos = []
+        for concepto_data in conceptos_data:
+            concepto = ConceptoBasico(
+                document_id=webhook_data.document_id,
+                title=concepto_data.get('title', ''),
+                definition=concepto_data.get('definition', ''),
+                examples=concepto_data.get('examples', []),
+                importance_level=concepto_data.get('importance_level', 'medium'),
+                category=concepto_data.get('category')
+            )
+            await db.conceptos_basicos.insert_one(concepto.dict())
+            saved_conceptos.append(concepto.dict())
+        
+        logging.info(f"Saved {len(saved_conceptos)} conceptos básicos for document {webhook_data.document_id}")
+        return {"message": f"Se guardaron {len(saved_conceptos)} conceptos básicos correctamente"}
+        
+    except Exception as e:
+        logging.error(f"Error processing conceptos básicos webhook: {e}")
+        raise HTTPException(status_code=500, detail="Error procesando conceptos básicos")
+
+@api_router.post("/webhooks/test_dos")
+async def receive_test_dos(webhook_data: WebhookData):
+    """Receive test dos questions from n8n"""
+    try:
+        test_data = webhook_data.data.get('preguntas', [])
+        
+        saved_tests = []
+        for pregunta_data in test_data:
+            test_dos = TestDos(
+                document_id=webhook_data.document_id,
+                question=pregunta_data.get('question', ''),
+                question_type=pregunta_data.get('question_type', 'multiple_choice'),
+                options=pregunta_data.get('options', []),
+                correct_answer=pregunta_data.get('correct_answer'),
+                correct_index=pregunta_data.get('correct_index'),
+                explanation=pregunta_data.get('explanation'),
+                difficulty=pregunta_data.get('difficulty', 'medium'),
+                points=pregunta_data.get('points', 1),
+                time_limit=pregunta_data.get('time_limit')
+            )
+            await db.test_dos.insert_one(test_dos.dict())
+            saved_tests.append(test_dos.dict())
+        
+        logging.info(f"Saved {len(saved_tests)} test dos for document {webhook_data.document_id}")
+        return {"message": f"Se guardaron {len(saved_tests)} preguntas de test dos correctamente"}
+        
+    except Exception as e:
+        logging.error(f"Error processing test dos webhook: {e}")
+        raise HTTPException(status_code=500, detail="Error procesando test dos")
+
 
 # Include the router in the main app
 app.include_router(api_router)
