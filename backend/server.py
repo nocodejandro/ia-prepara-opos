@@ -155,7 +155,6 @@ async def upload_document(file: UploadFile = File(...)):
         }
         
         # Send to all n8n webhooks
-        import aiohttp
         n8n_webhooks = {
             "resumen": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/861efbc1-9b19-4cc2-9848-888ea7cdb161",
             "esquema": "https://automatizaciones-n8n.dgkviv.easypanel.host/webhook/0e1d975f-672a-4363-8a3c-4739d9e5c784", 
