@@ -655,6 +655,81 @@ async def n8n_testdos_webhook(data: dict):
         logging.error(f"Error in testdos webhook: {e}")
         return {"status": "error", "message": str(e)}
 
+# ==================== DEBUG ENDPOINTS ====================
+
+@api_router.get("/debug/document/{document_id}")
+async def debug_document_status(document_id: str):
+    """Endpoint de debug para verificar estado del documento"""
+    try:
+        # Obtener documento
+        document = await db.documents.find_one({"id": document_id})
+        if not document:
+            return {"error": "Documento no encontrado"}
+        
+        # Contar contenido en cada colección
+        content_count = {}
+        content_count["resumenes"] = await db.resumenes.count_documents({"document_id": document_id})
+        content_count["esquemas"] = await db.esquemas.count_documents({"document_id": document_id})
+        content_count["flashcards"] = await db.flashcards.count_documents({"document_id": document_id})
+        content_count["preguntas_test"] = await db.preguntas_test.count_documents({"document_id": document_id})
+        content_count["casos_practicos"] = await db.casos_practicos.count_documents({"document_id": document_id})
+        content_count["conceptos_basicos"] = await db.conceptos_basicos.count_documents({"document_id": document_id})
+        content_count["test_dos"] = await db.test_dos.count_documents({"document_id": document_id})
+        
+        # Eliminar _id para JSON serialization
+        if "_id" in document:
+            del document["_id"]
+            
+        return {
+            "document": document,
+            "content_count": content_count,
+            "total_content": sum(content_count.values()),
+            "n8n_callback_received": sum(content_count.values()) > 0
+        }
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+@api_router.post("/debug/fix-processing-documents")
+async def fix_processing_documents():
+    """Arregla documentos que quedaron en processing"""
+    try:
+        # Buscar documentos en processing
+        processing_docs = await db.documents.find({"processing_status": "processing"}).to_list(100)
+        
+        fixed_count = 0
+        for doc in processing_docs:
+            document_id = doc["id"]
+            
+            # Verificar si tiene contenido
+            content_collections = [
+                db.resumenes, db.esquemas, db.flashcards, 
+                db.preguntas_test, db.casos_practicos, 
+                db.conceptos_basicos, db.test_dos
+            ]
+            
+            total_content = 0
+            for collection in content_collections:
+                count = await collection.count_documents({"document_id": document_id})
+                total_content += count
+            
+            if total_content > 0:
+                # Si tiene contenido, marcar como completado
+                await db.documents.update_one(
+                    {"id": document_id},
+                    {"$set": {"processing_status": "completed"}}
+                )
+                fixed_count += 1
+        
+        return {
+            "message": f"Se arreglaron {fixed_count} documentos",
+            "total_processing": len(processing_docs),
+            "fixed": fixed_count
+        }
+        
+    except Exception as e:
+        return {"error": str(e)}
+
 # Mantenemos los endpoints originales por compatibilidad
 @api_router.post("/webhooks/flashcards")
 async def receive_flashcards(webhook_data: WebhookData):
