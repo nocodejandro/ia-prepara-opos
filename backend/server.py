@@ -216,6 +216,40 @@ def parse_flashcards(text: str):
     
     return flashcards
 
+async def update_document_status_after_delay(document_id: str):
+    """Actualiza el estado del documento después de un delay si no se recibieron respuestas"""
+    await asyncio.sleep(120)  # Esperar 2 minutos
+    
+    # Verificar si ya se recibió contenido
+    content_collections = [
+        db.resumenes, db.esquemas, db.flashcards, 
+        db.preguntas_test, db.casos_practicos, 
+        db.conceptos_basicos, db.test_dos
+    ]
+    
+    has_content = False
+    for collection in content_collections:
+        count = await collection.count_documents({"document_id": document_id})
+        if count > 0:
+            has_content = True
+            break
+    
+    if has_content:
+        # Si ya hay contenido, marcar como completado
+        await db.documents.update_one(
+            {"id": document_id},
+            {"$set": {"processing_status": "completed"}}
+        )
+    else:
+        # Si no hay contenido, marcar como error con instrucciones
+        await db.documents.update_one(
+            {"id": document_id},
+            {"$set": {
+                "processing_status": "error_no_callback",
+                "error_message": "n8n procesó pero no envió resultados. Configura HTTP Request en workflows."
+            }}
+        )
+
 def parse_conceptos_basicos(text: str):
     """Parsea conceptos básicos que vienen de n8n"""
     conceptos = []
