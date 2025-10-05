@@ -170,11 +170,13 @@ async def upload_document(file: UploadFile = File(...)):
         file_content = await file.read()
         file_base64 = base64.b64encode(file_content).decode('utf-8')
         
-        # Prepare payload for n8n
+        # Prepare payload for n8n (formato correcto que esperan los workflows)
         payload = {
             "document_id": document_id,
             "filename": file.filename,
-            "file_content": file_base64,
+            "file_data": {
+                "content": file_base64
+            },
             "callback_url": "https://github-enhancer.preview.emergentagent.com/api/webhooks/"
         }
         
