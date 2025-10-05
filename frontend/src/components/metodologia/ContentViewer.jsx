@@ -149,12 +149,16 @@ const ContentViewer = ({ document }) => {
     switch (activeTab) {
       case 'resumen':
         return <Resumenes resumenes={content.resumenes} />;
+      case 'basicos':
+        return <ConceptosBasicos conceptos={content.conceptos_basicos} />;
       case 'flashcards':
         return <FlashCards flashcards={content.flashcards} />;
       case 'esquemas':
         return <Esquemas esquemas={content.esquemas} />;
-      case 'preguntas':
+      case 'test':
         return <PreguntasTest preguntas={content.preguntas_test} />;
+      case 'testdos':
+        return <TestDos preguntas={content.test_dos} />;
       case 'casos':
         return <CasosPracticos casos={content.casos_practicos} />;
       default:
