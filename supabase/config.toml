@@ -2,3 +2,9 @@ project_id = "dpcmcrbfihccafwaiefs"
 
 [functions.mentor-ia-chat]
 verify_jwt = false
+
+[functions.publicar-trial-reel]
+verify_jwt = false
+
+[functions.encolar-trial-reel]
+verify_jwt = false
