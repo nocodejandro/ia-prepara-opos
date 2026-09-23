@@ -1,0 +1,1406 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Centro Penitenciario Tipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#0f2229; --panel:rgba(14,32,39,.88); --paper:#eef1ea; --muted:#a3b7b1;
+  --signal:#f5c400; --ok:#62b38a; --line:rgba(238,241,234,.15);
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.hud{position:fixed;inset:0;pointer-events:none;z-index:2}
+.panel{background:var(--panel);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 12px 32px rgba(4,12,16,.32)}
+.eyebrow{display:block;font:600 11px/1.1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.plate{position:absolute;left:16px;top:calc(14px + env(safe-area-inset-top,0px));width:min(360px,calc(100vw - 212px));box-sizing:border-box;border-left:4px solid var(--signal);padding:9px 14px 11px}
+.plate .loc{display:block;margin-top:4px;font:700 28px/1 var(--display);letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+.plate .sub{display:block;margin-top:4px;font:500 15px/1.25 var(--body);opacity:.88}
+.route{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);display:grid;gap:3px}
+.route .next{font:600 17px/1.15 var(--display);letter-spacing:.03em;text-transform:uppercase;color:var(--signal);text-wrap:balance}
+.route .dist{font:400 12px/1.3 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:3px;background:var(--line);margin-top:5px}.bar i{display:block;height:100%;width:0;background:var(--signal);transition:width .5s}
+.radar{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top,0px));display:grid;justify-items:center;gap:10px;pointer-events:auto}
+#mini{width:164px;height:164px;border-radius:50%;display:block;box-shadow:0 0 0 3px rgba(14,32,39,.92),0 0 0 4px rgba(245,196,0,.6),0 12px 30px rgba(0,0,0,.35)}
+.btn{pointer-events:auto;font:600 13px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--paper);background:var(--panel);border:1px solid var(--line);padding:9px 14px;border-radius:2px;cursor:pointer}
+.btn kbd{font:500 11px var(--mono);color:var(--signal);margin-left:6px}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.card{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(440px,calc(100vw - 32px));box-sizing:border-box;max-height:min(54vh,480px);overflow:auto;pointer-events:auto;border-top:4px solid var(--signal);padding:14px 18px 18px;-webkit-user-select:text;user-select:text}
+.card header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card h2{margin:6px 0 8px;font:700 30px/1 var(--display);text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.card p{margin:0;font:400 15.5px/1.5 var(--body);color:#dfe6e1;max-width:62ch}
+.refs{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.refs li{font:500 11.5px/1.25 var(--mono);color:var(--ink);background:var(--signal);padding:4px 7px;border-radius:2px}
+.x{appearance:none;background:none;border:1px solid var(--line);color:var(--paper);width:34px;height:34px;display:grid;place-items:center;font:500 20px/1 var(--body);cursor:pointer;flex:none;border-radius:2px}
+.prompt{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;font:600 15px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;pointer-events:auto;cursor:pointer;border:0;color:var(--paper);white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis}
+.prompt kbd{display:grid;place-items:center;min-width:26px;height:26px;background:var(--signal);color:var(--ink);font:600 13px var(--mono);border-radius:2px}
+.talk{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));width:min(540px,calc(100vw - 32px));box-sizing:border-box;padding:12px 16px 14px;border-left:4px solid var(--ok);pointer-events:auto}
+.talk .who{font:600 12px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ok)}
+.talk p{margin:6px 0 0;font:400 16px/1.45 var(--body)}
+.toast{position:absolute;left:50%;top:calc(18px + env(safe-area-inset-top,0px));transform:translateX(-50%);padding:10px 16px;font:600 15px/1.15 var(--display);letter-spacing:.08em;text-transform:uppercase;border-bottom:3px solid var(--ok);text-align:center;max-width:calc(100vw - 32px);box-sizing:border-box}
+.keys{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));font:400 12px/1.7 var(--mono);color:var(--muted);text-align:right;padding:8px 12px}
+.keys b{color:var(--paper);font-weight:500}
+.touch{display:none}
+.is-touch .touch{display:block}
+.is-touch .keys{display:none}
+#stick{position:absolute;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:132px;height:132px;border-radius:50%;background:rgba(14,32,39,.45);border:2px solid rgba(238,241,234,.35);pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:rgba(238,241,234,.88);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.tbtn{position:absolute;pointer-events:auto;touch-action:none;border-radius:50%;display:grid;place-items:center;font:700 13px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;border:2px solid rgba(238,241,234,.4);padding:0}
+#actBtn{right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(44px + env(safe-area-inset-bottom,0px));width:80px;height:80px;background:var(--signal);color:var(--ink);border-color:transparent}
+#runBtn{right:calc(116px + env(safe-area-inset-right,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:66px;height:66px;background:rgba(14,32,39,.6);color:var(--paper);font-size:11px;letter-spacing:.04em}
+#runBtn.on{background:var(--paper);color:var(--ink)}
+.is-touch .card{bottom:calc(176px + env(safe-area-inset-bottom,0px));max-height:max(160px,calc(100% - 420px))}
+.is-touch .prompt{bottom:calc(186px + env(safe-area-inset-bottom,0px))}
+.is-touch .talk{bottom:calc(236px + env(safe-area-inset-bottom,0px))}
+.intro{position:fixed;inset:0;z-index:5;overflow:auto;background:linear-gradient(180deg,rgba(15,34,41,.25),rgba(15,34,41,.86) 62%);display:flex;align-items:center;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.intro-in{width:min(640px,100%);margin:auto}
+.kicker{font:600 13px/1.2 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--signal)}
+.intro h1{margin:10px 0 14px;font:700 clamp(46px,10vw,88px)/.9 var(--display);text-transform:uppercase;text-wrap:balance}
+.lead{font:400 18px/1.5 var(--body);max-width:56ch;color:#e3e9e4;margin:0}
+.zones{display:flex;flex-wrap:wrap;gap:8px 18px;margin:18px 0 0;padding:0;list-style:none;font:500 13px/1.3 var(--body);color:#dfe6e1}
+.zones i{display:inline-block;width:10px;height:10px;margin-right:7px;vertical-align:0}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:22px 0}
+.ctl section{border-top:1px solid var(--line);padding-top:10px}
+.ctl h3{font:600 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.ctl dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:14.5px;line-height:1.4}
+.ctl dt{font:500 12.5px/1.6 var(--mono);color:var(--signal)}
+.ctl dd{margin:0}
+.go{appearance:none;border:0;background:var(--signal);color:var(--ink);font:700 18px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;padding:16px 26px;cursor:pointer;border-radius:2px}
+.go:disabled{opacity:.6;cursor:progress}
+.note{margin:18px 0 0;font:400 12px/1.6 var(--mono);color:var(--muted);max-width:72ch}
+.mapview{position:fixed;inset:0;z-index:4;background:rgba(10,24,29,.95);display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.mapview header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.mapview h2{margin:0;font:700 30px/1 var(--display);text-transform:uppercase}
+.mapview header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.mapwrap{position:relative;min-height:0}
+#bigmap{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 12px/1.2 var(--mono);color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
+.short{display:none}
+@media (max-width:640px){
+  .long{display:none} .short{display:inline}
+  .card{padding:10px 14px 14px} .card h2{margin:4px 0 6px} .refs{margin-top:10px}
+  .is-touch .card{max-height:max(150px,calc(100% - 470px))}
+  .is-touch .toast{top:auto;bottom:calc(176px + env(safe-area-inset-bottom,0px));font-size:13px}
+  .plate{width:calc(100vw - 32px - 124px);padding:8px 11px 9px}
+  .plate .loc{font-size:21px}
+  .plate .sub{font-size:13px}
+  .route .next{font-size:14px}
+  #mini{width:112px;height:112px}
+  .card h2{font-size:24px}
+  .card p{font-size:14.5px}
+  .lead{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<canvas id="gl" tabindex="0" aria-label="Vista 3D del centro penitenciario"></canvas>
+
+<div class="hud" id="hud" hidden>
+  <div class="plate panel">
+    <span class="eyebrow">Estás en</span>
+    <strong class="loc" id="locTitle">Exterior</strong>
+    <span class="sub" id="locSub">Aparcamiento</span>
+    <div class="route" id="route">
+      <span class="eyebrow"><span class="long">Ruta de reconocimiento · </span><span class="short">Ruta · </span><b id="objCount">0/15</b></span>
+      <span class="next" id="objName">Control de accesos</span>
+      <span class="dist" id="objDist"></span>
+      <div class="bar"><i id="objBar"></i></div>
+    </div>
+  </div>
+  <div class="radar">
+    <canvas id="mini" width="328" height="328" aria-label="Minimapa"></canvas>
+    <button class="btn" id="mapBtn" type="button">Plano<kbd>M</kbd></button>
+  </div>
+  <aside class="card panel" id="card" hidden aria-live="polite">
+    <header><span class="eyebrow" id="cardZone"></span><button class="x" id="cardClose" type="button" aria-label="Cerrar ficha">×</button></header>
+    <h2 id="cardTitle"></h2>
+    <p id="cardText"></p>
+    <ul class="refs" id="cardRefs"></ul>
+  </aside>
+  <div class="talk panel" id="talk" hidden><span class="who" id="talkWho"></span><p id="talkText"></p></div>
+  <button class="prompt panel" id="prompt" type="button" hidden><kbd id="promptKey">E</kbd><span id="promptText"></span></button>
+  <div class="toast panel" id="toast" hidden></div>
+  <div class="keys panel"><b>WASD</b> moverse · <b>Shift</b> correr<br><b>← →</b> o arrastrar: girar cámara · <b>rueda</b> zoom<br><b>E</b> hablar / ver ficha · <b>M</b> plano</div>
+  <div class="touch">
+    <div id="stick"><div id="knob"></div></div>
+    <button class="tbtn" id="runBtn" type="button">Correr</button>
+    <button class="tbtn" id="actBtn" type="button">Acción</button>
+  </div>
+</div>
+
+<div class="mapview" id="mapView" hidden>
+  <header>
+    <div><h2>Plano del centro</h2><p>Toca una parada numerada para ir directamente allí.</p></div>
+    <button class="btn" id="mapClose" type="button">Volver<kbd>M</kbd></button>
+  </header>
+  <div class="mapwrap"><canvas id="bigmap"></canvas></div>
+  <div class="legend">
+    <span><i style="background:#e8dcb8"></i>Zona residencial</span>
+    <span><i style="background:#d9e2dc"></i>Extramodular, servicios y acceso</span>
+    <span><i style="background:#f5c400;border-radius:50%"></i>Siguiente parada</span>
+    <span><i style="background:#62b38a;border-radius:50%"></i>Visitada</span>
+  </div>
+</div>
+
+<div class="intro" id="intro">
+  <div class="intro-in">
+    <div class="kicker">Recorrido 3D · Instituciones Penitenciarias</div>
+    <h1>Centro Penitenciario Tipo</h1>
+    <p class="lead">Recorre a pie un centro tipo: control de accesos, oficinas de Dirección, comunicaciones, ingresos, rastrillo y los seis primeros módulos residenciales, con su office, comedor, galería de celdas y patio.</p>
+    <ul class="zones">
+      <li><i style="background:#e8dcb8"></i>Zona residencial: módulos</li>
+      <li><i style="background:#d9e2dc"></i>Zona extramodular: uso común</li>
+      <li><i style="background:#9fb0aa"></i>Zona de servicios</li>
+    </ul>
+    <div class="ctl">
+      <section><h3>Teclado</h3><dl><dt>WASD</dt><dd>Caminar</dd><dt>Shift</dt><dd>Correr</dd><dt>← →</dt><dd>Girar la cámara</dd><dt>E</dt><dd>Hablar o ver la ficha</dd><dt>M</dt><dd>Plano y teletransporte</dd></dl></section>
+      <section><h3>Móvil</h3><dl><dt>Joystick</dt><dd>Caminar (a tope, corre)</dd><dt>Arrastrar</dt><dd>Girar la cámara</dd><dt>Acción</dt><dd>Hablar o ver la ficha</dd><dt>Plano</dt><dd>Saltar a cualquier parada</dd></dl></section>
+    </div>
+    <button class="go" id="startBtn" type="button" disabled>Construyendo el centro…</button>
+    <p class="note">Distribución basada en el modelo de centro tipo español: edificios independientes unidos por viales, doble valla perimetral, módulos por parejas con cabina de control compartida y 72 celdas por módulo en dos plantas. Escalas y mobiliario simplificados. Las referencias a la LOGP y al Reglamento Penitenciario son orientativas: contrástalas con el texto vigente.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const isTouch = matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+if (isTouch) document.body.classList.add('is-touch');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!window.THREE) {
+  $('#startBtn').textContent = 'No se pudo cargar el motor 3D. Recarga la página.';
+  return;
+}
+
+/* ============ Paleta del mundo ============ */
+const C = {
+  grass:0x80995c, grass2:0x6f8f50, asphalt:0x55595d, line:0xe9e4d4, gravel:0xc3b89f, paving:0xbcb6aa, vial:0xa9a498,
+  facade:0xe2d7bd, facade2:0xd8c9a3, plinth:0x8f8a80, roof:0x6b635b, parapet:0x9a9185, band:0xc2b28c,
+  wallIn:0xece8de, floor:0xcfc8b9, floorOff:0xc2c7c1, floorCell:0xc4bdad, tile:0xb9d3da,
+  patio:0xb5afa3, patioWall:0xcdbf9c, steel:0x6b7e8b, steelDk:0x46535c, bar:0x9aa6ae, concrete:0xb9b3a6,
+  wood:0x9d7a52, woodDk:0x6e5236, chair:0x3c4c58, mattress:0x3f6b9b, blanket:0x8c5a4a, white:0xf2f2ee,
+  screen:0x1b2a33, glassDk:0x2e3d47, winIn:0x9fc0cc, court:0xb46a45, courtLine:0xf1ede2,
+  plant:0x4f7a3e, pot:0xa0633f, red:0xb23a2e, yellow:0xe5b52c, blue:0x2f5d9a, black:0x23272a, box:0xb48a5a
+};
+
+/* ============ Geometría agrupada (un draw call por lote) ============ */
+class Batch {
+  constructor(){ this.p=[]; this.n=[]; this.c=[]; this.i=[]; this.v=0; }
+  box(x0,x1,y0,y1,z0,z1,col){
+    if (x0>x1){const t=x0;x0=x1;x1=t;} if (y0>y1){const t=y0;y0=y1;y1=t;} if (z0>z1){const t=z0;z0=z1;z1=t;}
+    const r=((col>>16)&255)/255, g=((col>>8)&255)/255, b=(col&255)/255;
+    const P=this.p, N=this.n, K=this.c, I=this.i;
+    const f=(ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz,nx,ny,nz)=>{
+      const v=this.v; P.push(ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz);
+      for (let k=0;k<4;k++){ N.push(nx,ny,nz); K.push(r,g,b); }
+      I.push(v,v+1,v+2,v,v+2,v+3); this.v+=4;
+    };
+    f(x1,y0,z1, x1,y0,z0, x1,y1,z0, x1,y1,z1, 1,0,0);
+    f(x0,y0,z0, x0,y0,z1, x0,y1,z1, x0,y1,z0, -1,0,0);
+    f(x0,y1,z1, x1,y1,z1, x1,y1,z0, x0,y1,z0, 0,1,0);
+    f(x0,y0,z1, x1,y0,z1, x1,y1,z1, x0,y1,z1, 0,0,1);
+    f(x1,y0,z0, x0,y0,z0, x0,y1,z0, x1,y1,z0, 0,0,-1);
+  }
+  geo(){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p,3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n,3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(this.c,3));
+    g.setIndex(this.v>65000 ? new THREE.Uint32BufferAttribute(this.i,1) : new THREE.Uint16BufferAttribute(this.i,1));
+    g.computeBoundingSphere();
+    return g;
+  }
+  mesh(mat){ return this.v ? new THREE.Mesh(this.geo(), mat) : null; }
+}
+class QBatch {
+  constructor(){ this.p=[]; this.n=[]; this.uv=[]; this.i=[]; this.v=0; }
+  wall(x0,z0,x1,z1,y0,y1){
+    const len=Math.hypot(x1-x0,z1-z0), nx=(z1-z0)/len, nz=-(x1-x0)/len, v=this.v;
+    this.p.push(x0,y0,z0, x1,y0,z1, x1,y1,z1, x0,y1,z0);
+    for (let k=0;k<4;k++) this.n.push(nx,0,nz);
+    const U=len/0.7, V=(y1-y0)/0.7; this.uv.push(0,0, U,0, U,V, 0,V);
+    this.i.push(v,v+1,v+2,v,v+2,v+3); this.v+=4;
+  }
+  mesh(mat){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p,3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n,3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv,2));
+    g.setIndex(this.i); g.computeBoundingSphere();
+    return new THREE.Mesh(g, mat);
+  }
+}
+
+/* ============ Escena ============ */
+const canvas = $('#gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isTouch || devicePixelRatio < 2, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, isTouch ? 1.6 : 2));
+const scene = new THREE.Scene();
+(() => {
+  const c=document.createElement('canvas'); c.width=4; c.height=256; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,256); g.addColorStop(0,'#86aec2'); g.addColorStop(.62,'#cfdedf'); g.addColorStop(1,'#e2e7df');
+  x.fillStyle=g; x.fillRect(0,0,4,256); scene.background=new THREE.CanvasTexture(c);
+})();
+scene.fog = new THREE.Fog(0xdde4de, 120, 900);
+const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 1400);
+scene.add(new THREE.HemisphereLight(0xe4eef2, 0x857a62, 0.66));
+const sun = new THREE.DirectionalLight(0xfff1dc, 0.62); sun.position.set(-0.55,1,0.4); scene.add(sun);
+
+const worldMat = new THREE.MeshLambertMaterial({ vertexColors:true });
+const glassMat = new THREE.MeshLambertMaterial({ vertexColors:true, transparent:true, opacity:0.3, depthWrite:false });
+const charMat = new THREE.MeshLambertMaterial({ vertexColors:true });
+function chainTex(){
+  const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d');
+  x.strokeStyle='rgba(206,214,214,0.95)'; x.lineWidth=2.4; x.beginPath(); x.moveTo(0,0); x.lineTo(64,64); x.moveTo(64,0); x.lineTo(0,64); x.stroke();
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.anisotropy=4; return t;
+}
+const fenceTex = chainTex();
+const fenceMat = new THREE.MeshLambertMaterial({ map:fenceTex, alphaTest:0.45, side:THREE.DoubleSide });
+
+const STATIC=new Batch(), GLASS=new Batch(), FENCE=new QBatch();
+const buildings=[], colliders=[], zones=[], pois=[], npcs=[], gates=[], mapRects=[], mapLines=[], mapLabels=[];
+
+/* Rejilla de alturas para que la cámara no atraviese edificios */
+const GX0=-300, GZ0=-300, GW=600, GH=600;
+const hgt=new Float32Array(GW*GH), hid=new Int16Array(GW*GH).fill(-1);
+function hm(x0,x1,z0,z1,h,id=-1){
+  const a=Math.max(0,Math.floor(Math.min(x0,x1)-GX0)), b=Math.min(GW-1,Math.floor(Math.max(x0,x1)-GX0));
+  const c=Math.max(0,Math.floor(Math.min(z0,z1)-GZ0)), d=Math.min(GH-1,Math.floor(Math.max(z0,z1)-GZ0));
+  for (let j=c;j<=d;j++) for (let i=a;i<=b;i++){ const k=j*GW+i; if (h>hgt[k]){ hgt[k]=h; hid[k]=id; } }
+}
+
+/* ============ Primitivas de construcción ============ */
+let CUR=null; const SPLIT=3.3;
+function addCol(x0,x1,z0,z1,extra){ const c={x0:Math.min(x0,x1),x1:Math.max(x0,x1),z0:Math.min(z0,z1),z1:Math.max(z0,z1)}; if(extra)Object.assign(c,extra); colliders.push(c); return c; }
+function B(x0,x1,y0,y1,z0,z1,col,solid){
+  if (CUR){
+    if (y0>=SPLIT-0.001) CUR.up.box(x0,x1,y0,y1,z0,z1,col);
+    else if (y1>SPLIT+0.001){ STATIC.box(x0,x1,y0,SPLIT,z0,z1,col); CUR.up.box(x0,x1,SPLIT,y1,z0,z1,col); }
+    else STATIC.box(x0,x1,y0,y1,z0,z1,col);
+  } else STATIC.box(x0,x1,y0,y1,z0,z1,col);
+  if (solid && y0<1.6) addCol(x0,x1,z0,z1);
+}
+function ROOF(x0,x1,y0,y1,z0,z1,col){ (CUR?CUR.rf:STATIC).box(x0,x1,y0,y1,z0,z1,col); }
+function GL(x0,x1,y0,y1,z0,z1,solid){ GLASS.box(x0,x1,y0,y1,z0,z1,0xb4d4e0); if (solid) addCol(x0,x1,z0,z1); }
+function segs(a0,a1,gaps){
+  if (a0>a1){const t=a0;a0=a1;a1=t;}
+  const g=gaps.map(q=>[Math.min(q[0],q[1]),Math.max(q[0],q[1]),q[2]||2.3]).sort((p,q)=>p[0]-q[0]);
+  const S=[]; let cur=a0;
+  for (const q of g){ if (q[0]>cur+0.001) S.push([cur,q[0]]); cur=Math.max(cur,q[1]); }
+  if (cur<a1-0.001) S.push([cur,a1]);
+  return [S,g];
+}
+function wallX(z,x0,x1,h,col,gaps=[],o={}){
+  const t=o.t||0.3, y0=o.y0||0, [S,G]=segs(x0,x1,gaps), solid=o.solid!==false;
+  for (const [a,b] of S) B(a,b,y0,y0+h,z-t/2,z+t/2,col,solid);
+  for (const [a,b,gh] of G) if (gh<h) B(a,b,y0+gh,y0+h,z-t/2,z+t/2,col,false);
+  if (o.lin){ const lz=z+o.lin*(t/2+0.015), lh=Math.min(h,3.2), lc=o.linCol||C.wallIn;
+    for (const [a,b] of S) B(a,b,0.07,lh,lz-0.015,lz+0.015,lc,false);
+    for (const [a,b,gh] of G) if (gh<lh) B(a,b,gh,lh,lz-0.015,lz+0.015,lc,false); }
+}
+function wallZ(x,z0,z1,h,col,gaps=[],o={}){
+  const t=o.t||0.3, y0=o.y0||0, [S,G]=segs(z0,z1,gaps), solid=o.solid!==false;
+  for (const [a,b] of S) B(x-t/2,x+t/2,y0,y0+h,a,b,col,solid);
+  for (const [a,b,gh] of G) if (gh<h) B(x-t/2,x+t/2,y0+gh,y0+h,a,b,col,false);
+  if (o.lin){ const lx=x+o.lin*(t/2+0.015), lh=Math.min(h,3.2), lc=o.linCol||C.wallIn;
+    for (const [a,b] of S) B(lx-0.015,lx+0.015,0.07,lh,a,b,lc,false);
+    for (const [a,b,gh] of G) if (gh<lh) B(lx-0.015,lx+0.015,gh,lh,a,b,lc,false); }
+}
+/* Ventanas en un muro orientado en X (z fijo) o en Z (x fijo). side = hacia fuera */
+function winsX(z,side,x0,x1,rows,step=3.2,w=1.4,skip=[]){
+  for (let x=x0+step/2; x+w/2<=x1; x+=step){
+    const a=x-w/2, b=x+w/2; if (skip.some(s=>b>s[0]-0.4&&a<s[1]+0.4)) continue;
+    rows.forEach((r,ri)=>{
+      B(a,b,r[0],r[1],z+side*0.15,z+side*0.2,C.glassDk,false);
+      B(a-0.06,b+0.06,r[0]-0.1,r[0],z+side*0.15,z+side*0.26,C.parapet,false);
+      if (ri===0) B(a,b,r[0],r[1],z-side*0.18,z-side*0.2,C.winIn,false);
+    });
+  }
+}
+function winsZ(x,side,z0,z1,rows,step=3.2,w=1.4,skip=[]){
+  for (let z=z0+step/2; z+w/2<=z1; z+=step){
+    const a=z-w/2, b=z+w/2; if (skip.some(s=>b>s[0]-0.4&&a<s[1]+0.4)) continue;
+    rows.forEach((r,ri)=>{
+      B(x+side*0.15,x+side*0.2,r[0],r[1],a,b,C.glassDk,false);
+      B(x+side*0.15,x+side*0.26,r[0]-0.1,r[0],a-0.06,b+0.06,C.parapet,false);
+      if (ri===0) B(x-side*0.18,x-side*0.2,r[0],r[1],a,b,C.winIn,false);
+    });
+  }
+}
+function roofBox(x0,x1,z0,z1,h,col=C.roof){
+  ROOF(x0-0.15,x1+0.15,h,h+0.25,z0-0.15,z1+0.15,col);
+  const p=h+0.7;
+  ROOF(x0-0.15,x1+0.15,h+0.25,p,z0-0.15,z0+0.15,C.parapet); ROOF(x0-0.15,x1+0.15,h+0.25,p,z1-0.15,z1+0.15,C.parapet);
+  ROOF(x0-0.15,x0+0.15,h+0.25,p,z0-0.15,z1+0.15,C.parapet); ROOF(x1-0.15,x1+0.15,h+0.25,p,z0-0.15,z1+0.15,C.parapet);
+  const cx=(x0+x1)/2, cz=(z0+z1)/2;
+  ROOF(cx-1.4,cx+1.4,h+0.25,h+1.3,cz-1,cz+1,0x9ea3a3);
+}
+function bBegin(o){
+  const b={ id:buildings.length, short:o.short, name:o.name||o.short, x0:Math.min(o.x0,o.x1), x1:Math.max(o.x0,o.x1), z0:Math.min(o.z0,o.z1), z1:Math.max(o.z0,o.z1),
+            h:o.h, rooms:[], def:o.def||'Interior', up:new Batch(), rf:new Batch(), zone:o.zone||'' };
+  buildings.push(b); CUR=b; hm(b.x0,b.x1,b.z0,b.z1,o.h,b.id);
+  mapRects.push({x0:b.x0,x1:b.x1,z0:b.z0,z1:b.z1,t:o.kind||'bld'});
+  mapLabels.push({x:(b.x0+b.x1)/2,z:(b.z0+b.z1)/2,t:o.map||o.short,kind:o.kind||'bld'});
+  return b;
+}
+function bEnd(){ CUR=null; }
+function mapRect(x0,x1,z0,z1,t){ mapRects.push({x0:Math.min(x0,x1),x1:Math.max(x0,x1),z0:Math.min(z0,z1),z1:Math.max(z0,z1),t}); }
+function zone(o){ zones.push(o); return o; }
+
+/* ============ Rótulos ============ */
+const SIGN = {
+  inst:{bg:'#173a44',fg:'#f4f1e8',sub:'#bcd2cb',rule:'#f5c400'},
+  door:{bg:'#f2f0e8',fg:'#173a44',sub:'#56707a',rule:'#173a44'},
+  gc:{bg:'#27432a',fg:'#f4f1e8',sub:'#cfe0c4',rule:'#c9a227'},
+  warn:{bg:'#f5c400',fg:'#1b1b1b',sub:'#3b3b3b',rule:'#1b1b1b'}
+};
+function sign(title,sub,x,y,z,rot,w,h,style='inst'){
+  const S=SIGN[style], pw=style==='door'?320:640, ph=Math.max(48,Math.round(pw*h/w));
+  const cv=document.createElement('canvas'); cv.width=pw; cv.height=ph; const c=cv.getContext('2d');
+  c.fillStyle=S.bg; c.fillRect(0,0,pw,ph);
+  c.fillStyle=S.rule; if (style==='door') c.fillRect(0,0,Math.round(ph*0.14),ph); else c.fillRect(0,0,pw,Math.max(4,ph*0.07));
+  const pad=style==='door'?ph*0.34:ph*0.22;
+  const T=title.toUpperCase(); let fs=sub?ph*0.44:ph*0.56;
+  c.font=`700 ${fs}px "Barlow Condensed","Arial Narrow",sans-serif`;
+  while (c.measureText(T).width>pw-pad*2 && fs>8){ fs-=1; c.font=`700 ${fs}px "Barlow Condensed","Arial Narrow",sans-serif`; }
+  c.fillStyle=S.fg; c.textBaseline='middle'; c.fillText(T,pad,sub?ph*0.43:ph*0.55);
+  if (sub){ c.font=`500 ${Math.round(ph*0.2)}px Barlow,sans-serif`; c.fillStyle=S.sub; c.fillText(sub,pad,ph*0.77); }
+  const tex=new THREE.CanvasTexture(cv); tex.anisotropy=4;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({map:tex}));
+  m.position.set(x,y,z); m.rotation.y=rot; scene.add(m); return m;
+}
+
+/* ============ Mobiliario ============ */
+const BOOKS=[0xa33b2f,0x2f5d8a,0xc9a23a,0x3f7d5c,0x6b4c8a,0xd8d2c4,0x8a5a3a];
+function kit(F){
+  const k={};
+  k.desk=(u,v,w=1.5,d=0.75,col=C.wood)=>{F(u,u+w,v,v+d,0.72,0.77,col,true);F(u+0.04,u+0.1,v+0.05,v+d-0.05,0,0.72,C.woodDk);F(u+w-0.1,u+w-0.04,v+0.05,v+d-0.05,0,0.72,C.woodDk);};
+  k.mon=(u,v)=>{F(u,u+0.55,v,v+0.05,0.95,1.3,C.screen);F(u+0.24,u+0.31,v,v+0.12,0.77,0.95,C.black);};
+  k.chair=(u,v,back)=>{F(u,u+0.46,v,v+0.46,0.44,0.5,C.chair);F(u+0.2,u+0.26,v+0.2,v+0.26,0,0.44,C.black); if(back>0)F(u,u+0.46,v+0.41,v+0.46,0.5,0.95,C.chair); else F(u,u+0.46,v,v+0.05,0.5,0.95,C.chair);};
+  k.cab=(u,v,w=0.9,d=0.45,h=1.9,col=0x8d949a)=>F(u,u+w,v,v+d,0,h,col,true);
+  k.plant=(u,v)=>{F(u,u+0.4,v,v+0.4,0,0.4,C.pot,true);F(u-0.08,u+0.48,v-0.08,v+0.48,0.4,1.1,C.plant);};
+  k.shelf=(u,v,w,d,h,front)=>{F(u,u+w,v,v+d,0,h,C.woodDk,true); let i=0;
+    for (let y=0.3;y<h-0.25;y+=0.42){ let x=u+0.06; while (x<u+w-0.14){ const bw=0.07+((i*37)%5)*0.02; const fv=front>0?v+d:v; F(x,x+bw,fv-0.02*front,fv+0.02*front,y,y+0.26+((i*13)%3)*0.03,BOOKS[i%BOOKS.length]); x+=bw+0.015; i++; } } };
+  k.table=(u,v,w,d,col=0xd9d4c6)=>{F(u,u+w,v,v+d,0.72,0.78,col,true);F(u+w/2-0.07,u+w/2+0.07,v+d/2-0.07,v+d/2+0.07,0,0.72,C.steelDk);};
+  k.bed=(u,v,w,l,sheet=0xe9ecee)=>{F(u,u+w,v,v+l,0.3,0.5,C.steel,true);F(u+0.03,u+w-0.03,v+0.03,v+l-0.03,0.5,0.66,sheet);};
+  return k;
+}
+function furnish(t,r){
+  const W=r.W, D=r.D;
+  const F=(u0,u1,v0,v1,y0,y1,col,solid)=>B(r.x0+u0,r.x0+u1,y0,y1,r.near+r.dir*v0,r.near+r.dir*v1,col,solid);
+  const G=(u0,u1,v0,v1,y0,y1,solid)=>GL(r.x0+u0,r.x0+u1,y0,y1,r.near+r.dir*v0,r.near+r.dir*v1,solid);
+  const FC=(u0,u1,v0,v1)=>addCol(r.x0+u0,r.x0+u1,r.near+r.dir*v0,r.near+r.dir*v1);
+  const k=kit(F);
+  switch(t){
+    case 'office': { const c=W/2; k.desk(c-0.8,D-2.2,1.6,0.8); k.mon(c-0.3,D-1.9); k.chair(c-0.23,D-1.3,1); k.chair(c-0.8,D-3.3,-1); k.chair(c+0.3,D-3.3,-1);
+      k.cab(0.3,D-0.6); k.cab(1.3,D-0.6); k.shelf(W-2.6,D-0.5,2.2,0.4,1.9,-1); k.plant(W-0.8,1.6); break; }
+    case 'office2': { for (const c of [W*0.28,W*0.7]){ k.desk(c-0.75,D-2.3); k.mon(c-0.28,D-2.0); k.chair(c-0.23,D-1.45,1); }
+      k.cab(0.3,D-0.6); k.cab(1.3,D-0.6); k.cab(2.3,D-0.6); k.plant(W-0.8,1.6); break; }
+    case 'openoffice': { for (let u=1.2; u+1.6<W-0.6; u+=2.7) for (let v=2.4; v+1.5<D-0.9; v+=2.9){ k.desk(u,v); k.mon(u+0.5,v+0.55); k.chair(u+0.52,v+0.85,1); }
+      for (let u=0.4; u+0.9<W-0.4; u+=1.0) k.cab(u,D-0.55,0.9,0.45,1.3,0x9aa1a6); break; }
+    case 'director': { const c=W/2; k.desk(c-1.2,D-2.6,2.4,1.0,C.woodDk); k.mon(c-0.3,D-2.2); k.chair(c-0.23,D-1.45,1); k.chair(c-1.0,D-3.6,-1); k.chair(c+0.5,D-3.6,-1);
+      k.shelf(0.4,D-0.5,3.4,0.4,2.2,-1);
+      F(W-1.3,W-1.24,D-0.9,D-0.84,0,2.4,C.steel); F(W-1.24,W-0.62,D-0.9,D-0.86,1.72,1.84,C.red); F(W-1.24,W-0.62,D-0.9,D-0.86,1.84,2.08,C.yellow); F(W-1.24,W-0.62,D-0.9,D-0.86,2.08,2.2,C.red);
+      F(W-2.3,W-2.24,D-0.9,D-0.84,0,2.4,C.steel); F(W-2.24,W-1.62,D-0.9,D-0.86,1.72,2.2,0x2c4f9e);
+      F(0.8,3.2,2.0,2.8,0,0.45,0x5a4a3f,true); F(0.8,3.2,2.65,2.8,0.45,0.95,0x5a4a3f); F(1.3,2.7,3.3,4.1,0,0.42,C.woodDk,true); k.plant(W-0.8,1.6); break; }
+    case 'meeting': { const v0=D/2-0.9; F(1.6,W-1.6,v0,v0+1.8,0.74,0.8,C.woodDk,true); F(W/2-0.1,W/2+0.1,v0+0.8,v0+1.0,0,0.74,C.black);
+      for (let u=2.0; u+0.5<W-1.8; u+=1.1){ k.chair(u,v0-0.62,-1); k.chair(u,v0+1.95,1); }
+      F(W/2-1.4,W/2+1.4,D-0.12,D-0.06,1.2,2.5,C.screen); k.plant(0.6,D-0.9); k.plant(W-1.0,D-0.9); break; }
+    case 'locutorios': { const m=D/2; F(0.3,W-0.3,m-0.35,m+0.35,0,0.95,C.concrete,true); G(0.3,W-0.3,m-0.05,m+0.05,0.95,2.6,false);
+      for (let u=0.3; u<=W-0.3; u+=2.4){ F(u-0.05,u+0.05,m-1.3,m+1.3,0,2.3,C.wallIn,true); }
+      for (let u=1.5; u<W-0.3; u+=2.4){ F(u-0.2,u+0.2,m-1.0,m-0.6,0,0.45,C.steel); F(u-0.2,u+0.2,m+0.6,m+1.0,0,0.45,C.steel); F(u+0.5,u+0.62,m-0.4,m-0.36,1.2,1.5,C.black); } break; }
+    case 'lawyer': { k.table(W/2-0.9,D/2-0.5,1.8,1.0,C.wood); k.chair(W/2-0.23,D/2-1.1,-1); k.chair(W/2-0.23,D/2+0.65,1); k.cab(0.4,D-0.6); break; }
+    case 'lineup': { F(0.5,W-0.5,D-0.08,D-0.04,0,2.5,0xe8e6de); for (let y=1.4;y<=2.21;y+=0.2) F(0.5,W-0.5,D-0.1,D-0.08,y,y+0.025,C.black);
+      F(0.3,W-0.3,D-3.1,D-2.9,0,0.9,C.wallIn,true); G(0.3,W-0.3,D-3.05,D-2.95,0.9,2.6,false); for (let u=1;u<W-1;u+=1.0) k.chair(u,D-4.2,1); break; }
+    case 'vavfam': { F(0.8,3.4,D-1.1,D-0.3,0,0.45,0x6c7f5a,true); F(0.8,3.4,D-0.45,D-0.3,0.45,0.95,0x6c7f5a); F(1.2,3.0,D-2.6,D-1.7,0.38,0.44,C.wood,true);
+      k.chair(3.8,D-2.4,1); k.chair(0.3,D-2.4,1);
+      F(W-2.3,W-2.2,D-2.3,D,0,2.4,C.wallIn,true); F(W-2.3,W-1.3,D-2.35,D-2.25,0,2.4,C.wallIn,true); F(W-0.8,W-0.3,D-0.8,D-0.25,0,0.45,0xd8dde0,true); break; }
+    case 'vavint': { const c=W/2-0.5; F(c-0.8,c+0.8,D-2.2,D-0.2,0.25,0.5,C.woodDk,true); F(c-0.77,c+0.77,D-2.17,D-0.23,0.5,0.66,0xe9e4d8); F(c-0.7,c+0.7,D-0.7,D-0.3,0.66,0.78,C.white);
+      F(c-1.4,c-0.9,D-0.7,D-0.2,0,0.55,C.wood,true); F(W-2.0,W-1.9,D-2.2,D,0,2.4,C.wallIn,true); F(W-2.0,W-1.2,D-2.25,D-2.15,0,2.4,C.wallIn,true); F(W-0.8,W-0.3,D-0.8,D-0.25,0,0.45,0xd8dde0,true); break; }
+    case 'vavconv': { F(1,3.8,D-1.1,D-0.3,0,0.45,0x7a6a4f,true); F(1,3.8,D-0.45,D-0.3,0.45,0.95,0x7a6a4f); F(1.6,3.2,D-2.6,D-1.8,0.38,0.44,C.wood,true);
+      const cols=[0xd8574a,0x4f8fd0,0xf0c24a,0x5fae6a]; for (let i=0;i<4;i++) for (let j=0;j<3;j++) F(5+i*1.0,6+i*1.0,2+j*1.0,3+j*1.0,0.07,0.09,cols[(i+j)%4]);
+      F(W-3,W-1.8,D-1.4,D-0.6,0.5,0.55,0xf0c24a,true); F(5.5,5.9,2.5,2.9,0.09,0.45,C.red); F(7.2,7.5,3.5,3.8,0.09,0.35,C.blue);
+      F(W-2,W-0.4,D-0.12,D-0.06,1.3,2.2,C.screen); k.plant(W-0.8,1.8); break; }
+    case 'ident': { const c=W/2; F(c-1.5,c+1.5,D-0.08,D-0.04,0,2.4,0xe8e6de); for (let y=1.4;y<=2.01;y+=0.2) F(c-1.5,c+1.5,D-0.1,D-0.08,y,y+0.025,C.black);
+      F(c-0.05,c+0.05,2.4,2.5,0,1.4,C.black); F(c-0.15,c+0.15,2.35,2.65,1.4,1.62,C.black); k.desk(0.4,1.6,1.2,0.7); F(0.6,1.1,1.8,2.1,0.77,0.8,C.screen); k.cab(W-1.2,D-0.6); break; }
+    case 'search': { const c=W/2, m=D/2; F(c-1.2,c-0.9,m-0.3,m+0.3,0,2.3,0x9aa4ab,true); F(c+0.9,c+1.2,m-0.3,m+0.3,0,2.3,0x9aa4ab,true); F(c-1.2,c+1.2,m-0.3,m+0.3,2.3,2.55,0x9aa4ab);
+      k.table(0.5,D-1.6,2.2,0.9,0xc9cdd0); F(W-3,W-0.6,1.6,2.6,0,1.2,0xcfd4d6,true); F(W-3.4,W-0.2,1.9,2.3,0.8,0.86,C.black); break; }
+    case 'medical': { k.desk(0.5,D-1.8,1.4,0.7); k.mon(0.9,D-1.55); k.chair(0.95,D-1.0,1); k.chair(0.95,D-2.8,-1);
+      F(W-2.6,W-0.6,D-1.2,D-0.4,0.62,0.76,0xdfe7ea,true); F(W-2.5,W-0.7,D-1.1,D-0.5,0,0.62,C.steel); k.cab(W-1.5,1.6,0.9,0.45,1.9,0xe6e9ea); F(0.4,1.0,1.4,1.8,0.8,0.95,C.white); break; }
+    case 'medical2': { for (const u of [1,W/2+0.4]){ F(u,u+2,D-1.2,D-0.4,0.62,0.76,0xdfe7ea,true); F(u+0.1,u+1.9,D-1.1,D-0.5,0,0.62,C.steel); }
+      k.cab(0.4,1.6,0.9,0.45,1.9,0xe6e9ea); k.cab(W-1.3,1.6,0.9,0.45,1.9,0xe6e9ea); F(W/2-0.3,W/2+0.3,2,2.5,0,0.9,C.steel); break; }
+    case 'dentist': { const c=W/2; F(c-0.4,c+0.4,D/2-1.0,D/2+0.9,0.35,0.6,0x7fb2c2,true); F(c-0.4,c+0.4,D/2+0.7,D/2+0.9,0.6,1.3,0x7fb2c2);
+      F(c+0.6,c+0.7,D/2,D/2+0.1,0,2.0,C.white); F(c+0.1,c+0.7,D/2-0.2,D/2+0.1,1.95,2.1,C.white); k.cab(0.4,D-0.6,0.9,0.45,1.9,0xe6e9ea); k.desk(W-2,D-1.6,1.4,0.7); break; }
+    case 'xray': { const c=W/2, m=D/2+0.8; F(c-1,c+1,m-1.2,m+1.2,0.6,0.8,0xe3e6e8,true); F(c-0.2,c+0.2,m-1,m-0.6,0,0.6,0xd0d5d8);
+      F(c-0.2,c+0.2,m+1.3,m+1.6,0,2.4,0xd0d5d8,true); F(c-0.5,c+0.5,m-0.3,m+1.6,2.1,2.4,0xd0d5d8); F(0.4,2.4,1.6,1.8,0,2.2,0x9aa4ab,true); G(0.5,2.3,1.65,1.75,1.1,1.9,false); break; }
+    case 'holding': { const v0=2.3; for (let u=0.35; u<W-0.3; u+=0.16) F(u,u+0.04,v0-0.02,v0+0.02,0,2.4,C.bar); FC(0.3,W-0.3,v0-0.06,v0+0.06);
+      F(0.3,W-0.3,v0-0.05,v0+0.05,2.4,2.5,C.steel); for (let i=1;i<3;i++){ const u=i*W/3; F(u-0.08,u+0.08,v0,D,0,2.4,C.wallIn,true); }
+      for (let i=0;i<3;i++){ const u=i*W/3+0.3; F(u,u+W/3-0.6,D-0.6,D-0.1,0,0.45,C.concrete,true); } break; }
+    case 'storage': { for (let v=1.8; v+0.9<D-0.2; v+=2.3){ F(0.8,W-0.8,v,v+0.9,0,2.4,0x5f6b73,true);
+        for (let u=1.0; u<W-1.2; u+=0.7) for (let y=0.1;y<2.2;y+=0.7) F(u,u+0.55,v-0.05,v+0.3,y,y+0.45,((u*7+y*3)|0)%3?C.box:0xc9a878); } break; }
+    case 'control': { F(0.5,W-0.5,D-0.16,D-0.06,0.8,3.0,C.black); const sc=[0x3d7ea6,0x5c8f6a,0x4a6f8f,0x7e8e5a,0x356a88];
+      let i=0; for (let u=0.7;u+1.0<W-0.5;u+=1.1) for (let y=0.95;y<2.8;y+=0.66){ F(u,u+1.0,D-0.18,D-0.16,y,y+0.58,sc[i++%sc.length]); }
+      F(1.2,W-1.2,D-2.4,D-1.6,0,0.8,0x3b4b57,true); for (let u=1.6;u<W-1.8;u+=1.2) k.mon(u,D-2.1);
+      for (let u=1.7;u<W-1.8;u+=2.4) k.chair(u,D-3.1,-1); break; }
+    case 'servers': { for (let u=1;u+0.7<W-0.8;u+=1.8){ F(u,u+0.7,1.6,D-0.6,0,2.1,0x2a3238,true); for (let v=1.8;v<D-0.8;v+=0.6) F(u+0.7,u+0.72,v,v+0.08,1.6,1.66,0x62b38a); } break; }
+    case 'pharmacy': { k.shelf(0.3,D-0.5,W-0.6,0.4,2.2,-1); F(0.5,W-2.4,2.0,2.6,0,1.0,C.wood,true); F(0.5,W-2.4,2.0,2.6,1.0,1.05,C.woodDk);
+      k.shelf(0.2,3.2,0.4,D-4,2.0,1); k.cab(W-1.2,3.2,0.9,0.6,1.9,0xe6e9ea); break; }
+    case 'beds': { for (let u=0.8; u+1.1<W-0.6; u+=2.8){ k.bed(u,D-2.3,1.0,2.0); F(u,u+1.0,D-0.3,D-0.18,0.5,1.15,C.steel); F(u+0.15,u+0.85,D-0.75,D-0.35,0.66,0.78,C.white); F(u+1.25,u+1.7,D-0.7,D-0.25,0,0.7,0xd6d2c8,true); F(u-0.4,u-0.36,D-2.3,D-0.2,2.3,2.34,C.steel); }
+      F(1,2.2,1.6,2.2,0,1.0,C.steel,true); break; }
+    case 'classroom': { F(W/2-2.2,W/2+2.2,D-0.1,D-0.05,1.0,2.2,0xf4f4f0); F(W/2-2.3,W/2+2.3,D-0.12,D-0.1,0.95,2.25,C.steel); k.desk(W/2-0.75,D-2.3);
+      for (let u=1.2; u+1.2<W-0.8; u+=2.0) for (let v=2.2; v+0.6<D-3.4; v+=1.7){ F(u,u+1.2,v,v+0.6,0.72,0.76,0xcfc3a5,true); F(u+0.1,u+0.15,v+0.1,v+0.5,0,0.72,C.steel); F(u+1.05,u+1.1,v+0.1,v+0.5,0,0.72,C.steel); k.chair(u+0.37,v-0.55,-1); } break; }
+    case 'computers': { for (let u=1.2; u+1.4<W-0.6; u+=2.2) for (let v=2.2; v+0.7<D-0.8; v+=2.0){ F(u,u+1.4,v,v+0.7,0.72,0.76,0xd7d9da,true); F(u+0.1,u+0.15,v+0.1,v+0.6,0,0.72,C.steel); k.mon(u+0.42,v+0.5); k.chair(u+0.47,v-0.55,-1); } break; }
+    case 'library': { for (let u=1; u+0.6<W*0.55; u+=2.2) k.shelf(u,2.2,0.5,D-3.2,1.9,1);
+      for (let v=2.4; v+1.2<D-0.8; v+=3.0){ k.table(W*0.62,v,2.6,1.2,C.wood); k.chair(W*0.62+0.5,v-0.55,-1); k.chair(W*0.62+1.6,v+1.25,1); } k.shelf(0.3,D-0.45,W-0.6,0.35,2.1,-1); break; }
+    case 'artroom': { for (let u=1.2; u+3<W-0.8; u+=4.2){ k.table(u,D/2-0.8,3,1.6,0xc8b89a); for (let i=0;i<3;i++){ k.chair(u+0.3+i*1,D/2-1.45,-1); } }
+      F(W-1.4,W-1.35,D-1.6,D-1.2,0,1.8,C.woodDk); F(W-1.7,W-1.0,D-1.62,D-1.58,1.0,1.8,0xf2efe6); k.shelf(0.3,D-0.45,3,0.35,1.8,-1); break; }
+    case 'auditorium': { F(0.5,W-0.5,D-3,D,0,0.6,C.woodDk,true); F(W/2-0.3,W/2+0.3,D-2.4,D-1.9,0.6,1.7,C.wood); F(0.5,W-0.5,D-0.1,D-0.05,1.0,3.0,0x7a2e2e);
+      for (let v=2; v<D-4.2; v+=1.0) for (let u=1; u<W-1; u+=0.62){ if (Math.abs(u-W/2)<0.7) continue; F(u,u+0.48,v,v+0.45,0.42,0.48,0x8a3a3a); F(u,u+0.48,v,v+0.06,0.48,0.9,0x8a3a3a); } break; }
+    case 'kitchen': { F(3,W-3,D/2-0.8,D/2+0.8,0,0.9,0x9aa3a8,true); for (let u=3.5; u<W-3.5; u+=1.2) F(u,u+0.6,D/2-0.5,D/2+0.1,0.9,0.93,C.black);
+      F(3,W-3,D/2-1.1,D/2+1.1,2.7,3.0,0xa9b0b4); for (let u=1; u+1.3<W-0.8; u+=2.0){ F(u,u+1.3,D-1.6,D-0.3,0,1.0,0xb5bcc0,true); F(u+0.1,u+1.2,D-1.5,D-0.4,1.0,1.05,0x7c858a); }
+      F(0.3,0.9,1.8,D-2,0,0.9,0xc3c9cc,true); for (let u=2; u<W-2; u+=3.5) F(u,u+1.2,1.8,2.4,0,1.1,C.steel,true); break; }
+    case 'cold': { F(0.6,W/2-0.4,D-4.4,D-0.2,0,2.8,0xe8ecee,true); F(W/2+0.4,W-0.6,D-4.4,D-0.2,0,2.8,0xe8ecee,true);
+      F(W/4-0.6,W/4+0.6,D-4.45,D-4.4,0,2.2,C.steel); F(3*W/4-0.6,3*W/4+0.6,D-4.45,D-4.4,0,2.2,C.steel); for (let u=1;u<W-1;u+=2.2) F(u,u+1.2,1.8,2.6,0,1.2,C.box,true); break; }
+    case 'bakery': { for (let u=1; u+2.4<W-0.5; u+=3.2){ F(u,u+2.4,D-1.8,D-0.2,0,2.2,0x8b9398,true); F(u+0.4,u+2.0,D-1.82,D-1.8,0.8,1.6,C.black); }
+      for (let u=1.5; u+2.5<W-1; u+=4){ F(u,u+2.5,D/2-1.4,D/2-0.4,0,0.9,0xc9b99a,true); } for (let u=1.5; u<W-1.5; u+=3) F(u,u+0.7,2,2.6,0,1.8,C.steel,true); break; }
+    case 'laundry': { for (let u=0.8; u+1.4<W-0.6; u+=1.8){ F(u,u+1.4,D-1.5,D-0.2,0,1.6,0xd9dde0,true); F(u+0.35,u+1.05,D-1.52,D-1.5,0.5,1.2,C.screen); }
+      for (let u=1.5; u+3<W-1.2; u+=4.5) F(u,u+3,D/2-0.9,D/2+0.3,0,0.9,0xc8ccce,true); for (let u=2; u<W-2; u+=4.5) F(u,u+1,2,3,0,1.1,0x3f6b9b,true); break; }
+    case 'workshop': { for (let u=1.5; u+3<W-1; u+=5){ F(u,u+3,D/2-0.6,D/2+0.6,0,0.9,C.wood,true); F(u+0.3,u+0.9,D/2-0.3,D/2+0.2,0.9,1.2,C.steel); }
+      F(0.5,W-0.5,D-0.1,D-0.06,1.0,2.2,0x6f7a5a); for (let u=1;u<W-1;u+=0.5) F(u,u+0.08,D-0.14,D-0.1,1.3+((u*10)%3)*0.2,1.9,C.steelDk); break; }
+    case 'wood': { for (let u=1.5; u+2.6<W-1; u+=4.0) for (let v=2.4; v+1.1<D-2.4; v+=3.4){ F(u,u+2.6,v,v+1.1,0,0.9,C.wood,true); F(u+0.2,u+2.4,v+0.2,v+0.9,0.9,0.95,0xd9b98a); }
+      for (let u=1; u+3<W-1; u+=5) F(u,u+3,D-1.2,D-0.3,0,1.2,0xc9a36a,true); F(W-4,W-2,2,3.4,0,1.3,0x7d8a70,true); F(W-3.2,W-2.8,2.4,3.0,1.3,1.6,C.steel); break; }
+    case 'pack': { for (let v=2.4; v+1.2<D-1; v+=3.2){ F(1.5,W-1.5,v,v+1.2,0.74,0.8,0xcfc8b4,true); F(1.6,1.7,v+0.1,v+1.1,0,0.74,C.steel); F(W-1.7,W-1.6,v+0.1,v+1.1,0,0.74,C.steel);
+        for (let u=2; u<W-2; u+=1.3) F(u,u+0.5,v+0.3,v+0.8,0.8,1.05,C.box); }
+      for (let u=1; u<W-1; u+=1.4) F(u,u+1.1,D-1.3,D-0.2,0,1.2+((u*3)|0)%3*0.4,C.box,true); break; }
+    case 'sew': { for (let u=1.2; u+1.4<W-0.8; u+=2.2) for (let v=2.2; v+0.8<D-1; v+=2.2){ F(u,u+1.4,v,v+0.8,0.72,0.76,0xd7d2c4,true); F(u+0.1,u+0.15,v+0.1,v+0.7,0,0.72,C.steel); F(u+0.5,u+0.95,v+0.35,v+0.6,0.76,1.05,C.white); k.chair(u+0.47,v-0.55,-1); }
+      for (let u=1; u<W-1; u+=1.2) F(u,u+0.9,D-0.7,D-0.2,0,1.3,0x5c7da0,true); break; }
+    case 'fp': { F(0.5,W-0.5,D-0.14,D-0.08,0.9,2.3,0xd2d6d4); for (let u=1; u+1.2<W-0.8; u+=1.8){ F(u,u+1.2,D-0.18,D-0.14,1.1,2.0,0xf0f0ea); F(u+0.2,u+0.5,D-0.2,D-0.18,1.3,1.6,C.red); }
+      for (let u=1.5; u+2.4<W-1; u+=3.6) F(u,u+2.4,D/2-0.5,D/2+0.5,0,0.9,C.wood,true); break; }
+    case 'cellS': { F(0.2,1.1,D-2.3,D-0.25,0,0.5,C.concrete,true); F(0.25,1.05,D-2.25,D-0.3,0.5,0.62,C.mattress); F(W-0.7,W-0.2,D-0.8,D-0.25,0,0.45,C.steel,true);
+      F(W-0.9,W-0.2,2.0,2.8,0.7,0.76,C.concrete,true); break; }
+  }
+}
+
+/* ============ Edificio con pasillo central (plantilla) ============ */
+function corridorBuilding(o){
+  const b=bBegin(o);
+  const {x0,x1,z0,z1}=b, h=o.h, cw=o.cw||3.4, zc=(z0+z1)/2, east=o.door==='east', L=x1-x0, hall=o.hall||10, fac=o.fac||C.facade;
+  const AX=s=>east?x1-s:x0+s;
+  B(x0,x1,0,0.075,z0,z1,o.floor||C.floorOff,false);
+  const dg=[zc-1.3,zc+1.3,2.8];
+  wallX(z0,x0,x1,h,fac,[],{lin:1});
+  wallX(z1,x0,x1,h,fac,[],{lin:-1});
+  wallZ(x0,z0,z1,h,fac,east?[]:[dg],{lin:1});
+  wallZ(x1,z0,z1,h,fac,east?[dg]:[],{lin:-1});
+  const sides={a:{near:zc-cw/2,far:z0,dir:-1},b:{near:zc+cw/2,far:z1,dir:1}};
+  for (const key of ['a','b']){
+    const list=o[key]||[]; if (!list.length) continue;
+    const sd=sides[key], gaps=[]; let s=hall;
+    for (let i=0;i<list.length;i++){
+      const r=list[i], w=i===list.length-1?L-s:r.w, s1=s+w;
+      const rx0=Math.min(AX(s),AX(s1)), rx1=Math.max(AX(s),AX(s1));
+      if (i>0) wallZ(AX(s),sd.near,sd.far,3.0,C.wallIn,[],{t:0.2});
+      const dw=r.door||1.2, da=s+(r.doorAt!=null?r.doorAt:0.7);
+      gaps.push([AX(da),AX(da+dw),2.2]);
+      const dx=(AX(da)+AX(da+dw))/2;
+      if (!r.nosign) sign(r.label||r.name,null,dx,2.62,sd.near-sd.dir*0.13,sd.dir<0?0:Math.PI,Math.min(2.2,Math.max(1.5,w-0.4)),0.4,'door');
+      const room={name:r.name,x0:rx0,x1:rx1,z0:Math.min(sd.near,sd.far),z1:Math.max(sd.near,sd.far),near:sd.near,far:sd.far,dir:sd.dir,W:rx1-rx0,D:Math.abs(sd.far-sd.near)};
+      room.du0=Math.min(AX(da),AX(da+dw))-rx0; room.du1=Math.max(AX(da),AX(da+dw))-rx0;
+      b.rooms.push(room);
+      if (r.f) furnish(r.f,room);
+      s=s1;
+    }
+    wallX(sd.near,AX(hall),AX(L),3.0,C.wallIn,gaps,{t:0.2});
+  }
+  wallZ(AX(hall),z0,z1,3.0,C.wallIn,[[zc-cw/2,zc+cw/2,3.0]],{t:0.2});
+  b.rooms.push({name:'Pasillo',x0:Math.min(AX(hall),AX(L)),x1:Math.max(AX(hall),AX(L)),z0:zc-cw/2,z1:zc+cw/2});
+  const hr={name:o.hallName||'Vestíbulo',x0:Math.min(AX(0),AX(hall)),x1:Math.max(AX(0),AX(hall)),z0,z1};
+  b.rooms.push(hr); b.hall=hr; b.door={x:east?x1:x0,z:zc,out:east?1:-1};
+  hallFurnish(o.hallF||'reception',hr,east,zc,cw);
+  const rows=h>6?[[1.1,2.3],[4.4,5.6]]:[[1.1,2.3]];
+  winsX(z0,-1,x0,x1,rows); winsX(z1,1,x0,x1,rows);
+  winsZ(east?x1:x0,east?1:-1,z0,z1,rows,3.2,1.4,[[dg[0],dg[1]]]);
+  winsZ(east?x0:x1,east?-1:1,z0,z1,h>6?[[4.4,5.6]]:[[1.4,2.2]]);
+  const ox=east?1:-1, dxw=east?x1:x0;
+  B(dxw,dxw+ox*2.2,2.9,3.1,zc-2,zc+2,C.steelDk,false);
+  B(dxw+ox*2.05,dxw+ox*2.2,0,2.9,zc-1.95,zc-1.8,C.steel,true); B(dxw+ox*2.05,dxw+ox*2.2,0,2.9,zc+1.8,zc+1.95,C.steel,true);
+  sign(o.short,o.sub||null,dxw+ox*0.18,Math.min(h-0.8,4.1),zc,east?Math.PI/2:-Math.PI/2,Math.min(9,Math.max(5,o.short.length*0.42)),1.1,o.signStyle||'inst');
+  roofBox(x0,x1,z0,z1,h,o.roof||C.roof);
+  bEnd();
+  return b;
+}
+function hallFurnish(t,r,east,zc,cw){
+  const W=r.x1-r.x0;
+  const F=(s0,s1,a,b,y0,y1,col,solid)=>B(east?r.x1-s0:r.x0+s0,east?r.x1-s1:r.x0+s1,y0,y1,a,b,col,solid);
+  const z0=r.z0, z1=r.z1;
+  if (t==='none') return;
+  F(W*0.45,W*0.45+0.7,zc+cw/2+0.8,Math.min(z1-0.6,zc+cw/2+4.2),0,1.1,C.wood,true);
+  F(W*0.45-0.1,W*0.45+0.8,zc+cw/2+0.7,Math.min(z1-0.5,zc+cw/2+4.3),1.1,1.16,C.woodDk);
+  F(1.2,Math.min(W-1.2,6.5),z0+0.3,z0+0.8,0,0.45,C.chair,true);
+  F(1.2,Math.min(W-1.2,6.5),z0+0.3,z0+0.4,0.45,0.9,C.chair);
+  F(W-1,W-0.6,z0+0.4,z0+0.8,0,0.4,C.pot,true); F(W-1.1,W-0.5,z0+0.3,z0+0.9,0.4,1.1,C.plant);
+  F(1.5,3.5,z1-0.08,z1-0.04,1.2,2.2,0x5a7560);
+}
+
+/* ============ Suelos, viales y exterior ============ */
+function buildGround(){
+  B(-300,300,-0.3,0,-300,300,C.grass,false);
+  mapRect(-300,300,-300,300,'out');
+  B(-300,300,0,0.02,206,216,C.asphalt); mapRect(-300,300,206,216,'road');
+  for (let x=-298;x<298;x+=9) B(x,x+4.5,0.02,0.03,210.9,211.1,C.line);
+  B(-14,14,0,0.02,166,206,C.asphalt); mapRect(-14,14,166,206,'road');
+  B(-92,-14,0,0.02,172,200,C.asphalt); mapRect(-92,-14,172,200,'road');
+  for (let x=-90;x<-24;x+=3){ B(x,x+0.12,0.02,0.03,172.5,178.5,C.line); B(x,x+0.12,0.02,0.03,193.5,199.5,C.line); }
+  B(24,64,0,0.025,168,200,C.paving); mapRect(24,64,168,200,'paving');
+  B(-172,172,0,0.025,-212,162,C.asphalt); mapRect(-172,172,-212,162,'ronda');
+  B(-160,160,0,0.035,-200,150,C.gravel); mapRect(-160,160,-200,150,'in');
+  B(-160,160,0,0.045,95,150,C.paving); mapRect(-160,160,95,150,'paving');
+  B(16,40,0,0.05,118,144,C.grass2); B(-54,-20,0,0.05,130,146,C.grass2); B(-150,-60,0,0.05,142,148,C.grass2); B(60,150,0,0.05,142,148,C.grass2);
+  B(-12,12,0,0.055,-196,86,C.vial); mapRect(-12,12,-196,86,'vial');
+  B(-12,-8,0,0.06,-196,86,C.paving); B(8,12,0,0.06,-196,86,C.paving);
+  for (let z=-194; z<84; z+=6) B(-0.12,0.12,0.06,0.065,z,z+3,C.line);
+  B(-160,-12,0,0.055,-3,3,C.vial); B(-160,-12,0,0.055,-93,-87,C.vial); mapRect(-160,-12,-3,3,'vial'); mapRect(-160,-12,-93,-87,'vial');
+  B(12,84,0,0.055,40,48,C.vial); B(70,80,0,0.055,2,48,C.vial); mapRect(12,84,40,48,'vial'); mapRect(70,80,2,48,'vial');
+  B(-160,-93,0,0.05,-200,95,0xbdb298);
+  // Plaza de acceso y banderas
+  for (const [x,cols] of [[22,[C.red,C.yellow,C.red]],[27,[0x2c4f9e,0x2c4f9e,0x2c4f9e]]]){
+    B(x-0.08,x+0.08,0,11,131.9,132.1,0xd7dadb,true);
+    const fl=new Batch(); fl.box(0,2.2,0,0.35,-0.02,0.02,cols[0]); fl.box(0,2.2,0.35,1.05,-0.02,0.02,cols[1]); fl.box(0,2.2,1.05,1.4,-0.02,0.02,cols[2]);
+    const m=fl.mesh(worldMat); m.position.set(x+0.1,9.4,132); scene.add(m); flags.push(m);
+  }
+  zone({id:'parking',title:'Exterior',sub:'Aparcamiento',x0:-100,x1:24,z0:166,z1:204});
+  zone({id:'gcarea',title:'Exterior',sub:'Puesto de la Guardia Civil',x0:24,x1:66,z0:166,z1:204});
+}
+const flags=[];
+
+/* ============ Perímetro: doble valla, garitas y muro interior ============ */
+function fence(ax,c,a0,a1,h){
+  const posts=[];
+  if (ax==='x'){ FENCE.wall(a0,c,a1,c,0.1,h); addCol(a0,a1,c-0.15,c+0.15); for (let x=a0;x<=a1+0.01;x+=4) B(x-0.07,x+0.07,0,h+0.4,c-0.07,c+0.07,0x8e979a,false); mapLines.push([a0,c,a1,c]); }
+  else { FENCE.wall(c,a0,c,a1,0.1,h); addCol(c-0.15,c+0.15,a0,a1); for (let z=a0;z<=a1+0.01;z+=4) B(c-0.07,c+0.07,0,h+0.4,z-0.07,z+0.07,0x8e979a,false); mapLines.push([c,a0,c,a1]); }
+  const len=a1-a0, t=fenceTex.clone(); t.needsUpdate=true; t.repeat.set(4,len/0.9);
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.36,len,10,1,true), new THREE.MeshLambertMaterial({map:t,alphaTest:0.45,side:THREE.DoubleSide}));
+  if (ax==='x'){ m.rotation.z=Math.PI/2; m.position.set((a0+a1)/2,h+0.45,c); } else { m.rotation.x=Math.PI/2; m.position.set(c,h+0.45,(a0+a1)/2); }
+  scene.add(m);
+}
+function tower(x,z,guard){
+  B(x-1.1,x+1.1,0,8,z-1.1,z+1.1,0xb8b0a0,true); hm(x-1.1,x+1.1,z-1.1,z+1.1,10.8);
+  B(x-1.9,x+1.9,8,8.3,z-1.9,z+1.9,0xa39b8c); B(x-1.9,x+1.9,8.3,9.1,z-1.9,z-1.75,0xd9d0bd); B(x-1.9,x+1.9,8.3,9.1,z+1.75,z+1.9,0xd9d0bd);
+  B(x-1.9,x-1.75,8.3,9.1,z-1.9,z+1.9,0xd9d0bd); B(x+1.75,x+1.9,8.3,9.1,z-1.9,z+1.9,0xd9d0bd);
+  GL(x-1.85,x+1.85,9.1,10.45,z-1.85,z+1.85,false);
+  for (const [a,b] of [[-1.9,-1.75],[1.75,1.9]]) for (const [c,d] of [[-1.9,-1.75],[1.75,1.9]]) B(x+a,x+b,9.1,10.5,z+c,z+d,C.steelDk);
+  B(x-2.3,x+2.3,10.5,10.8,z-2.3,z+2.3,C.roof); B(x-0.3,x+0.3,10.8,11.4,z-0.3,z+0.3,C.steelDk);
+  mapRects.push({x0:x-1.9,x1:x+1.9,z0:z-1.9,z1:z+1.9,t:'tower'});
+  if (guard) npc({kind:'gc',x,z:z,y:8.3,h:z>0?0:Math.PI,role:'Guardia Civil · Garita',lines:['Desde la garita vigilamos el perímetro y el camino de ronda. La seguridad exterior del centro es competencia de las Fuerzas y Cuerpos de Seguridad del Estado.']});
+}
+function buildPerimeter(){
+  fence('x',160,-170,-14,6); fence('x',160,14,170,6); fence('x',-210,-170,170,6); fence('z',-170,-210,160,6); fence('z',170,-210,160,6);
+  fence('x',150,-160,-14,5); fence('x',150,14,160,5); fence('x',-200,-160,160,5); fence('z',-160,-200,150,5); fence('z',160,-200,150,5);
+  for (const [x,z,g] of [[-165,155,0],[165,155,1],[-165,-205,0],[165,-205,0],[-165,-25,1],[165,-25,0],[0,-205,1],[-85,-205,0],[85,-205,0],[-85,155,0],[85,155,0]]) tower(x,z,g);
+  // Esclusa de vehículos (cerrada)
+  for (const z of [150.35,159.65]){ for (let x=18.2;x<34;x+=0.2) B(x,x+0.05,0,4.5,z-0.03,z+0.03,C.bar); B(18,34,4.4,4.6,z-0.08,z+0.08,C.steel); B(18,34,0,0.2,z-0.08,z+0.08,C.steel); }
+  sign('Esclusa de vehículos',null,26,5.1,160.1,0,5,0.7,'warn');
+  // Muro de seguridad interior (separa zona de acceso del recinto)
+  for (const [a,b] of [[-160,-12],[12,160]]){ B(a,b,0,4.5,94.8,95.2,C.concrete,true); hm(a,b,94.8,95.2,4.5); FENCE.wall(a,95,b,95,4.5,6); mapLines.push([a,95,b,95]); }
+  zone({id:'ronda',title:'Camino de ronda',sub:'Entre la doble valla',x0:-172,x1:172,z0:-212,z1:162,late:true});
+}
+
+/* ============ Control de accesos ============ */
+function buildAccess(){
+  const b=bBegin({short:'Control de accesos',name:'Edificio de acceso',x0:-14,x1:14,z0:146,z1:166,h:5,map:'Acceso',def:'Control de accesos'});
+  B(-14,14,0,0.075,146,166,C.floorOff);
+  wallX(166,-14,14,5,C.facade,[[-2,2,2.8]],{lin:-1}); wallX(146,-14,14,5,C.facade,[[-2,2,2.8]],{lin:1});
+  wallZ(-14,146,166,5,C.facade,[],{lin:1}); wallZ(14,146,166,5,C.facade,[],{lin:-1});
+  B(-8.6,-8,0,1.1,149,163,C.wood,true); GL(-8.55,-8.05,1.1,2.5,149,163,false); B(-8.7,-7.9,2.5,2.6,149,163,C.steel);
+  B(-13.6,-11,0.72,0.77,151,155,C.wood,true); B(-12.8,-12.3,0.95,1.3,152,152.05,C.screen); B(-12.8,-12.3,0.95,1.3,153.5,153.55,C.screen);
+  B(-1.3,-1.0,0,2.3,155.7,156.3,0x9aa4ab,true); B(1.0,1.3,0,2.3,155.7,156.3,0x9aa4ab,true); B(-1.3,1.3,2.3,2.55,155.7,156.3,0x9aa4ab); B(-0.25,0.25,2.55,2.62,155.9,156.1,0x62b38a);
+  B(-5,-2.2,0,1.3,154.5,157.5,0xcfd4d6,true); B(-5.6,-1.6,0.85,0.9,155.3,156.7,C.black);
+  for (let z=149; z<163; z+=0.5) B(13.2,13.84,0,1.9,z,z+0.47,(z*2)%2?0x7c8f9e:0x6f8291,false); addCol(13.2,13.84,149,163);
+  for (const z of [158,160,162]) B(4,9,0,0.45,z,z+0.5,C.chair,true);
+  winsX(166,1,-14,14,[[1.2,2.4]],3.2,1.4,[[-2,2]]); winsX(146,-1,-14,14,[[1.2,2.4]],3.2,1.4,[[-2,2]]);
+  B(-3,3,2.9,3.1,166,168.5,C.steelDk);
+  sign('Centro Penitenciario','Control de accesos',0,3.9,166.2,0,9,1.5,'inst');
+  roofBox(-14,14,146,166,5);
+  b.rooms.push({name:'Control de accesos',x0:-14,x1:14,z0:146,z1:166});
+  bEnd();
+  npc({kind:'func',x:-11,z:157,h:Math.PI/2,role:'Funcionaria · Control de accesos',lines:['Buenos días. Aquí se identifica a todo el que entra: personal, familias, abogados y profesionales. Pase por el arco detector, por favor.','Los objetos no autorizados se quedan en las taquillas. Los paquetes pasan por el escáner.']});
+  return b;
+}
+
+/* ============ Rastrillo ============ */
+function buildRastrillo(){
+  const b=bBegin({short:'Rastrillo',name:'Rastrillo',x0:-12,x1:12,z0:86,z1:104,h:4.5,map:'Rastrillo',def:'Esclusa'});
+  B(-12,12,0,0.075,86,104,C.floorOff);
+  wallX(104,-12,12,4.5,C.facade,[[-4,4,3.4]],{lin:-1}); wallX(86,-12,12,4.5,C.facade,[[-4,4,3.4]],{lin:1});
+  wallZ(-12,86,104,4.5,C.facade,[],{lin:1}); wallZ(12,86,104,4.5,C.facade,[],{lin:-1});
+  for (const x of [-5,5]){ B(x-0.15,x+0.15,0,1.0,86,104,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,86,88,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,102,104,C.wallIn,true); GL(x-0.08,x+0.08,1.0,2.3,88,102,true); B(x-0.15,x+0.15,2.3,4.5,86,104,C.wallIn); }
+  B(-11.8,-9.8,0.72,0.77,89,99,C.wood,true); for (const z of [90,92.5,95,97.5]) B(-11.5,-11.45,0.95,1.35,z,z+0.6,C.screen);
+  B(7,10.5,0,1.2,93,97,0xcfd4d6,true); B(6.5,11,0.8,0.86,93.6,96.4,C.black);
+  for (let x=-4;x<4;x+=0.5) B(x,x+0.25,0.075,0.08,94.6,95.4,C.yellow);
+  sign('Rastrillo','Acceso al recinto interior',0,3.95,104.2,0,6,1.1,'inst');
+  sign('Rastrillo','Zona de acceso',0,3.95,85.8,Math.PI,6,1.1,'inst');
+  roofBox(-12,12,86,104,4.5);
+  b.rooms.push({name:'Esclusa',x0:-5,x1:5,z0:86,z1:104},{name:'Cabina del rastrillo',x0:-12,x1:-5,z0:86,z1:104},{name:'Sala de cacheos',x0:5,x1:12,z0:86,z1:104});
+  bEnd();
+  const g1=gate(0,103.55,8,'x'), g2=gate(0,86.45,8,'x'); g1.partner=g2; g2.partner=g1;
+  npc({kind:'func',x:-10.6,z:94,h:Math.PI/2,role:'Funcionario · Rastrillo',lines:['Esto es una esclusa: las dos rejas nunca se abren a la vez. Acérquese a una y se abrirá cuando la otra esté cerrada.','Todo movimiento de personas y objetos hacia el recinto interior queda registrado aquí.']});
+  return b;
+}
+
+/* ============ Rejas automáticas ============ */
+const gateMat=new THREE.MeshLambertMaterial({vertexColors:true});
+function gate(cx,cz,w,axis){
+  const bt=new Batch(), h=3.1;
+  for (let a=-w/2+0.05;a<w/2;a+=0.14) bt.box(a,a+0.045,0.05,h,-0.03,0.03,C.bar);
+  bt.box(-w/2,w/2,h-0.12,h,-0.06,0.06,C.steel); bt.box(-w/2,w/2,1.1,1.18,-0.05,0.05,C.steel); bt.box(-w/2,w/2,0.05,0.14,-0.05,0.05,C.steel);
+  const m=bt.mesh(gateMat); const grp=new THREE.Group(); grp.add(m); grp.position.set(cx,0,cz); if (axis==='z') grp.rotation.y=Math.PI/2; scene.add(grp);
+  const g={m:grp,cx,cz,w,axis,open:0,partner:null};
+  g.col = axis==='x' ? addCol(cx-w/2,cx+w/2,cz-0.1,cz+0.1,{gate:g}) : addCol(cx-0.1,cx+0.1,cz-w/2,cz+w/2,{gate:g});
+  gates.push(g); return g;
+}
+
+/* ============ Módulo residencial ============ */
+const mods=[];
+function buildModule(n,c,south){
+  const L=81, s=south?1:-1, zb=c+2*s;
+  const X=u=>-12-u, Z=v=>zb+s*v;
+  const M=(u0,u1,y0,y1,v0,v1,col,solid)=>B(X(u0),X(u1),y0,y1,Z(v0),Z(v1),col,solid);
+  const MG=(u0,u1,y0,y1,v0,v1,solid)=>GL(X(u0),X(u1),y0,y1,Z(v0),Z(v1),solid);
+  const WU=(v,u0,u1,h,col,gaps=[],o={})=>wallX(Z(v),X(u0),X(u1),h,col,gaps.map(g=>[X(g[0]),X(g[1]),g[2]]),o.lin?Object.assign({},o,{lin:o.lin*s}):o);
+  const WV=(u,v0,v1,h,col,gaps=[],o={})=>wallZ(X(u),Z(v0),Z(v1),h,col,gaps.map(g=>[Z(g[0]),Z(g[1]),g[2]]),o.lin?Object.assign({},o,{lin:-o.lin}):o);
+  const b=bBegin({short:'Módulo '+n,name:'Módulo residencial '+n,x0:X(L),x1:X(0),z0:Z(0),z1:Z(14),h:7,map:'M'+n,kind:'mod',def:'Interior'});
+  b.module=n;
+  const R=(name,u0,u1,v0,v1)=>b.rooms.push({name,x0:Math.min(X(u0),X(u1)),x1:Math.max(X(u0),X(u1)),z0:Math.min(Z(v0),Z(v1)),z1:Math.max(Z(v0),Z(v1))});
+  M(0,L,0,0.075,0,14,C.floor);
+  M(29.5,76.3,0.075,0.08,0,5,C.floorCell); M(29.5,76.3,0.075,0.08,9,14,C.floorCell); M(76.3,L,0.075,0.085,0,14,C.tile);
+  // Muros exteriores
+  WU(0,0,26,4.2,C.facade2,[],{lin:1}); WU(0,26,L,7,C.facade2,[],{lin:1});
+  WU(14,0,26,4.2,C.facade2,[[20,22.5,2.6]],{lin:-1}); WU(14,26,L,7,C.facade2,[],{lin:-1});
+  WV(0,0,14,4.2,C.facade2,[[8.5,11,2.6]],{lin:1}); WV(L,0,14,7,C.facade2,[],{lin:-1});
+  M(25.85,26.15,4.2,7,0,14,C.facade2);
+  for (const v of [-0.2,14.2]) { for (const [a,bb] of (v>0?[[0,20],[22.5,L]]:[[0,L]])) M(a,bb,0,0.6,v-0.03,v+0.03,C.plinth); M(26,L,3.3,3.5,v-0.04,v+0.04,C.band); }
+  // Particiones
+  WV(8,0,14,3.2,C.wallIn,[[9,11,2.3]],{t:0.2});
+  WV(26,0,14,4.2,C.wallIn,[[5,9,3.0]],{t:0.3});
+  // Office de funcionarios (acristalado)
+  MG(0.2,5.5,0.9,2.6,4.95,5.05,true); MG(6.6,7.9,0.9,2.6,4.95,5.05,true);
+  M(0.2,5.5,0,0.9,4.9,5.1,C.steel,true); M(6.6,7.9,0,0.9,4.9,5.1,C.steel,true); M(0.1,8,2.6,3.2,4.9,5.1,C.steel);
+  M(1,4.5,0.72,0.77,0.4,1.2,C.wood,true); M(1.5,2.05,0.95,1.3,1.1,1.15,C.screen); M(2.8,3.35,0.95,1.3,1.1,1.15,C.screen); M(6.2,7.6,0,1.9,0.2,0.65,0x8d949a,true);
+  M(7.7,7.85,1.3,2.1,1.5,3.2,0x5a3f2a);
+  // Vestíbulo
+  M(1,4.5,0,0.45,13.3,13.8,C.chair,true); M(1.2,4.3,1.3,2.2,13.82,13.86,0x5a7560);
+  // Comedor
+  M(9,16,0,0.95,0.3,1.1,C.steel,true); M(9,16,0.95,1.0,0.25,1.2,0xc7cdd1);
+  for (const u of [9.4,10.6]) M(u,u+0.9,0,1.05,1.5,2.1,C.steel,true);
+  for (const u of [11,14.6]) for (const v of [4,7.4,11.9]){ M(u-0.65,u+0.65,0.72,0.78,v-0.45,v+0.45,0xd9d4c6,true); M(u-0.08,u+0.08,0,0.72,v-0.08,v+0.08,C.steelDk);
+    for (const du of [-0.35,0.35]) for (const dv of [-0.85,0.85]) M(u+du-0.18,u+du+0.18,0.42,0.47,v+dv-0.18,v+dv+0.18,C.steel); }
+  // Sala de día
+  M(25.7,25.85,1.8,2.7,10.4,12.4,C.screen); M(25.68,25.7,1.9,2.6,10.5,12.3,0x3d6f8e);
+  M(21,21.6,0,0.45,9.4,12.4,C.chair,true); M(21,21.1,0.45,0.95,9.4,12.4,C.chair); M(18.4,19,0,0.45,9.4,12.4,C.chair,true); M(18.4,18.5,0.45,0.95,9.4,12.4,C.chair);
+  M(18.3,19.7,0.72,0.77,2.3,3.5,0xd9d4c6,true); M(18.95,19.05,0,0.72,2.85,2.95,C.steelDk);
+  M(22,24.4,0,1.05,0.2,0.65,C.wood,true); M(21.9,24.5,1.05,2.3,0.16,0.2,C.glassDk);
+  for (let i=0;i<3;i++) M(25.62,25.85,1.2,1.7,1.3+i*1.1,1.75+i*1.1,C.black);
+  sign('Economato',null,X(23.2),2.6,Z(0.2),s>0?0:Math.PI,1.8,0.4,'door');
+  sign('Teléfonos',null,X(25.83),2.35,Z(2.4),-Math.PI/2,1.6,0.38,'door');
+  // Galería: escalera, pasarelas y planta primera
+  for (let i=0;i<10;i++) M(26.3+i*0.3,26.6+i*0.3,0,0.33*(i+1),0.3,1.5,C.parapet);
+  addCol(X(26.3),X(29.3),Z(0.3),Z(1.5));
+  M(26,29.5,3.3,3.5,0.3,5,C.floor);
+  M(26,76.3,3.3,3.5,5,6.2,C.floor); M(26,76.3,3.3,3.5,7.8,9,C.floor);
+  M(29.5,76.3,3.3,3.5,0,5,C.floor); M(29.5,76.3,3.3,3.5,9,14,C.floor);
+  for (let u=26.2;u<76.3;u+=2.6){ M(u,u+0.06,3.5,4.5,6.14,6.2,C.steel); M(u,u+0.06,3.5,4.5,7.8,7.86,C.steel); }
+  M(26,76.3,4.45,4.55,6.12,6.22,C.steel); M(26,76.3,4.45,4.55,7.78,7.88,C.steel);
+  M(50,52.2,3.3,3.5,6.2,7.8,C.floor);
+  // Celdas (18 por lado en planta baja; la planta primera repite la serie)
+  let num=1;
+  for (const side of [0,1]){
+    const V=side===0?(d=>d):(d=>14-d), cwv=side===0?5:9, gaps=[];
+    for (let k=0;k<18;k++){
+      const ua=29.5+2.6*k;
+      WV(ua,V(0),V(5),3.3,C.wallIn,[],{t:0.16});
+      M(ua-0.08,ua+0.08,3.5,6.6,V(0),V(5),C.wallIn);
+      gaps.push([ua+1.5,ua+2.4,2.1]);
+      const P=(u0,u1,d0,d1,y0,y1,col,solid)=>M(ua+u0,ua+u1,y0,y1,V(d0),V(d1),col,solid);
+      P(0.12,0.98,0.25,2.25,0.35,0.5,C.steel,true); P(0.14,0.96,0.27,2.23,0.5,0.62,C.mattress); P(0.2,0.9,0.3,0.7,0.62,0.72,C.white);
+      P(0.12,0.98,0.25,2.25,1.45,1.55,C.steel); P(0.14,0.96,0.27,2.23,1.55,1.67,C.blanket);
+      for (const [a,bb] of [[0.12,0.18],[0.92,0.98]]) for (const [c2,d2] of [[0.25,0.31],[2.19,2.25]]) P(a,bb,c2,d2,0,1.7,C.steel);
+      P(2.0,2.45,0.2,0.75,0,0.45,0xd8dde0,true); P(1.45,1.9,0.18,0.5,0.75,0.9,0xd8dde0);
+      P(0.12,0.8,3.2,4.2,0.72,0.77,C.wood,true); P(0.15,0.2,3.25,4.15,0,0.72,C.woodDk); P(1.0,1.35,3.5,3.85,0,0.45,C.steel);
+      P(1.5,2.45,0.16,0.42,1.85,1.9,C.wood);
+      for (const y of [[1.5,2.6],[4.7,5.8]]){ P(1.05,1.55,-0.2,-0.16,y[0],y[1],C.glassDk); P(1.18,1.22,-0.24,-0.2,y[0],y[1],C.bar); P(1.36,1.4,-0.24,-0.2,y[0],y[1],C.bar); }
+      P(1.05,1.55,0.18,0.2,1.5,2.6,C.winIn);
+      P(2.45,3.35,5.1,5.16,0.02,2.1,C.steel); P(2.45,3.35,5.1,5.16,3.52,5.6,C.steel);
+      const cname=`Celda ${num} · planta baja`; R(cname,ua,ua+2.6,V(0),V(5)); num++;
+    }
+    WU(cwv,29.5,76.3,3.3,C.wallIn,gaps,{t:0.2});
+    WU(cwv,29.5,76.3,3.1,C.wallIn,gaps.map(g=>[g[0],g[1],2.1]),{t:0.2,y0:3.5,solid:false});
+  }
+  // Duchas
+  WV(76.3,0,14,3.3,C.wallIn,[[5.5,8.5,2.3]],{t:0.2});
+  for (let v=1.2; v<13; v+=1.8){ M(L-0.6,L-0.3,2.0,2.1,v+0.7,v+0.9,C.steel); if (v>1.3) M(L-1.3,L-0.2,0,2.0,v-0.03,v+0.03,0xdfe6e8,true); }
+  M(77.6,78.6,0,0.45,5.6,8.4,C.wood,true);
+  // Ventanas de comedor y sala de día
+  for (const [u0,u1,v] of [[9.5,16,0],[9.5,16,14],[17.5,19.6,14],[23.2,25.4,14],[17.5,21.5,0]]){
+    const o=v===0?-1:1; M(u0,u1,1.2,2.6,v+o*0.16,v+o*0.2,C.glassDk); M(u0,u1,1.2,2.6,v-o*0.18,v-o*0.2,C.winIn);
+    for (let u=u0+0.2;u<u1;u+=0.3) M(u,u+0.04,1.2,2.6,v+o*0.2,v+o*0.24,C.bar);
+  }
+  // Cubiertas
+  ROOF(X(-0.15),X(26.15),4.2,4.45,Z(-0.15),Z(14.15),C.roof);
+  ROOF(X(25.85),X(L+0.15),7,7.25,Z(-0.15),Z(14.15),C.roof);
+  ROOF(X(30),X(75),7.25,7.5,Z(6),Z(8),0x9fc0cc);
+  for (const [u0,u1,y] of [[-0.15,26.15,4.45],[25.85,L+0.15,7.25]]){ ROOF(X(u0),X(u1),y,y+0.5,Z(-0.15),Z(0.15),C.parapet); ROOF(X(u0),X(u1),y,y+0.5,Z(13.85),Z(14.15),C.parapet); }
+  ROOF(X(-0.15),X(0.15),4.45,4.95,Z(-0.15),Z(14.15),C.parapet); ROOF(X(L-0.15),X(L+0.15),7.25,7.75,Z(-0.15),Z(14.15),C.parapet);
+  sign('Módulo '+n,'Zona residencial',X(0)+0.18,3.4,Z(9.75),Math.PI/2,3.2,0.95,'inst');
+  sign('Office',null,X(4),2.85,Z(5.12),s>0?0:Math.PI,1.4,0.36,'door');
+  sign('Comedor',null,X(8.12),2.7,Z(10),Math.PI/2,1.6,0.38,'door');
+  sign('Galería',null,X(25.84),3.4,Z(7),Math.PI/2,1.8,0.4,'door');
+  sign('Duchas',null,X(76.18),2.6,Z(7),Math.PI/2,1.4,0.36,'door');
+  R('Office de funcionarios',0,8,0,5); R('Vestíbulo',0,8,5,14); R('Comedor',8,17,0,14); R('Sala de día',17,26,0,14); R('Galería · escalera',26,29.5,0,14);
+  R('Galería · planta baja',29.5,76.3,5,9); R('Duchas',76.3,L,0,14);
+  bEnd();
+  // Patio
+  M(0,L,0,0.065,14.15,40,C.patio);
+  WV(0,14,40,5,C.patioWall); WV(L,14,40,5,C.patioWall); WU(40,0,L,5,C.patioWall);
+  hm(X(0)-0.3,X(0)+0.3,Z(14),Z(40),5); hm(X(L)-0.3,X(L)+0.3,Z(14),Z(40),5); hm(X(0),X(L),Z(40)-0.3,Z(40)+0.3,5);
+  M(0,L,5,5.9,39.9,40.1,C.steelDk); M(-0.1,0.1,5,5.9,14,40,C.steelDk); M(L-0.1,L+0.1,5,5.9,14,40,C.steelDk);
+  for (const [a,bb,c1,d1] of [[38,52,15,15.12],[38,52,38.88,39],[38,38.12,15,39],[51.88,52,15,39],[38,52,26.94,27.06]]) M(a,bb,0.065,0.075,c1,d1,C.courtLine);
+  for (const v of [15.2,38.8]){ const d=v<27?1:-1; M(44.9,45.1,0,3.05,v-0.1*d,v+0.1*d,C.steel,true); M(44.1,45.9,2.9,3.95,v+0.1*d,v+0.15*d,C.white); M(44.8,45.2,3.05,3.09,v+0.15*d,v+0.55*d,0xd05a2a); }
+  M(60,L,3.1,3.25,14,21,0x8c8f8f); for (const u of [60.2,67,74,80.5]) M(u,u+0.25,0,3.1,20.7,20.95,C.steel,true);
+  M(62,67,0,0.45,15,15.5,C.wood,true); M(69,74,0,0.45,15,15.5,C.wood,true);
+  M(3,3.5,0,1.0,15,15.4,C.steel,true); M(18,20.7,0.72,0.76,28,29.5,0x2e6b4f,true); M(19.33,19.37,0.76,0.92,28,29.5,C.white); M(19.2,19.5,0,0.72,28.6,28.9,C.steelDk);
+  for (const u of [8,24,62]) M(u,u+4,0,0.45,39.3,39.8,C.concrete,true);
+  sign('Patio · Módulo '+n,null,X(0)+0.18,4.2,Z(27),Math.PI/2,4,0.7,'inst');
+  const px0=Math.min(X(0),X(L)), px1=Math.max(X(0),X(L)), pz0=Math.min(Z(14),Z(40)), pz1=Math.max(Z(14),Z(40));
+  mapRect(px0,px1,pz0,pz1,'patio');
+  zone({id:'patio'+n,patio:true,module:n,title:'Módulo '+n,sub:'Patio',x0:px0,x1:px1,z0:pz0,z1:pz1});
+  const gt=gate(X(26),Z(7),4,'z');
+  const md={n,b,X,Z,s,L,patio:{x0:px0+2,x1:px1-2,z0:pz0+2,z1:pz1-2},gate:gt};
+  mods[n]=md;
+  // Personas
+  npc({kind:'func',x:X(3),z:Z(2.2),h:s>0?0:Math.PI,role:'Funcionario del módulo '+n,lines:['Desde el office controlamos el módulo: recuentos, apertura y cierre de celdas y todos los movimientos de internos.','Las 72 celdas están en dos plantas: 36 abajo y 36 arriba. La reja de la galería se abre al acercarse.','Los internos de este módulo no se cruzan con los de otros: cada módulo tiene su comedor, su sala de día y su patio.']});
+  const sp=(u,v)=>[X(u),Z(v)];
+  for (let i=0;i<5;i++){ const [x,z]=sp(6+i*14,20+(i%3)*6); npc({kind:'civ',x,z,wander:md.patio,role:'Interno',lines:INMATE}); }
+  for (let i=0;i<2;i++){ const [x,z]=sp(19+i*4,5+i*2); npc({kind:'civ',x,z,wander:{x0:Math.min(X(17.5),X(25.4)),x1:Math.max(X(17.5),X(25.4)),z0:Math.min(Z(4.2),Z(8.8)),z1:Math.max(Z(4.2),Z(8.8))},role:'Interno',lines:INMATE}); }
+  for (const [u,v] of [[10.65,4.85],[14.95,8.25]]){ const [x,z]=sp(u,v); npc({kind:'civ',x,z,sit:true,h:s>0?Math.PI:0,role:'Interno',lines:INMATE}); }
+  const [cx,cz]=sp(29.5+2.6*3+1.7,2.8); npc({kind:'civ',x:cx,z:cz,h:s>0?Math.PI:0,role:'Interno',lines:INMATE});
+  return md;
+}
+function sharedBooth(c,a,b){
+  B(-20,-12,0,0.9,c-2,c+2,C.steel,true); GL(-19.8,-12.2,0.9,2.6,c-1.9,c+1.9,false); B(-20.2,-11.8,2.6,3.0,c-2.2,c+2.2,C.steelDk);
+  hm(-20,-12,c-2,c+2,3);
+  sign('Cabina de control',`Módulos ${a} y ${b}`,-11.75,3.45,c,Math.PI/2,3.6,0.8,'inst');
+  npc({kind:'func',x:-15.5,z:c,h:Math.PI/2,role:`Cabina compartida · Módulos ${a} y ${b}`,lines:[`Esta cabina da servicio a la pareja de módulos ${a} y ${b}: los módulos se construyen por parejas, simétricos, con el control en el centro.`]});
+}
+
+/* ============ Polideportivo ============ */
+function buildPolideportivo(){
+  const x0=80,x1=150,z0=2,z1=40,h=9;
+  const b=bBegin({short:'Polideportivo',x0,x1,z0,z1,h,map:'Polideportivo',def:'Pista polideportiva'});
+  B(x0,x1,0,0.075,z0,z1,0xb98b5a);
+  wallX(z0,x0,x1,h,C.facade,[],{lin:1}); wallX(z1,x0,x1,h,C.facade,[],{lin:-1});
+  wallZ(x0,z0,z1,h,C.facade,[[19,22,2.8]],{lin:1}); wallZ(x1,z0,z1,h,C.facade,[],{lin:-1});
+  wallX(9,x0,x1,3.2,C.wallIn,[[86,87.4],[108,109.4],[130,131.4]],{t:0.2}); wallZ(100,z0,9,3.2,C.wallIn,[],{t:0.2}); wallZ(120,z0,9,3.2,C.wallIn,[],{t:0.2});
+  for (const [a,bb,c1,d1] of [[90,140,13,13.12],[90,140,34.88,35],[90,90.12,13,35],[139.88,140,13,35],[114.94,115.06,13,35]]) B(a,bb,0.075,0.085,c1,d1,C.courtLine);
+  for (const [px,d] of [[88.8,1],[141.2,-1]]){ B(px-0.15,px+0.15,0,3.05,23.85,24.15,C.steel,true); B(px+d*0.15,px+d*0.2,2.9,3.95,23.1,24.9,C.white); B(px+d*0.2,px+d*0.6,3.05,3.09,23.8,24.2,0xd05a2a); }
+  for (let i=0;i<4;i++){ B(88,142,0,0.45*(i+1),36.6+0.8*i,39.85,0x7d8b95,i===0); B(88,142,0.45*(i+1),0.45*(i+1)+0.05,36.6+0.8*i,36.95+0.8*i,i%2?0x2f5d9a:0xd05a2a); }
+  for (let x=82;x<98;x+=1.2) B(x,x+1.0,0,1.9,2.2,2.7,0x5c7da0,false); addCol(82,98,2.2,2.7); B(84,96,0,0.45,5,5.5,C.wood,true);
+  for (let x=102;x<118;x+=1.2) B(x,x+1.0,0,1.9,2.2,2.7,0x5c7da0,false); addCol(102,118,2.2,2.7); B(104,116,0,0.45,5,5.5,C.wood,true);
+  for (let x=123;x<148;x+=4){ B(x,x+1.6,0,1.2,3,4.2,C.black,true); B(x+0.2,x+1.4,1.2,1.6,3.3,3.9,C.steel); }
+  winsX(z1,1,x0,x1,[[6.2,8.2]],4,2.6); winsX(z0,-1,x0,x1,[[6.2,8.2]],4,2.6);
+  sign('Polideportivo','Zona extramodular',x0-0.18,4.4,20.5,-Math.PI/2,6,1.1,'inst');
+  B(x0,x0-2.2,2.9,3.1,18.5,22.5,C.steelDk);
+  roofBox(x0,x1,z0,z1,h,0x5f7482);
+  b.rooms.push({name:'Vestuario 1',x0:80,x1:100,z0:2,z1:9},{name:'Vestuario 2',x0:100,x1:120,z0:2,z1:9},{name:'Gimnasio',x0:120,x1:150,z0:2,z1:9});
+  bEnd();
+  B(84,150,0,0.06,50,90,0x6f9a4e); mapRect(84,150,50,90,'field');
+  for (const [a,bb,c1,d1] of [[86,148,52,52.15],[86,148,87.85,88],[86,86.15,52,88],[147.85,148,52,88],[116.93,117.07,52,88]]) B(a,bb,0.06,0.07,c1,d1,C.courtLine);
+  for (const [gx,d] of [[86,-1],[148,1]]){ B(gx-0.06,gx+0.06,0,2.44,66.3,66.42,C.white,true); B(gx-0.06,gx+0.06,0,2.44,73.58,73.7,C.white,true); B(gx-0.06,gx+0.06,2.32,2.44,66.3,73.7,C.white); FENCE.wall(gx+d*1.5,66.4,gx+d*1.5,73.6,0,2.4); }
+  zone({id:'campo',title:'Campo de deportes',sub:'Zona extramodular',x0:84,x1:150,z0:50,z1:90});
+  for (let i=0;i<6;i++) npc({kind:'civ',x:95+i*9,z:62+(i%3)*8,wander:{x0:88,x1:146,z0:54,z1:86},role:'Interno',lines:INMATE,run:true});
+  for (let i=0;i<3;i++) npc({kind:'civ',x:100+i*12,z:22,wander:{x0:92,x1:138,z0:14,z1:34},role:'Interno',lines:INMATE});
+  npc({kind:'func',x:84,z:26,h:Math.PI/2,role:'Monitor deportivo',lines:['El deporte forma parte de las actividades de tratamiento. Los módulos usan la pista por turnos, sin mezclarse.']});
+  return b;
+}
+
+/* ============ Departamento especial: patios ============ */
+function especialPatios(){
+  const zA=-74, zB=-56;
+  B(20,62,0,0.065,zA,zB,C.patio); mapRect(20,62,zA,zB,'patio');
+  wallX(zA,20,62,5,C.patioWall); for (const x of [20,34,48,62]) wallZ(x,zA,zB,5,C.patioWall);
+  hm(20,62,zA-0.3,zA+0.3,5); for (const x of [20,34,48,62]) hm(x-0.3,x+0.3,zA,zB,5);
+  for (let x=20;x<=62;x+=2) B(x,x+0.05,5,5.05,zA,zB,C.steelDk); for (let z=zA;z<=zB;z+=2) B(20,62,5,5.05,z,z+0.05,C.steelDk);
+  zone({id:'espPatio',title:'Departamento especial',sub:'Patios individuales',x0:20,x1:62,z0:zA,z1:zB});
+}
+
+/* ============ Exterior: Guardia Civil, coches, árboles, farolas ============ */
+function rng(seed){ return () => { seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function car(x,z,col,gc){
+  B(x-0.9,x+0.9,0.35,1.0,z-2.15,z+2.15,col,true); B(x-0.8,x+0.8,1.0,1.55,z-1.1,z+1.0,gc?0xf2f2ee:0x2d3a44); B(x-0.78,x+0.78,1.05,1.5,z-1.12,z+0.98,0x2d3a44);
+  for (const dz of [-1.35,1.35]) { B(x-0.95,x-0.75,0,0.6,z+dz-0.32,z+dz+0.32,C.black); B(x+0.75,x+0.95,0,0.6,z+dz-0.32,z+dz+0.32,C.black); }
+  if (gc){ B(x-0.92,x+0.92,0.6,0.78,z-2.16,z+2.16,0x2f6b3a); B(x-0.4,x+0.4,1.55,1.68,z-0.2,z+0.2,0x2f5d9a); }
+}
+function tree(x,z,s=1){ B(x-0.2,x+0.2,0,2*s,z-0.2,z+0.2,0x6b4f35,true); B(x-1.4*s,x+1.4*s,1.8*s,4.2*s,z-1.4*s,z+1.4*s,0x5d7f45); B(x-0.9*s,x+0.9*s,4.2*s,5.4*s,z-0.9*s,z+0.9*s,0x678a4c); }
+function lamp(x,z,dir){ B(x-0.08,x+0.08,0,6,z-0.08,z+0.08,0x59626a,true); B(x,x+dir*1.2,5.9,6.0,z-0.06,z+0.06,0x59626a); B(x+dir*0.8,x+dir*1.4,5.72,5.9,z-0.18,z+0.18,0xf3eed0); }
+function buildExterior(){
+  const R=rng(7);
+  const b=bBegin({short:'Guardia Civil',name:'Puesto de la Guardia Civil',x0:30,x1:58,z0:176,z1:192,h:4.2,map:'G. Civil',def:'Puesto'});
+  B(30,58,0,0.075,176,192,C.floorOff);
+  wallX(176,30,58,4.2,0xefe9dc,[[42,44.4,2.6]],{lin:1}); wallX(192,30,58,4.2,0xefe9dc,[],{lin:-1}); wallZ(30,176,192,4.2,0xefe9dc,[],{lin:1}); wallZ(58,176,192,4.2,0xefe9dc,[],{lin:-1});
+  winsX(176,-1,30,58,[[1.2,2.4]],3.2,1.4,[[42,44.4]]);
+  B(34,40,0.72,0.77,180,181,C.wood,true); B(48,54,0.72,0.77,180,181,C.wood,true);
+  sign('Guardia Civil','Vigilancia exterior',43.2,3.5,175.8,Math.PI,6.5,1.1,'gc');
+  roofBox(30,58,176,192,4.2,0x7b6f63);
+  b.rooms.push({name:'Puesto',x0:30,x1:58,z0:176,z1:192});
+  bEnd();
+  car(36,171,0xf2f2ee,true); car(40,171,0xf2f2ee,true);
+  B(34,40,0.3,2.6,195,197.4,0xf2f2ee,true); B(34,40,1.2,1.5,194.98,197.42,0x2f6b3a);
+  const cols=[0x9c2f2f,0x2f4f7a,0xd9d6cf,0x3a3f44,0x6b7d5c,0xb8b3a8,0x1f2a3a,0x8a6f4a];
+  for (let i=0;i<14;i++){ const x=-88+i*4.6+R()*0.4; if (R()<0.72) car(x,175.4,cols[(i*3)%cols.length]); if (R()<0.6) car(x,196.6,cols[(i*5+1)%cols.length]); }
+  for (let x=-260;x<260;x+=16+R()*10){ if (Math.abs(x)<22) continue; tree(x,222+R()*6,0.8+R()*0.5); if (x<-100||x>70) tree(x,200+R()*4,0.8+R()*0.4); }
+  for (let z=-260;z<150;z+=22+R()*12){ tree(-195-R()*30,z,0.9+R()*0.5); tree(195+R()*30,z,0.9+R()*0.5); }
+  for (let x=-240;x<240;x+=24+R()*12) tree(x,-235-R()*25,0.9+R()*0.5);
+  for (let z=-190;z<84;z+=24) { lamp(-9.6,z,1); if (!((z>-8&&z<0)||(z>-92&&z<-82)||(z>-146&&z<-136))) lamp(9.6,z,-1); }
+  for (let x=-150;x<150;x+=30) if (Math.abs(x)>16) lamp(x,100,1);
+  B(-40,-35.8,0.35,2.7,126,132.5,0xf2f2ee,true); B(-40.02,-35.78,1.3,1.6,126,132.5,0x2f6b3a); B(-39.8,-36,1.6,2.4,125.95,126,C.glassDk);
+  npc({kind:'gc',x:4,z:170,h:0,role:'Guardia Civil · Entrada',lines:['Buenos días. La vigilancia exterior del perímetro, las garitas y las conducciones de internos las hacemos nosotros, la Guardia Civil.','Dentro del recinto la seguridad es cosa de los funcionarios de Instituciones Penitenciarias.']});
+  npc({kind:'gc',x:44,z:173,h:0,role:'Guardia Civil',lines:['Desde este puesto se coordina la vigilancia del perímetro exterior y de la doble valla.']});
+}
+
+/* ============ Personas ============ */
+const INMATE=['Buenos días, funcionario.','¿Sabe si esta semana tengo comunicación?','Me he apuntado al taller de carpintería.','Voy al economato antes del recuento.','Estoy sacándome la ESO en la escuela del centro.','Hoy toca patio largo, menos mal.'];
+const SKIN=[0xf0c8a8,0xe0ac86,0xc68d64,0x9a6644,0x6e4630], HAIR=[0x2a1f1a,0x3b2a20,0x5a3e2b,0x1a1a1a,0x8a8a88,0xb08a58];
+const CLOTH=[0x3d5a80,0x7a2e2e,0x2f5d4a,0x444a52,0x8a8f96,0xd9d4c8,0x1f2a38,0x5c3f6e,0xa5663c,0x28303a,0xc9c1a6];
+const OUT={
+  func:{shirt:0x9dbfe3,pants:0x1f2b45,shoe:0x15181c,badge:0xe0c050,belt:0x14171b},
+  player:{shirt:0x9dbfe3,pants:0x1f2b45,shoe:0x15181c,badge:0xf5c400,belt:0x14171b,vest:0xf5c400},
+  gc:{shirt:0x5d6b40,pants:0x4a5733,shoe:0x15181c,cap:0x4a5733,badge:0xc9a227,belt:0x2a2a22},
+  sanit:{shirt:0xf3f4f2,pants:0xe6ecef,shoe:0xeeeeee,badge:0x7fb2c2},
+  staff:{shirt:0x6c8a7a,pants:0x3b3f46,shoe:0x2a2a2a}
+};
+const shadowGeo=new THREE.CircleGeometry(0.36,14), shadowMat=new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.22,depthWrite:false});
+let pseed=1; const PR=rng(99);
+function human(o){
+  const g=new THREE.Group(), bd=new Batch();
+  bd.box(-0.23,0.23,0.86,1.44,-0.13,0.13,o.shirt);
+  if (o.belt) bd.box(-0.235,0.235,0.84,0.93,-0.135,0.135,o.belt);
+  if (o.vest){ bd.box(-0.235,-0.12,1.0,1.44,0.13,0.14,o.vest); bd.box(0.12,0.235,1.0,1.44,0.13,0.14,o.vest); }
+  bd.box(-0.07,0.07,1.44,1.5,-0.07,0.07,o.skin);
+  bd.box(-0.14,0.14,1.5,1.78,-0.14,0.14,o.skin);
+  bd.box(-0.15,0.15,1.74,1.83,-0.15,0.12,o.hair); bd.box(-0.15,0.15,1.52,1.8,-0.15,-0.1,o.hair);
+  bd.box(-0.085,-0.04,1.63,1.67,0.14,0.15,0x1d1d1d); bd.box(0.04,0.085,1.63,1.67,0.14,0.15,0x1d1d1d);
+  if (o.cap){ bd.box(-0.16,0.16,1.78,1.9,-0.16,0.16,o.cap); bd.box(-0.15,0.15,1.78,1.81,0.14,0.28,o.cap); }
+  if (o.badge) bd.box(0.08,0.17,1.26,1.35,0.13,0.145,o.badge);
+  g.add(bd.mesh(charMat));
+  const lb=new Batch(); lb.box(-0.09,0.09,-0.86,0,-0.1,0.1,o.pants); lb.box(-0.1,0.1,-0.86,-0.76,-0.12,0.17,o.shoe); const lg=lb.geo();
+  const ab=new Batch(); ab.box(-0.07,0.07,-0.56,0.02,-0.08,0.08,o.sleeve||o.shirt); ab.box(-0.06,0.06,-0.7,-0.56,-0.06,0.06,o.skin); const ag=ab.geo();
+  const mk=(geo,x,y)=>{ const p=new THREE.Group(); p.position.set(x,y,0); p.add(new THREE.Mesh(geo,charMat)); g.add(p); return p; };
+  const legL=mk(lg,-0.11,0.86), legR=mk(lg,0.11,0.86), armL=mk(ag,-0.31,1.42), armR=mk(ag,0.31,1.42);
+  const sh=new THREE.Mesh(shadowGeo,shadowMat); sh.rotation.x=-Math.PI/2; sh.position.y=0.09; g.add(sh);
+  scene.add(g);
+  return {g,legL,legR,armL,armR,phase:0};
+}
+function outfit(kind){
+  const base=OUT[kind]||null, skin=SKIN[(PR()*SKIN.length)|0], hair=HAIR[(PR()*HAIR.length)|0];
+  if (base) return Object.assign({skin,hair},base);
+  const shirt=CLOTH[(PR()*CLOTH.length)|0]; let pants=CLOTH[(PR()*CLOTH.length)|0]; if (pants===shirt) pants=0x2b3440;
+  return {skin,hair,shirt,pants,shoe:PR()<0.5?0xeeeeee:0x2a2a2a};
+}
+function npc(o){
+  const h=human(outfit(o.kind));
+  const n=Object.assign({x:o.x,z:o.z,y:o.y||0,t:{x:o.x,z:o.z},wait:PR()*3,speed:o.run?2.6+PR()*1.2:1.0+PR()*0.5,li:0},o);
+  n.hum=h; n.hd=n.home=o.h||0;
+  if (o.sit){ h.legL.rotation.x=h.legR.rotation.x=-Math.PI/2; h.armL.rotation.x=h.armR.rotation.x=-0.5; n.y=-0.4; }
+  h.g.position.set(n.x,n.y+0.075,n.z); h.g.rotation.y=n.hd;
+  npcs.push(n); return n;
+}
+
+/* ============ Construcción del mundo ============ */
+let ACC,OFI,COM,ING,RAS,CTL,ENF,SOC,POL,ESP,SER,TAL;
+function buildWorld(){
+  buildGround();
+  buildPerimeter();
+  buildExterior();
+  ACC=buildAccess();
+  RAS=buildRastrillo();
+  OFI=corridorBuilding({short:'Oficinas',sub:'Dirección y Administración',x0:-135,x1:-55,z0:104,z1:140,h:7.2,door:'east',hall:12,map:'Oficinas',
+    a:[{name:'Dirección',w:16,f:'director'},{name:'Sala de Juntas',w:14,f:'meeting'},{name:'Subdirección de Régimen',label:'Subdir. Régimen',w:12,f:'office'},{name:'Subdirección de Seguridad',label:'Subdir. Seguridad',w:12,f:'office'},{name:'Gerencia',f:'office2'}],
+    b:[{name:'Subdirección de Tratamiento',label:'Subdir. Tratamiento',w:14,f:'office'},{name:'Oficina de Régimen',w:14,f:'openoffice'},{name:'Oficina de Gestión',w:14,f:'openoffice'},{name:'Equipos Técnicos',w:12,f:'office2'},{name:'Oficina de Personal',f:'office2'}]});
+  COM=corridorBuilding({short:'Comunicaciones',sub:'Locutorios y vis a vis',x0:55,x1:135,z0:104,z1:140,h:5,door:'west',hall:14,map:'Comunicaciones',hallName:'Sala de espera',
+    a:[{name:'Locutorios',w:30,f:'locutorios'},{name:'Locutorio de abogados',label:'Abogados',w:10,f:'lawyer'},{name:'Sala de reconocimiento',label:'Reconocimiento',w:12,f:'lineup'},{name:'Locutorio de autoridades',label:'Autoridades',f:'lawyer'}],
+    b:[{name:'Vis a vis familiar 1',label:'V. a V. familiar 1',w:9,f:'vavfam'},{name:'Vis a vis familiar 2',label:'V. a V. familiar 2',w:9,f:'vavfam'},{name:'Vis a vis íntimo 1',label:'V. a V. íntimo 1',w:7,f:'vavint'},{name:'Vis a vis íntimo 2',label:'V. a V. íntimo 2',w:7,f:'vavint'},{name:'Vis a vis íntimo 3',label:'V. a V. íntimo 3',w:7,f:'vavint'},{name:'Vis a vis de convivencia',label:'V. a V. convivencia',f:'vavconv'}]});
+  ING=corridorBuilding({short:'Ingresos',sub:'Ingresos y salidas',x0:-48,x1:-18,z0:104,z1:124,h:4.5,door:'east',hall:7,cw:2.6,map:'Ingresos',
+    a:[{name:'Identificación y reseña',label:'Identificación',w:9,f:'ident'},{name:'Cacheo y registro',label:'Cacheo',f:'search'}],
+    b:[{name:'Consulta médica de ingresos',label:'Consulta médica',w:8,f:'medical'},{name:'Celdas de ingreso',w:8,f:'holding'},{name:'Depósito de pertenencias',label:'Depósito',f:'storage'}]});
+  CTL=corridorBuilding({short:'Centro de Control',x0:16,x1:38,z0:99,z1:114,h:4.2,door:'west',hall:6,cw:2.4,map:'Control',hallF:'none',
+    a:[{name:'Sala de control',f:'control'}],b:[{name:'Sala técnica',f:'servers'}]});
+  // Módulos por parejas, simétricos, con cabina compartida
+  const centers=[45,-45,-135];
+  centers.forEach((c,i)=>{ const a=2*i+1, bb=2*i+2; buildModule(a,c,true); buildModule(bb,c,false); sharedBooth(c,a,bb); });
+  ENF=corridorBuilding({short:'Enfermería',sub:'Zona extramodular',x0:12,x1:70,z0:48,z1:82,h:7,door:'west',hall:10,map:'Enfermería',zone:'extra',
+    a:[{name:'Consulta médica 1',label:'Consulta 1',w:8,f:'medical'},{name:'Consulta médica 2',label:'Consulta 2',w:8,f:'medical'},{name:'Sala de curas',w:8,f:'medical2'},{name:'Odontología',w:8,f:'dentist'},{name:'Radiología',f:'xray'}],
+    b:[{name:'Farmacia',w:10,f:'pharmacy'},{name:'Control de enfermería',label:'Control enfermería',w:8,f:'office'},{name:'Hospitalización',f:'beds'}]});
+  SOC=corridorBuilding({short:'Sociocultural',sub:'Escuela y biblioteca',x0:12,x1:70,z0:2,z1:40,h:7,door:'west',hall:10,map:'Sociocultural',zone:'extra',
+    a:[{name:'Aula 1',w:12,f:'classroom'},{name:'Aula 2',w:12,f:'classroom'},{name:'Aula de informática',label:'Informática',f:'computers'}],
+    b:[{name:'Biblioteca',w:18,f:'library'},{name:'Taller ocupacional',w:12,f:'artroom'},{name:'Salón de actos',f:'auditorium'}]});
+  POL=buildPolideportivo();
+  const cells=p=>Array.from({length:14},(_,i)=>({name:`Celda ${p}-${i+1}`,label:`${p}-${i+1}`,w:3.5,door:0.9,doorAt:1.3,f:'cellS'}));
+  ESP=corridorBuilding({short:'Departamento especial',sub:'Régimen cerrado',x0:12,x1:70,z0:-56,z1:-40,h:4.2,door:'west',hall:8,cw:3,map:'Dpto. especial',hallName:'Control del departamento',
+    a:cells('A'),b:cells('B')});
+  especialPatios();
+  gate(ESP.x0+8,-48,3,'z');
+  SER=corridorBuilding({short:'Servicios',sub:'Cocina y lavandería',x0:12,x1:110,z0:-135,z1:-92,h:7,door:'west',hall:10,cw:4,map:'Servicios',kind:'svc',
+    a:[{name:'Cocina central',w:30,f:'kitchen'},{name:'Cámaras frigoríficas',label:'Cámaras',w:14,f:'cold'},{name:'Panadería',w:16,f:'bakery'},{name:'Almacén general',f:'storage'}],
+    b:[{name:'Lavandería',w:26,f:'laundry'},{name:'Economato central',w:16,f:'storage'},{name:'Ropería',w:14,f:'storage'},{name:'Mantenimiento',f:'workshop'}]});
+  TAL=corridorBuilding({short:'Talleres productivos',sub:'Trabajo penitenciario',x0:12,x1:110,z0:-192,z1:-148,h:8,door:'west',hall:10,cw:4,map:'Talleres',kind:'svc',
+    a:[{name:'Taller de carpintería',label:'Carpintería',w:30,f:'wood'},{name:'Taller de manipulados',label:'Manipulados',f:'pack'}],
+    b:[{name:'Taller de confección',label:'Confección',w:30,f:'sew'},{name:'Formación profesional',w:26,f:'fp'},{name:'Almacén de talleres',label:'Almacén',f:'storage'}]});
+  // Controles del vial
+  for (const z of [-4,-86,-141]){ B(9,12,0,0.9,z-2,z+2,C.steel,true); GL(9.1,11.9,0.9,2.5,z-1.9,z+1.9,false); B(8.8,12.2,2.5,2.8,z-2.2,z+2.2,C.steelDk); hm(9,12,z-2,z+2,2.8); }
+  npc({kind:'func',x:10.5,z:-4,h:-Math.PI/2,role:'Funcionario · Control de vial',lines:['Los internos no circulan solos por el vial: los movimientos entre módulos y edificios se hacen controlados, en grupo y a horas fijas.']});
+  sign('Módulos 7 a 14',"Ampliación · no representados",-10,3,-197.5,0,5,1,'inst'); B(-10.1,-9.9,0,2.5,-197.6,-197.4,C.steelDk,true);
+  sign('Zona residencial','Módulos 1 a 6',-9.7,4.6,83,0,4.6,1,'inst'); B(-9.8,-9.6,0,4.1,82.9,83.1,C.steelDk,true);
+  sign('Zona extramodular','Enfermería · Sociocultural · Deportes',9.7,4.6,83,0,5.4,1,'inst'); B(9.6,9.8,0,4.1,82.9,83.1,C.steelDk,true);
+  // Zonas exteriores con nombre
+  zone({id:'vial',title:'Vial central',sub:'Eje de comunicación interior',x0:-12,x1:12,z0:-198,z1:86});
+  zone({id:'acceso',title:'Zona de acceso',sub:'Plaza exterior',x0:-160,x1:160,z0:95,z1:150});
+  zone({id:'resid',title:'Zona residencial',sub:'Viales entre módulos',x0:-160,x1:-12,z0:-200,z1:95});
+  zone({id:'extra',title:'Zona extramodular',sub:'Viales y servicios comunes',x0:12,x1:160,z0:-200,z1:95});
+  zones.sort((a,b)=>(a.late?1:0)-(b.late?1:0));
+  // Personal en edificios
+  const hc=b=>({x:(b.hall.x0+b.hall.x1)/2,z:(b.hall.z0+b.hall.z1)/2});
+  const rc=(b,name)=>{ const r=b.rooms.find(q=>q.name===name); return {x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,r}; };
+  let p=hc(OFI); npc({kind:'func',x:p.x-1.2,z:p.z+4.5,h:Math.PI/2,role:'Recepción · Oficinas',lines:['La Dirección está al fondo, en el lado norte del pasillo, junto a la Sala de Juntas.','Aquí trabajan el Director, los subdirectores, el Gerente y las oficinas de Régimen, Gestión y Personal.']});
+  p=rc(OFI,'Dirección'); npc({kind:'staff',x:p.x,z:p.r.far+1.2,h:0,role:'Director del centro',lines:['El Director dirige y coordina el centro y preside sus órganos colegiados: Consejo de Dirección, Junta de Tratamiento y Comisión Disciplinaria.']});
+  p=rc(OFI,'Oficina de Gestión'); npc({kind:'staff',x:p.x-1,z:p.z+1,h:Math.PI,role:'Oficina de Gestión',lines:['En Gestión llevamos los expedientes de los internos: situación procesal y penal, liquidaciones de condena y libertades.']});
+  p=hc(COM); npc({kind:'func',x:p.x+1.4,z:p.z+4.5,h:-Math.PI/2,role:'Funcionaria · Comunicaciones',lines:['Los locutorios tienen cristal e interfono. Los vis a vis se hacen en las salas del otro lado del pasillo.','Las familias esperan aquí hasta que se las llama por turno.']});
+  p=hc(ING); npc({kind:'func',x:p.x-2.3,z:p.z+3.5,h:Math.PI/2,role:'Funcionario · Ingresos',lines:['Al ingresar se comprueba la orden, se identifica al interno, se le hace la reseña, se le cachea y pasa el reconocimiento médico. Después se le asigna módulo.']});
+  p=rc(CTL,'Sala de control'); npc({kind:'func',x:p.x,z:p.r.far+2.6,h:Math.PI,role:'Centro de Control',lines:['Desde aquí vemos las cámaras de todo el centro, gestionamos las alarmas, la apertura de puertas y las comunicaciones por radio.']});
+  p=rc(ENF,'Farmacia'); npc({kind:'sanit',x:p.x,z:p.z-3,h:Math.PI,role:'Enfermero',lines:['Pasamos consulta por la mañana y la farmacia prepara la medicación de cada módulo. La atención especializada se hace en hospitales de la red pública.']});
+  p=rc(ENF,'Consulta médica 1'); npc({kind:'sanit',x:p.x+1,z:p.r.far+0.75,h:0,role:'Médica',lines:['Todo interno pasa reconocimiento médico al ingresar en el centro.']});
+  p=rc(SOC,'Aula 1'); npc({kind:'staff',x:p.x,z:p.r.far+1.0,h:0,role:'Maestra',lines:['La LOGP obliga a que haya una escuela en cada establecimiento. Damos alfabetización, secundaria y apoyo para estudios a distancia.']});
+  for (let i=0;i<3;i++){ const r=rc(SOC,'Aula 1'); npc({kind:'civ',x:r.r.x0+1.8+i*2,z:r.r.near-1.9,sit:true,h:Math.PI,role:'Interno · Alumno',lines:INMATE}); }
+  p=rc(SOC,'Biblioteca'); npc({kind:'civ',x:p.x+3,z:p.z,wander:{x0:p.r.x0+10,x1:p.r.x1-1,z0:p.r.z0+2,z1:p.r.z1-2},role:'Interno',lines:INMATE});
+  p=hc(ESP); npc({kind:'func',x:p.x,z:p.z-4,h:Math.PI/2,role:'Funcionario · Departamento especial',lines:['Aquí se cumple el régimen cerrado en su modalidad más restrictiva. Salidas al patio limitadas, individuales o en grupos muy reducidos, y siempre con medidas de seguridad.']});
+  p=rc(SER,'Cocina central'); for (let i=0;i<3;i++) npc({kind:'civ',x:p.r.x0+6+i*6,z:p.z,wander:{x0:p.r.x0+2,x1:p.r.x1-2,z0:p.r.z1-3.5,z1:p.r.z1-1.2},role:'Interno · Cocina',lines:['Salen de aquí unos mil menús al día, en carros térmicos para cada módulo.','Trabajo en cocina: es un destino que ayuda en mi evolución.']});
+  p=rc(SER,'Lavandería'); npc({kind:'civ',x:p.x,z:p.z,wander:{x0:p.r.x0+1,x1:p.r.x1-1,z0:p.r.z0+2,z1:p.r.z0+5},role:'Interno · Lavandería',lines:INMATE});
+  p=rc(TAL,'Taller de carpintería'); npc({kind:'staff',x:p.r.x0+3,z:p.r.far+2,h:0,role:'Maestro de taller',lines:['Los internos que trabajan en los talleres productivos tienen una relación laboral de carácter especial, gestionada por la entidad Trabajo Penitenciario y Formación para el Empleo.']});
+  for (let i=0;i<4;i++) npc({kind:'civ',x:p.r.x0+4+i*6,z:p.z,wander:{x0:p.r.x0+1,x1:p.r.x1-1,z0:p.r.z0+1.5,z1:p.r.z1-2},role:'Interno · Taller',lines:INMATE});
+  p=rc(TAL,'Taller de confección'); for (let i=0;i<3;i++) npc({kind:'civ',x:p.r.x0+1.9+i*4.4,z:p.r.near+1.6,sit:true,h:0,role:'Interna · Confección',lines:INMATE});
+  npc({kind:'func',x:-4,z:40,wander:{x0:-6,x1:6,z0:-190,z1:84},role:'Funcionario de vial',lines:['Hago ronda por el vial central. A la izquierda la zona residencial; a la derecha, la extramodular y los servicios.']});
+  npc({kind:'func',x:4,z:-100,wander:{x0:-6,x1:6,z0:-190,z1:84},role:'Funcionaria de vial',lines:['Si buscas los talleres, están al final del vial, a la derecha.']});
+}
+
+/* ============ Fichas didácticas ============ */
+const ROUTE=['acceso','oficinas','comunicaciones','ingresos','rastrillo','control','modulo','galeria','patio','enfermeria','sociocultural','polideportivo','especial','servicios','talleres'];
+function definePOIs(){
+  const P=o=>pois.push(o);
+  const m1=mods[1], d=b=>b.door, ent=(b,off=3)=>({x:d(b).x+d(b).out*off,z:d(b).z,h:d(b).out>0?-Math.PI/2:Math.PI/2});
+  P({id:'celda',match:l=>l.room&&l.room.startsWith('Celda')&&l.b&&l.b.module,zone:'Módulo residencial',title:'La celda',
+     text:'Unos 10 m² con cama (a menudo litera), inodoro y lavabo de acero, mesa, estantería y ventana con barrotes. En el centro tipo las celdas se reparten en dos plantas a ambos lados de la galería. La regla general es la celda individual, con excepciones por falta de espacio u otras causas legales.',
+     refs:['LOGP art. 19','RP art. 13: principio celular']});
+  P({id:'office',match:l=>l.room==='Office de funcionarios',zone:'Módulo residencial',title:'Office de funcionarios',
+     text:'Puesto de los funcionarios de vigilancia del módulo, acristalado para ver el vestíbulo. Desde aquí se hacen los recuentos, se abren y cierran las celdas, se controlan los movimientos de internos y se recogen sus instancias.',refs:['Vigilancia interior','Recuentos']});
+  P({id:'comedor',match:l=>l.room==='Comedor'&&l.b&&l.b.module,zone:'Módulo residencial',title:'Comedor del módulo',
+     text:'Cada módulo come en su propio comedor, sin mezclarse con otros. La comida llega en carros térmicos desde la cocina central y se sirve en el mostrador del office de comidas.',refs:['LOGP art. 21: alimentación']});
+  P({id:'sala',match:l=>l.room==='Sala de día'&&l.b&&l.b.module,zone:'Módulo residencial',title:'Sala de día',
+     text:'Espacio de convivencia del módulo: televisión, mesas de juego, cabinas de teléfono y la ventanilla del economato, donde los internos compran con su peculio.',refs:['RP art. 47: comunicaciones telefónicas']});
+  P({id:'galeria',route:1,match:l=>l.b&&l.b.module&&l.room&&l.room.startsWith('Galería'),zone:'Módulo residencial',title:'Galería de celdas',
+     text:'Pasillo de doble altura: 18 celdas a cada lado en planta baja (36) y otras 36 en la planta primera, a la que se sube por la escalera y se recorre por las pasarelas. En total, 72 celdas por módulo. Una reja separa la galería de las zonas comunes.',
+     refs:['72 celdas por módulo','LOGP art. 19'],target:{x:m1.X(27),z:m1.Z(7)},spawn:{x:m1.X(24),z:m1.Z(7),h:-Math.PI/2}});
+  P({id:'patio',route:1,match:l=>l.zone&&l.zone.patio,zone:'Módulo residencial',title:'Patio del módulo',
+     text:'Cada módulo tiene su propio patio cerrado por muros, con pista deportiva, zona cubierta y bancos. Así los internos de distintos módulos no coinciden y se mantiene la separación interior.',
+     refs:['LOGP art. 16: separación'],target:{x:m1.X(21.25),z:m1.Z(16)},spawn:{x:m1.X(21.25),z:m1.Z(18),h:Math.PI}});
+  P({id:'modulo',route:1,match:l=>l.b&&l.b.module,zone:'Zona residencial',title:'Módulo residencial',
+     text:'Edificio autosuficiente: office de funcionarios, comedor, sala de día, economato, duchas, patio y 72 celdas en dos plantas. En el centro tipo los módulos se levantan por parejas, simétricos y con una cabina de control compartida. Permiten clasificar y separar a los internos por perfiles.',
+     refs:['LOGP art. 16','LOGP art. 12: máx. 350 internos por unidad'],target:{x:-12,z:m1.Z(9.75)},spawn:{x:-9,z:m1.Z(9.75),h:-Math.PI/2}});
+  P({id:'direccion',match:l=>l.b===OFI&&l.room==='Dirección',zone:'Oficinas',title:'Despacho del Director',
+     text:'El Director dirige, coordina y supervisa el centro, ostenta su representación y preside los órganos colegiados. Junto a él trabajan los subdirectores (Régimen, Seguridad, Tratamiento) y el Gerente.',refs:['Órganos unipersonales','Consejo de Dirección']});
+  P({id:'juntas',match:l=>l.b===OFI&&l.room==='Sala de Juntas',zone:'Oficinas',title:'Sala de Juntas',
+     text:'Aquí se reúnen los órganos colegiados del centro: Consejo de Dirección, Junta de Tratamiento, Comisión Disciplinaria y Junta Económico-Administrativa.',refs:['Órganos colegiados']});
+  P({id:'oficinas',route:1,match:l=>l.b===OFI,zone:'Zona de acceso',title:'Oficinas: Dirección y Administración',
+     text:'Edificio de gestión, fuera del recinto de internos. Alberga la Dirección, las subdirecciones, la Gerencia y las oficinas de Régimen, Gestión (expedientes y condenas) y Personal, además de los Equipos Técnicos de tratamiento.',
+     refs:['RP 1996 · organización de los centros'],target:{x:-55,z:122},spawn:ent(OFI)});
+  P({id:'locutorios',match:l=>l.b===COM&&l.room==='Locutorios',zone:'Comunicaciones',title:'Locutorios',
+     text:'Comunicaciones orales con familiares y amigos, separados por un cristal y con interfono. Como mínimo, dos a la semana de al menos 20 minutos.',refs:['LOGP art. 51','RP art. 42']});
+  P({id:'vis',match:l=>l.b===COM&&l.room&&l.room.startsWith('Vis a vis'),zone:'Comunicaciones',title:'Vis a vis',
+     text:'Salas para comunicaciones sin separación. Íntimas y familiares: al menos una al mes, de una a tres horas. De convivencia, con cónyuge o pareja e hijos menores de diez años: hasta seis horas.',refs:['LOGP art. 53','RP art. 45']});
+  P({id:'comunicaciones',route:1,match:l=>l.b===COM,zone:'Zona de acceso',title:'Edificio de Comunicaciones',
+     text:'Donde los internos se relacionan con el exterior: sala de espera para familias, locutorios, locutorios de abogados y autoridades, sala de reconocimiento y salas de vis a vis familiares, íntimos y de convivencia.',
+     refs:['LOGP arts. 51-53','RP arts. 41-49'],target:{x:55,z:122},spawn:ent(COM)});
+  P({id:'ingresos',route:1,match:l=>l.b===ING,zone:'Zona de acceso',title:'Ingresos y salidas',
+     text:'Por aquí entra y sale cada interno. Se comprueba el mandamiento u orden de ingreso, se le identifica y reseña (fotografía y huellas), se cachean él y sus pertenencias, que quedan en depósito, y pasa el reconocimiento médico. Después se le asigna módulo.',
+     refs:['LOGP art. 15: expediente','RP art. 15','RP art. 214: reconocimiento médico'],target:{x:-18,z:114},spawn:ent(ING)});
+  P({id:'acceso',route:1,match:l=>l.b===ACC,zone:'Zona de acceso',title:'Control de accesos',
+     text:'Primer filtro del centro. Se identifica a todas las personas que entran (personal, familias, abogados, voluntariado), se registran sus datos y pasan por el arco detector y el escáner. Los objetos no autorizados se quedan en las taquillas.',
+     refs:['Seguridad interior'],target:{x:0,z:166},spawn:{x:0,z:170,h:Math.PI}});
+  P({id:'rastrillo',route:1,match:l=>l.b===RAS,zone:'Zona de acceso',title:'Rastrillo',
+     text:'Esclusa de seguridad con dos rejas que nunca se abren a la vez. Separa la zona de acceso del recinto interior y controla cada movimiento de personas y objetos. Pruébalo: acércate a una reja y espera a que la otra se cierre.',
+     refs:['Doble puerta'],target:{x:0,z:104},spawn:{x:0,z:108,h:Math.PI}});
+  P({id:'control',route:1,match:l=>l.b===CTL,zone:'Zona de acceso',title:'Centro de Control',
+     text:'El cerebro de la seguridad electrónica: videovigilancia de todo el centro, alarmas, apertura remota de puertas, intercomunicadores y comunicaciones por radio con los servicios.',
+     refs:['Seguridad interior'],target:{x:16,z:106.5},spawn:ent(CTL)});
+  P({id:'enfermeria',route:1,match:l=>l.b===ENF,zone:'Zona extramodular',title:'Enfermería',
+     text:'Centro sanitario del establecimiento: consultas de medicina general, sala de curas, odontología, radiología, farmacia y habitaciones de hospitalización. La atención especializada se presta en hospitales de la red pública.',
+     refs:['LOGP art. 36','RP arts. 207-220'],target:{x:12,z:65},spawn:ent(ENF)});
+  P({id:'sociocultural',route:1,match:l=>l.b===SOC,zone:'Zona extramodular',title:'Centro sociocultural',
+     text:'Escuela, biblioteca, aula de informática, taller ocupacional y salón de actos. Es zona extramodular: de uso común para internos de distintos módulos, que acuden por turnos sin mezclarse.',
+     refs:['LOGP art. 55: escuela','LOGP art. 57: biblioteca'],target:{x:12,z:21},spawn:ent(SOC)});
+  P({id:'polideportivo',route:1,match:l=>l.b===POL,zone:'Zona extramodular',title:'Polideportivo',
+     text:'Pista cubierta, gradas, gimnasio y vestuarios, junto al campo de deportes exterior. La actividad física forma parte del tratamiento y de la vida diaria del centro.',
+     refs:['LOGP art. 13: instalaciones'],target:{x:80,z:20.5},spawn:{x:76,z:20.5,h:Math.PI/2}});
+  P({id:'especial',route:1,match:l=>l.b===ESP||(l.zone&&l.zone.id==='espPatio'),zone:'Zona extramodular',title:'Departamento especial',
+     text:'Régimen cerrado en su modalidad más restrictiva, para internos de primer grado extremadamente peligrosos o manifiestamente inadaptados. Celdas individuales, patios pequeños cubiertos con malla y actividades muy limitadas y programadas.',
+     refs:['LOGP art. 10','RP art. 91','RP art. 93'],target:{x:12,z:-48},spawn:ent(ESP)});
+  P({id:'servicios',route:1,match:l=>l.b===SER,zone:'Zona de servicios',title:'Cocina, lavandería y almacenes',
+     text:'Zona de servicios del centro: cocina central, panadería, cámaras frigoríficas, lavandería, ropería, economato central, almacén y mantenimiento. Muchos internos trabajan aquí.',
+     refs:['LOGP art. 21'],target:{x:12,z:-113.5},spawn:ent(SER)});
+  P({id:'talleres',route:1,match:l=>l.b===TAL,zone:'Zona de servicios',title:'Talleres productivos',
+     text:'Trabajo remunerado para internos: carpintería, manipulados, confección y formación profesional. Lo gestiona la entidad estatal Trabajo Penitenciario y Formación para el Empleo, con una relación laboral de carácter especial.',
+     refs:['LOGP arts. 26-35','RD 782/2001'],target:{x:12,z:-170},spawn:ent(TAL)});
+  P({id:'vial',match:l=>l.zone&&l.zone.id==='vial',zone:'Recinto interior',title:'Vial central',
+     text:'Eje que une todos los edificios del recinto. A la izquierda (oeste), la zona residencial con los módulos; a la derecha, la zona extramodular (enfermería, sociocultural, deportes) y, al fondo, la de servicios. Los movimientos de internos por el vial son controlados.',refs:['Tres zonas del centro tipo']});
+  P({id:'gc',match:l=>(l.zone&&l.zone.id==='gcarea')||(l.b&&l.b.short==='Guardia Civil'),zone:'Exterior',title:'Vigilancia exterior',
+     text:'La seguridad exterior (perímetro, garitas, camino de ronda y conducciones de internos) corresponde a las Fuerzas y Cuerpos de Seguridad del Estado, normalmente la Guardia Civil. La seguridad interior es de los funcionarios de Instituciones Penitenciarias.',refs:['Seguridad exterior e interior']});
+  P({id:'exterior',match:l=>l.zone&&l.zone.id==='parking',zone:'Exterior',title:'Centro Penitenciario Tipo',
+     text:'Modelo de prisión que se construye en España desde los años noventa (Plan de Amortización y Creación de Centros Penitenciarios de 1991). No es un edificio único: son edificios independientes unidos por viales, dentro de una doble valla con garitas. Tiene tres zonas: residencial, extramodular y de servicios.',
+     refs:['LOGP art. 7: tipos de establecimientos','LOGP art. 12']});
+  for (const p of pois){ p.seen=false; p.visited=false; }
+}
+
+/* ============ Rejilla de colisiones ============ */
+const CG=8, grid=new Map(); let stamp=1;
+function buildGrid(){
+  for (const c of colliders){
+    const i0=Math.floor((c.x0+400)/CG), i1=Math.floor((c.x1+400)/CG), j0=Math.floor((c.z0+400)/CG), j1=Math.floor((c.z1+400)/CG);
+    for (let i=i0;i<=i1;i++) for (let j=j0;j<=j1;j++){ const k=i*1000+j; let a=grid.get(k); if(!a){a=[];grid.set(k,a);} a.push(c); }
+  }
+}
+const qbuf=[];
+function query(x,z){
+  qbuf.length=0; stamp++;
+  const i=Math.floor((x+400)/CG), j=Math.floor((z+400)/CG);
+  for (let a=i-1;a<=i+1;a++) for (let b=j-1;b<=j+1;b++){ const l=grid.get(a*1000+b); if(!l) continue; for (const c of l){ if(c.s!==stamp){c.s=stamp;qbuf.push(c);} } }
+  return qbuf;
+}
+function resolve(p,r){
+  for (let it=0;it<3;it++){
+    let moved=false;
+    for (const c of query(p.x,p.z)){
+      if (c.gate && c.gate.open>0.75) continue;
+      const qx=clamp(p.x,c.x0,c.x1), qz=clamp(p.z,c.z0,c.z1), dx=p.x-qx, dz=p.z-qz, d2=dx*dx+dz*dz;
+      if (d2<r*r){
+        if (d2>1e-9){ const dd=Math.sqrt(d2); p.x+=dx/dd*(r-dd); p.z+=dz/dd*(r-dd); }
+        else { const l=p.x-c.x0, rr=c.x1-p.x, t=p.z-c.z0, bb=c.z1-p.z, m=Math.min(l,rr,t,bb);
+          if (m===l) p.x=c.x0-r; else if (m===rr) p.x=c.x1+r; else if (m===t) p.z=c.z0-r; else p.z=c.z1+r; }
+        moved=true;
+      }
+    }
+    if (!moved) break;
+  }
+}
+
+/* ============ Minimapa y plano ============ */
+const MAPCOL={out:'#1a3037',road:'#34525c',paving:'#2d4c56',ronda:'#27434c',in:'#223f48',vial:'#46707a',patio:'#3a6a74',field:'#2c5c46',bld:'#d9e2dc',mod:'#e8dcb8',svc:'#9fb0aa',tower:'#8fb0a6'};
+let mapBase=null;
+function drawMapBase(){
+  const c=document.createElement('canvas'); c.width=c.height=1200; const x=c.getContext('2d');
+  x.scale(2,2); x.translate(300,300);
+  for (const r of mapRects){ x.fillStyle=MAPCOL[r.t]||'#444'; x.fillRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0); if (r.t==='bld'||r.t==='mod'||r.t==='svc'){ x.strokeStyle='rgba(15,34,41,.6)'; x.lineWidth=0.6; x.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0);} }
+  x.strokeStyle='#8fb0a6'; x.lineWidth=0.9; x.setLineDash([2,1.5]);
+  for (const l of mapLines){ x.beginPath(); x.moveTo(l[0],l[1]); x.lineTo(l[2],l[3]); x.stroke(); }
+  x.setLineDash([]);
+  mapBase=c;
+}
+const mini=$('#mini'), mctx=mini.getContext('2d');
+function drawMini(){
+  const W=mini.width, R=W/2, S=W/164*1.25;
+  mctx.save(); mctx.clearRect(0,0,W,W); mctx.beginPath(); mctx.arc(R,R,R,0,Math.PI*2); mctx.clip();
+  mctx.fillStyle=MAPCOL.out; mctx.fillRect(0,0,W,W);
+  mctx.translate(R,R); mctx.rotate(camYaw); mctx.scale(S,S); mctx.translate(-player.x,-player.z);
+  mctx.drawImage(mapBase,GX0,GZ0,GW,GH);
+  mctx.restore();
+  const tgt=currentTarget();
+  if (tgt){
+    const dx=tgt.x-player.x, dz=tgt.z-player.z, cs=Math.cos(camYaw), sn=Math.sin(camYaw);
+    let sx=(dx*cs-dz*sn)*S, sy=(dx*sn+dz*cs)*S; const L=Math.hypot(sx,sy), lim=R-12;
+    if (L>lim){ sx*=lim/L; sy*=lim/L; }
+    mctx.save(); mctx.translate(R+sx,R+sy); mctx.rotate(Math.PI/4); mctx.fillStyle='#f5c400'; mctx.strokeStyle='#0f2229'; mctx.lineWidth=3; mctx.fillRect(-8,-8,16,16); mctx.strokeRect(-8,-8,16,16); mctx.restore();
+  }
+  mctx.save(); mctx.translate(R,R); mctx.rotate(Math.PI-player.hd+camYaw);
+  mctx.beginPath(); mctx.moveTo(0,-15); mctx.lineTo(10,11); mctx.lineTo(0,5); mctx.lineTo(-10,11); mctx.closePath();
+  mctx.fillStyle='#ffffff'; mctx.fill(); mctx.lineWidth=3; mctx.strokeStyle='#0f2229'; mctx.stroke(); mctx.restore();
+  const nx=R+Math.sin(camYaw)*(R-16), ny=R-Math.cos(camYaw)*(R-16);
+  mctx.fillStyle='#0f2229'; mctx.beginPath(); mctx.arc(nx,ny,14,0,Math.PI*2); mctx.fill();
+  mctx.fillStyle='#f5c400'; mctx.font='700 18px "Barlow Condensed",sans-serif'; mctx.textAlign='center'; mctx.textBaseline='middle'; mctx.fillText('N',nx,ny+1);
+}
+const big=$('#bigmap'); let bigView=null;
+function drawBig(){
+  const r=big.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2);
+  big.width=Math.max(1,Math.round(r.width*dpr)); big.height=Math.max(1,Math.round(r.height*dpr));
+  const x=big.getContext('2d'); const VX0=-180,VX1=180,VZ0=-222,VZ1=212;
+  const S=Math.min(big.width/(VX1-VX0),big.height/(VZ1-VZ0)), ox=(big.width-(VX1-VX0)*S)/2-VX0*S, oy=(big.height-(VZ1-VZ0)*S)/2-VZ0*S;
+  bigView={S,ox,oy,dpr};
+  x.fillStyle='#0a181d'; x.fillRect(0,0,big.width,big.height);
+  x.save(); x.translate(ox,oy); x.scale(S,S); x.drawImage(mapBase,GX0,GZ0,GW,GH); x.restore();
+  const fs=clamp(S*3.2,9*dpr,15*dpr);
+  x.textAlign='center'; x.textBaseline='middle';
+  for (const l of mapLabels){ x.font=`600 ${fs}px "Barlow Condensed",sans-serif`; x.fillStyle=l.kind==='mod'||l.kind==='bld'||l.kind==='svc'?'#0f2229':'#eef1ea'; x.fillText(l.t.toUpperCase(),ox+l.x*S,oy+l.z*S); }
+  const rp=ROUTE.map(id=>pois.find(p=>p.id===id)), next=nextRoute();
+  rp.forEach((p,i)=>{ const px=ox+p.target.x*S, py=oy+p.target.z*S, rad=11*dpr;
+    x.beginPath(); x.arc(px,py,rad,0,Math.PI*2); x.fillStyle=p.visited?'#62b38a':(p===next?'#f5c400':'#eef1ea'); x.fill(); x.lineWidth=2*dpr; x.strokeStyle='#0f2229'; x.stroke();
+    x.fillStyle='#0f2229'; x.font=`700 ${12*dpr}px "IBM Plex Mono",monospace`; x.fillText(String(i+1),px,py+0.5); });
+  const px=ox+player.x*S, py=oy+player.z*S;
+  x.save(); x.translate(px,py); x.rotate(Math.PI-player.hd); x.beginPath(); x.moveTo(0,-12*dpr); x.lineTo(8*dpr,9*dpr); x.lineTo(0,4*dpr); x.lineTo(-8*dpr,9*dpr); x.closePath(); x.fillStyle='#fff'; x.fill(); x.strokeStyle='#0f2229'; x.lineWidth=2*dpr; x.stroke(); x.restore();
+}
+big.addEventListener('pointerup',e=>{
+  if (!bigView) return; const r=big.getBoundingClientRect(), mx=(e.clientX-r.left)*bigView.dpr, my=(e.clientY-r.top)*bigView.dpr;
+  let best=null, bd=26*bigView.dpr;
+  for (const id of ROUTE){ const p=pois.find(q=>q.id===id); const d=Math.hypot(bigView.ox+p.target.x*bigView.S-mx, bigView.oy+p.target.z*bigView.S-my); if (d<bd){bd=d;best=p;} }
+  if (best){ teleport(best.spawn); toggleMap(false); }
+});
+
+/* ============ Estado del juego ============ */
+const player={x:0,z:192,hd:Math.PI,speed:0,run:false};
+let PL=null, camYaw=0, zoom=1, state='intro', T=0, camRate=8;
+const camPos=new THREE.Vector3(0,160,300), camLook=new THREE.Vector3(0,0,0);
+const keys={}; const stick={active:false,x:0,y:0,id:null}; let runHeld=false, dragging=null;
+let curB=null, loc={title:'',sub:''}, activePoi=null, pending=[];
+const ui={locTitle:$('#locTitle'),locSub:$('#locSub'),objCount:$('#objCount'),objName:$('#objName'),objDist:$('#objDist'),objBar:$('#objBar'),card:$('#card'),cardZone:$('#cardZone'),cardTitle:$('#cardTitle'),cardText:$('#cardText'),cardRefs:$('#cardRefs'),talk:$('#talk'),talkWho:$('#talkWho'),talkText:$('#talkText'),prompt:$('#prompt'),promptText:$('#promptText'),toast:$('#toast')};
+let cardPoi=null, talkTimer=0, toastTimer=0;
+
+function save(){ try{ localStorage.setItem('ctipo-v1',JSON.stringify(pois.filter(p=>p.visited).map(p=>p.id))); }catch(e){} }
+function load(){ try{ const a=JSON.parse(localStorage.getItem('ctipo-v1')||'[]'); for (const p of pois) if (a.includes(p.id)){ p.visited=true; p.seen=true; } }catch(e){} }
+function nextRoute(){ for (const id of ROUTE){ const p=pois.find(q=>q.id===id); if (!p.visited) return p; } return null; }
+function currentTarget(){ const p=nextRoute(); return p?p.target:null; }
+function updateRouteUI(){
+  const done=ROUTE.filter(id=>pois.find(p=>p.id===id).visited).length, n=nextRoute();
+  ui.objCount.textContent=`${done}/${ROUTE.length}`; ui.objBar.style.width=(done/ROUTE.length*100)+'%';
+  ui.objName.textContent=n?`${ROUTE.indexOf(n.id)+1}. ${n.title}`:'Recorrido completado';
+}
+function showCard(p){ cardPoi=p; ui.cardZone.textContent=p.zone; ui.cardTitle.textContent=p.title; ui.cardText.textContent=p.text; ui.cardRefs.replaceChildren(...(p.refs||[]).map(r=>{const li=document.createElement('li'); li.textContent=r; return li;})); ui.card.hidden=false; ui.card.scrollTop=0; }
+function hideCard(){ ui.card.hidden=true; cardPoi=null; if (pending.length){ const p=pending.shift(); setTimeout(()=>{ if (!cardPoi) showCard(p); },250); } }
+function showTalk(who,text){ ui.talkWho.textContent=who; ui.talkText.textContent=text; ui.talk.hidden=false; talkTimer=8; }
+function toast(t){ ui.toast.textContent=t; ui.toast.hidden=false; toastTimer=3.2; }
+function teleport(s){ player.x=s.x; player.z=s.z; player.hd=s.h; camYaw=s.h+Math.PI; ui.talk.hidden=true; }
+
+/* ============ Entrada ============ */
+addEventListener('keydown',e=>{
+  if (state!=='play') return;
+  keys[e.code]=true;
+  const onBtn=document.activeElement&&document.activeElement.tagName==='BUTTON';
+  if ((e.code==='KeyE'||(e.code==='Space'&&!onBtn))){ e.preventDefault(); act(); }
+  if (e.code==='KeyM'){ toggleMap(); }
+  if (e.code==='Escape'){ if (!$('#mapView').hidden) toggleMap(false); else if (!ui.card.hidden) hideCard(); ui.talk.hidden=true; }
+  if (e.code.startsWith('Arrow')) e.preventDefault();
+});
+addEventListener('keyup',e=>{ keys[e.code]=false; });
+addEventListener('blur',()=>{ for (const k in keys) keys[k]=false; });
+canvas.addEventListener('pointerdown',e=>{ if (state!=='play') return; dragging={id:e.pointerId,x:e.clientX,y:e.clientY}; canvas.setPointerCapture(e.pointerId); canvas.focus({preventScroll:true}); });
+canvas.addEventListener('pointermove',e=>{ if (!dragging||dragging.id!==e.pointerId) return; camYaw-=(e.clientX-dragging.x)*0.0065; dragging.x=e.clientX; dragging.y=e.clientY; });
+const endDrag=e=>{ if (dragging&&dragging.id===e.pointerId) dragging=null; };
+canvas.addEventListener('pointerup',endDrag); canvas.addEventListener('pointercancel',endDrag);
+canvas.addEventListener('wheel',e=>{ e.preventDefault(); zoom=clamp(zoom*(e.deltaY>0?1.1:0.9),0.55,1.9); },{passive:false});
+const stickEl=$('#stick'), knob=$('#knob');
+stickEl.addEventListener('pointerdown',e=>{ stick.active=true; stick.id=e.pointerId; stickEl.setPointerCapture(e.pointerId); moveStick(e); e.preventDefault(); });
+stickEl.addEventListener('pointermove',e=>{ if (stick.active&&e.pointerId===stick.id) moveStick(e); });
+const endStick=e=>{ if (e.pointerId!==stick.id) return; stick.active=false; stick.x=stick.y=0; knob.style.transform=''; };
+stickEl.addEventListener('pointerup',endStick); stickEl.addEventListener('pointercancel',endStick);
+function moveStick(e){ const r=stickEl.getBoundingClientRect(), R=r.width/2; let dx=e.clientX-r.left-R, dy=e.clientY-r.top-R; const L=Math.hypot(dx,dy); if (L>R){dx*=R/L;dy*=R/L;} stick.x=dx/R; stick.y=dy/R; knob.style.transform=`translate(${dx}px,${dy}px)`; }
+const runBtn=$('#runBtn');
+runBtn.addEventListener('pointerdown',e=>{ e.preventDefault(); runHeld=!runHeld; runBtn.classList.toggle('on',runHeld); });
+$('#actBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); act(); });
+$('#cardClose').addEventListener('click',hideCard);
+ui.prompt.addEventListener('click',act);
+$('#mapBtn').addEventListener('click',()=>toggleMap());
+$('#mapClose').addEventListener('click',()=>toggleMap(false));
+ui.talk.addEventListener('click',()=>{ ui.talk.hidden=true; });
+function toggleMap(force){ const mv=$('#mapView'), open=force!==undefined?force:mv.hidden; mv.hidden=!open; if (open){ requestAnimationFrame(drawBig); } else canvas.focus({preventScroll:true}); }
+addEventListener('resize',()=>{ resize(); if (!$('#mapView').hidden) drawBig(); });
+
+let nearNpc=null;
+function act(){
+  if (nearNpc){ const n=nearNpc; showTalk(n.role,n.lines[n.li%n.lines.length]); n.li++; return; }
+  if (activePoi){ if (cardPoi===activePoi) hideCard(); else showCard(activePoi); }
+}
+
+/* ============ Bucle ============ */
+function resize(){ const w=innerWidth, h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<h?68:58; camera.updateProjectionMatrix(); }
+function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI; return a+d*t; }
+function updatePlayer(dt){
+  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0), iy=((keys.KeyW||keys.ArrowUp)?1:0)-((keys.KeyS||keys.ArrowDown)?1:0);
+  if (keys.ArrowLeft||keys.KeyQ) camYaw+=1.9*dt; if (keys.ArrowRight) camYaw-=1.9*dt;
+  if (stick.active){ ix=stick.x; iy=-stick.y; }
+  let mag=Math.min(1,Math.hypot(ix,iy));
+  const run=keys.ShiftLeft||keys.ShiftRight||runHeld||(stick.active&&mag>0.96);
+  let moving=false;
+  if (mag>0.08 && $('#mapView').hidden){
+    const fx=-Math.sin(camYaw), fz=-Math.cos(camYaw), rx=Math.cos(camYaw), rz=-Math.sin(camYaw);
+    let mx=fx*iy+rx*ix, mz=fz*iy+rz*ix; const l=Math.hypot(mx,mz); mx/=l; mz/=l;
+    const sp=(run?8.2:4.2)*mag*dt, steps=Math.ceil(sp/0.14);
+    for (let i=0;i<steps;i++){ player.x+=mx*sp/steps; player.z+=mz*sp/steps; resolve(player,0.34); }
+    player.x=clamp(player.x,-290,290); player.z=clamp(player.z,-290,290);
+    player.hd=lerpAngle(player.hd,Math.atan2(mx,mz),1-Math.exp(-14*dt)); moving=true;
+  } else mag=0;
+  for (const n of npcs){ if (!n.vis||n.y>1) continue; const dx=player.x-n.x, dz=player.z-n.z, d=Math.hypot(dx,dz); if (d<0.62&&d>0.001){ player.x=n.x+dx/d*0.62; player.z=n.z+dz/d*0.62; } }
+  resolve(player,0.34);
+  animWalk(PL,moving?(run?2.1:1.1)*mag:0,dt,run);
+  PL.g.position.set(player.x,0.075,player.z); PL.g.rotation.y=player.hd;
+}
+function animWalk(h,amt,dt,run){
+  h.phase+=dt*(run?11:7.2)*(amt>0?1:0);
+  const a=Math.min(1,amt), s=Math.sin(h.phase)*(run?0.85:0.6)*a;
+  h.legL.rotation.x=s; h.legR.rotation.x=-s; h.armL.rotation.x=-s*0.8; h.armR.rotation.x=s*0.8;
+  if (!a){ h.legL.rotation.x*=0.8; }
+}
+function occlude(tx,ty,tz,cx,cy,cz,ignore){
+  const dx=cx-tx, dy=cy-ty, dz=cz-tz, len=Math.hypot(dx,dy,dz), n=Math.ceil(len/0.4);
+  for (let i=2;i<=n;i++){ const t=i/n, x=tx+dx*t, y=ty+dy*t, z=tz+dz*t, gx=Math.floor(x-GX0), gz=Math.floor(z-GZ0);
+    if (gx<0||gz<0||gx>=GW||gz>=GH) continue; const k=gz*GW+gx; if (ignore>=0&&hid[k]===ignore) continue;
+    if (hgt[k]>y) return Math.max(0.14,(t*len-0.6)/len); }
+  return 1;
+}
+function updateCamera(dt){
+  const inside=!!curB, dist=(inside?6.2:7.6)*zoom, hgtC=(inside?10.5:3.7)*(inside?Math.max(0.8,zoom):1)+(zoom>1&&!inside?(zoom-1)*5:0);
+  const tx=player.x, ty=1.55, tz=player.z;
+  let cx=tx+Math.sin(camYaw)*dist, cy=ty+hgtC-1.55+0.3, cz=tz+Math.cos(camYaw)*dist;
+  const f=occlude(tx,ty,tz,cx,cy,cz,curB?curB.id:-1);
+  if (f<1){ cx=tx+(cx-tx)*f; cy=ty+(cy-ty)*f+(1-f)*1.2; cz=tz+(cz-tz)*f; }
+  camRate=Math.min(8,camRate+dt*4);
+  const k=1-Math.exp(-camRate*dt);
+  camPos.x+=(cx-camPos.x)*k; camPos.y+=(cy-camPos.y)*k; camPos.z+=(cz-camPos.z)*k;
+  camLook.x+=(tx-camLook.x)*k; camLook.y+=(ty-camLook.y)*k; camLook.z+=(tz-camLook.z)*k;
+  camera.position.copy(camPos); camera.lookAt(camLook);
+}
+function locate(x,z){
+  for (const b of buildings) if (x>b.x0+0.1&&x<b.x1-0.1&&z>b.z0+0.1&&z<b.z1-0.1){
+    let room=null; for (const r of b.rooms) if (x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1){ room=r.name; break; }
+    return {b,title:b.short,sub:room||b.def,room};
+  }
+  for (const zn of zones) if (x>=zn.x0&&x<=zn.x1&&z>=zn.z0&&z<=zn.z1) return {b:null,zone:zn,title:zn.title,sub:zn.sub};
+  return {b:null,title:'Exterior',sub:'Entorno del centro'};
+}
+function updateWorldState(){
+  const l=locate(player.x,player.z);
+  if (l.b!==curB){
+    if (curB){ curB.rfMesh&&(curB.rfMesh.visible=true); if (curB.upMat){ curB.upMat.opacity=1; curB.upMat.transparent=false; curB.upMat.depthWrite=true; curB.upMat.needsUpdate=true; } }
+    curB=l.b;
+    if (curB){ curB.rfMesh&&(curB.rfMesh.visible=false); if (curB.upMat){ curB.upMat.opacity=0.16; curB.upMat.transparent=true; curB.upMat.depthWrite=false; curB.upMat.needsUpdate=true; } }
+  }
+  if (l.title!==loc.title) ui.locTitle.textContent=l.title;
+  if (l.sub!==loc.sub) ui.locSub.textContent=l.sub;
+  loc=l;
+  // Fichas
+  let first=null; const fresh=[];
+  for (const p of pois){ if (!p.match(l)) continue; if (!first) first=p; if (!p.seen) fresh.push(p);
+    if (p.route&&!p.visited){ p.visited=true; save(); updateRouteUI(); const i=ROUTE.indexOf(p.id)+1, done=ROUTE.filter(id=>pois.find(q=>q.id===id).visited).length; toast(done===ROUTE.length?'Recorrido completado · 15/15':`Parada ${i} · ${p.title} · ${done}/${ROUTE.length}`); } }
+  if (fresh.length){ for (const p of fresh) p.seen=true; showCard(fresh[0]); for (const p of fresh.slice(1)) if (!pending.includes(p)) pending.push(p); }
+  activePoi=first;
+  const t=currentTarget();
+  ui.objDist.textContent=t?`A ${Math.round(Math.hypot(t.x-player.x,t.z-player.z))} m`+(isTouch?'':' · sigue el rombo amarillo'):'Has recorrido las tres zonas';
+}
+function updatePrompt(){
+  nearNpc=null; let bd=2.3;
+  for (const n of npcs){ if (!n.vis) continue; const d=Math.hypot(n.x-player.x,n.z-player.z)+(n.y>1?99:0); if (d<bd){ bd=d; nearNpc=n; } }
+  let txt=null;
+  if (nearNpc) txt='Hablar · '+nearNpc.role;
+  else if (activePoi&&cardPoi!==activePoi) txt='Ver ficha · '+activePoi.title;
+  ui.prompt.hidden=!txt; if (txt&&ui.promptText.textContent!==txt) ui.promptText.textContent=txt;
+  $('#promptKey').textContent=isTouch?'A':'E';
+}
+function updateGates(dt){
+  for (const g of gates){
+    const d=Math.hypot(player.x-g.cx,player.z-g.cz), want=(state==='play'&&d<3.8&&(!g.partner||g.partner.open<0.03))?1:0;
+    g.open=clamp(g.open+(want?1:-1)*dt*1.1,0,1);
+    const off=g.open*g.w*0.95;
+    if (g.axis==='x') g.m.position.x=g.cx+off; else g.m.position.z=g.cz+off;
+  }
+}
+function updateNPCs(dt){
+  for (const n of npcs){
+    const dx=n.x-player.x, dz=n.z-player.z, d2=dx*dx+dz*dz;
+    n.vis=state!=='play'?d2<200*200:d2<80*80; n.hum.g.visible=n.vis; if (!n.vis) continue;
+    let moving=false;
+    if (n.wander){
+      if (n.wait>0){ n.wait-=dt; if (n.wait<=0){ const w=n.wander; n.t={x:w.x0+PR()*(w.x1-w.x0),z:w.z0+PR()*(w.z1-w.z0)}; } }
+      else { const tx=n.t.x-n.x, tz=n.t.z-n.z, L=Math.hypot(tx,tz);
+        if (L<0.3){ n.wait=1+PR()*(n.run?1.5:4); } else { const st=Math.min(L,n.speed*dt); n.x+=tx/L*st; n.z+=tz/L*st; n.hd=lerpAngle(n.hd,Math.atan2(tx,tz),1-Math.exp(-8*dt)); moving=true; } }
+    }
+    if (!moving && !n.sit && d2<36 && state==='play') n.hd=lerpAngle(n.hd,Math.atan2(-dx,-dz),1-Math.exp(-4*dt));
+    else if (!moving && !n.wander && !n.sit) n.hd=lerpAngle(n.hd,n.home,1-Math.exp(-2*dt));
+    if (!n.sit) animWalk(n.hum,moving?(n.run?1.8:0.9):0,dt,n.run);
+    n.hum.g.position.set(n.x,n.y+0.075,n.z); n.hum.g.rotation.y=n.hd;
+  }
+}
+let marker=null, beam=null;
+function updateMarker(){
+  const t=currentTarget(); marker.visible=beam.visible=!!t&&state==='play'; if (!t) return;
+  const bob=reduceMotion?0:Math.sin(T*2.4)*0.25; marker.position.set(t.x,3.4+bob,t.z); marker.rotation.y=T*1.4;
+  beam.position.set(t.x,18,t.z); beam.visible=Math.hypot(t.x-player.x,t.z-player.z)>14;
+}
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now; T+=dt;
+  if (state==='intro'){
+    const a=reduceMotion?0.6:0.6+T*0.045; camera.position.set(Math.sin(a)*235-5,150,Math.cos(a)*235-30); camera.lookAt(-5,0,-30);
+    camPos.copy(camera.position); camLook.set(-5,0,-30);
+  } else {
+    updatePlayer(dt); updateWorldState(); updateCamera(dt); updatePrompt(); drawMini(); updateMarker();
+    if (talkTimer>0){ talkTimer-=dt; if (talkTimer<=0) ui.talk.hidden=true; }
+    if (toastTimer>0){ toastTimer-=dt; if (toastTimer<=0) ui.toast.hidden=true; }
+  }
+  updateGates(dt); updateNPCs(dt);
+  if (!reduceMotion) for (const f of flags) f.rotation.y=Math.sin(T*1.7+f.position.x)*0.25;
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+
+/* ============ Arranque ============ */
+async function boot(){
+  resize();
+  try { await Promise.race([Promise.all([document.fonts.load('700 40px "Barlow Condensed"'),document.fonts.load('500 20px Barlow')]),new Promise(r=>setTimeout(r,2500))]); } catch(e){}
+  buildWorld();
+  const sm=STATIC.mesh(worldMat); scene.add(sm);
+  const gm=GLASS.mesh(glassMat); if (gm){ gm.renderOrder=2; scene.add(gm); }
+  scene.add(FENCE.mesh(fenceMat));
+  for (const b of buildings){
+    const u=b.up.mesh(b.upMat=worldMat.clone()); if (u){ b.upMesh=u; u.renderOrder=1; scene.add(u); } else b.upMat=null;
+    const r=b.rf.mesh(worldMat); if (r){ b.rfMesh=r; scene.add(r); }
+    b.up=b.rf=null;
+  }
+  buildGrid(); drawMapBase(); definePOIs(); load();
+  PL=human(Object.assign({skin:0xe0ac86,hair:0x3b2a20},OUT.player));
+  PL.g.position.set(player.x,0.075,player.z); PL.g.rotation.y=player.hd;
+  marker=new THREE.Mesh(new THREE.OctahedronGeometry(0.7), new THREE.MeshBasicMaterial({color:0xf5c400})); marker.scale.y=1.5; scene.add(marker);
+  beam=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.12,36,6,1,true), new THREE.MeshBasicMaterial({color:0xf5c400,transparent:true,opacity:0.35,depthWrite:false})); scene.add(beam);
+  marker.visible=beam.visible=false;
+  updateRouteUI();
+  const btn=$('#startBtn'); btn.disabled=false; btn.textContent=pois.some(p=>p.visited)?'Continuar el recorrido':'Empezar el recorrido';
+  btn.addEventListener('click',start);
+  requestAnimationFrame(frame);
+}
+function start(){
+  $('#intro').hidden=true; $('#hud').hidden=false; state='play'; camRate=1.2; last=performance.now();
+  scene.fog.near=90; scene.fog.far=420;
+  camYaw=player.hd+Math.PI; canvas.focus({preventScroll:true});
+  updateWorldState();
+}
+boot();
+})();
+</script>
+
+</html>
