@@ -1,0 +1,1199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Calle de la Constitución</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Archivo+Narrow:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap">
+<style>
+:root{
+  --azul:#1d4f91; --azul-2:#14213d; --loza:#f6f1e3; --loza-2:#ebe2cb; --rojo:#c60b1e; --oro:#ffc400; --tinta:#1f2430; --gris:#5a6272;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif; --narrow:"Archivo Narrow","Arial Narrow",system-ui,sans-serif; --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:#bcd8ec;color:var(--tinta);font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+button:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+.hud{position:fixed;inset:0;pointer-events:none;z-index:2}
+/* Placa de calle de azulejo */
+.plate{position:absolute;left:16px;top:calc(14px + env(safe-area-inset-top,0px));width:min(380px,calc(100vw - 212px));box-sizing:border-box;background:var(--loza);border:3px solid var(--azul);box-shadow:0 0 0 3px var(--loza),0 0 0 5px var(--azul),0 12px 28px rgba(20,33,61,.3);padding:8px 14px 10px;text-align:center}
+.plate .eb{display:block;font:700 11px/1.1 var(--narrow);letter-spacing:.18em;text-transform:uppercase;color:var(--rojo)}
+.plate .t{display:block;margin-top:3px;font:800 27px/1.02 var(--serif);color:var(--azul);text-wrap:balance}
+.plate .s{display:block;margin-top:4px;font:500 14.5px/1.25 var(--body);color:var(--azul-2);text-wrap:balance}
+.plate .pg{display:flex;align-items:center;gap:8px;margin-top:8px;font:600 12px/1 var(--narrow);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);font-variant-numeric:tabular-nums}
+.plate .bar{flex:1;height:4px;background:var(--loza-2)}.plate .bar i{display:block;height:100%;width:0;background:var(--rojo);transition:width .4s}
+.side{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top,0px));display:grid;justify-items:center;gap:8px;pointer-events:auto}
+#mini{width:164px;height:164px;display:block;border:3px solid var(--azul);box-shadow:0 0 0 3px var(--loza),0 0 0 5px var(--azul),0 12px 28px rgba(20,33,61,.3)}
+.btn{pointer-events:auto;font:700 13px/1 var(--narrow);letter-spacing:.1em;text-transform:uppercase;color:var(--loza);background:var(--azul);border:0;padding:10px 14px;border-radius:2px;cursor:pointer;min-width:112px}
+.btn.alt{background:var(--rojo)}
+.speed{font:700 20px/1 var(--narrow);color:var(--loza);background:var(--azul-2);padding:6px 10px;border-radius:2px;font-variant-numeric:tabular-nums}
+/* Ficha del artículo */
+.card{--tc:#1d4f91;position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(460px,calc(100vw - 32px));box-sizing:border-box;max-height:min(56vh,520px);overflow:auto;pointer-events:auto;background:var(--loza);border:3px solid var(--azul);box-shadow:0 0 0 3px var(--loza),0 0 0 5px var(--azul),0 16px 36px rgba(20,33,61,.35);padding:0 0 14px;-webkit-user-select:text;user-select:text}
+.card .band{display:flex;align-items:stretch;gap:12px;background:var(--tc);color:#fff;padding:10px 12px 10px 14px}
+.card .num{font:800 54px/.9 var(--serif);font-variant-numeric:tabular-nums;min-width:1.4ch;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.card .num small{display:block;font:700 11px/1 var(--narrow);letter-spacing:.2em;text-transform:uppercase;opacity:.9;margin-bottom:4px;text-shadow:none}
+.card .hd{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;min-width:0}
+.card .zone{font:600 11.5px/1.25 var(--narrow);letter-spacing:.08em;text-transform:uppercase;opacity:.92}
+.card h2{margin:0;font:800 23px/1.08 var(--serif);text-wrap:balance}
+.card .x{appearance:none;align-self:flex-start;background:rgba(255,255,255,.18);border:0;color:#fff;width:34px;height:34px;font:600 20px/1 var(--body);cursor:pointer;border-radius:2px;flex:none}
+.card p{margin:12px 16px 0;font:400 16px/1.55 var(--body);color:var(--tinta);max-width:62ch}
+.card .acts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 16px 0}
+.card .acts button{appearance:none;border:2px solid var(--azul);background:transparent;color:var(--azul);font:700 13px/1 var(--narrow);letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;border-radius:2px;cursor:pointer}
+.card .acts button.pri{background:var(--azul);color:var(--loza)}
+.toast{position:absolute;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top,0px));background:var(--azul-2);color:var(--loza);padding:9px 16px;font:700 15px/1.2 var(--narrow);letter-spacing:.04em;border-bottom:3px solid var(--oro);max-width:calc(100vw - 32px);box-sizing:border-box;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prompt{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;background:var(--loza);border:2px solid var(--azul);padding:7px 14px 7px 7px;font:700 15px/1 var(--narrow);letter-spacing:.04em;text-transform:uppercase;color:var(--azul);pointer-events:auto;cursor:pointer;white-space:nowrap}
+.prompt kbd{display:grid;place-items:center;min-width:26px;height:26px;background:var(--azul);color:var(--loza);font:700 14px var(--narrow);border-radius:2px}
+.keys{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:rgba(20,33,61,.82);color:#dfe6f3;font:500 12.5px/1.65 var(--narrow);letter-spacing:.02em;text-align:right;padding:8px 12px;border-radius:2px}
+.keys b{color:var(--oro)}
+.touch{display:none}.is-touch .touch{display:block}.is-touch .keys{display:none}
+#stick{position:absolute;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:132px;height:132px;border-radius:50%;background:rgba(20,33,61,.35);border:2px solid rgba(246,241,227,.6);pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:var(--loza);box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.tb{position:absolute;pointer-events:auto;touch-action:none;border-radius:50%;display:grid;place-items:center;font:700 12px/1 var(--narrow);letter-spacing:.06em;text-transform:uppercase;border:2px solid rgba(246,241,227,.7);padding:0}
+#actBtn{right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(46px + env(safe-area-inset-bottom,0px));width:80px;height:80px;background:var(--oro);color:var(--azul-2);border-color:transparent}
+#runBtn{right:calc(114px + env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));width:66px;height:66px;background:rgba(20,33,61,.6);color:var(--loza)}
+#runBtn.on{background:var(--loza);color:var(--azul)}
+.is-touch .card{bottom:calc(176px + env(safe-area-inset-bottom,0px));max-height:max(170px,calc(100% - 440px))}
+.is-touch .prompt{bottom:calc(186px + env(safe-area-inset-bottom,0px))}
+/* Índice */
+.index{position:fixed;inset:0;z-index:4;background:rgba(20,33,61,.94);overflow:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;color:var(--loza)}
+.index header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;max-width:980px;margin:0 auto 8px}
+.index h2{margin:0;font:800 32px/1 var(--serif)}
+.index header p{margin:6px 0 0;color:#c9d4ea;font-size:15px}
+#idxGrid{max-width:980px;margin:0 auto}
+#idxGrid h3{--tc:#fff;margin:18px 0 8px;font:700 13px/1.3 var(--narrow);letter-spacing:.1em;text-transform:uppercase;color:#fff;border-left:6px solid var(--tc);padding-left:8px}
+.nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
+.nums button{--tc:#fff;appearance:none;border:2px solid var(--tc);background:transparent;color:#fff;font:700 16px/1 var(--narrow);height:40px;border-radius:2px;cursor:pointer;font-variant-numeric:tabular-nums}
+.nums button.seen{background:var(--tc);color:#14213d}
+/* Portada */
+.intro{position:fixed;inset:0;z-index:5;overflow:auto;background:linear-gradient(180deg,rgba(20,33,61,.15),rgba(20,33,61,.8) 60%);display:flex;align-items:center;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.sheet{width:min(640px,100%);margin:auto;background:var(--loza);border:4px solid var(--azul);box-shadow:0 0 0 4px var(--loza),0 0 0 7px var(--azul),0 24px 60px rgba(0,0,0,.35);padding:22px 22px 20px;box-sizing:border-box}
+.sheet .eb{font:700 12px/1.2 var(--narrow);letter-spacing:.22em;text-transform:uppercase;color:var(--rojo);text-align:center}
+.sheet h1{margin:8px 0 12px;font:800 clamp(38px,8.5vw,64px)/.95 var(--serif);color:var(--azul);text-align:center;text-wrap:balance}
+.sheet .lead{margin:0 auto;max-width:54ch;font:400 17px/1.5 var(--body);color:var(--tinta);text-align:center}
+.rule{display:flex;justify-content:center;gap:10px;margin:16px 0;font:700 13px/1.2 var(--narrow);letter-spacing:.06em;text-transform:uppercase;color:var(--azul);flex-wrap:wrap}
+.rule span{border:2px solid var(--azul);padding:7px 10px}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:6px 0 18px}
+.ctl h3{margin:0 0 8px;font:700 12px/1 var(--narrow);letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.ctl dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:14.5px;line-height:1.35}
+.ctl dt{font:700 13px/1.4 var(--narrow);color:var(--rojo)}.ctl dd{margin:0}
+.go{display:block;width:100%;appearance:none;border:0;background:var(--rojo);color:#fff;font:700 18px/1 var(--narrow);letter-spacing:.14em;text-transform:uppercase;padding:16px;cursor:pointer;border-radius:2px}
+.go:disabled{opacity:.6;cursor:progress}
+.note{margin:14px 0 0;font:400 12.5px/1.5 var(--body);color:var(--gris);text-align:center}
+@media (max-width:640px){
+  .plate{width:calc(100vw - 32px - 124px);padding:7px 10px 8px}.plate .t{font-size:21px}.plate .s{font-size:12.5px}
+  #mini{width:108px;height:108px}.btn{min-width:0;padding:9px 10px;font-size:12px}
+  .card .num{font-size:42px}.card h2{font-size:19px}.card p{font-size:15px;margin:10px 12px 0}.card .acts{margin:12px 12px 0}
+  .is-touch .card{max-height:max(160px,calc(100% - 470px))}
+  .is-touch .toast{top:calc(214px + env(safe-area-inset-top,0px));font-size:13px}
+  .sheet{padding:18px 14px}
+}
+@media (prefers-reduced-motion:reduce){.plate .bar i{transition:none}}
+</style>
+
+<canvas id="gl" tabindex="0" aria-label="Vista 3D de la Calle de la Constitución"></canvas>
+<div class="hud" id="hud" hidden>
+  <div class="plate"><span class="eb" id="locEyebrow">C/ de la Constitución</span><strong class="t" id="locTitle">Plaza del Preámbulo</strong><span class="s" id="locSub"></span>
+    <div class="pg"><span>Artículos vistos</span><span class="bar"><i id="progBar"></i></span><span id="prog">0/169</span></div></div>
+  <div class="side"><canvas id="mini" width="328" height="328" aria-label="Minimapa"></canvas><button class="btn" id="idxBtn" type="button">Índice (M)</button><button class="btn alt" id="carBtn" type="button">Coche (F)</button><span class="speed" id="speed" hidden>0 km/h</span></div>
+  <aside class="card" id="card" hidden aria-live="polite">
+    <div class="band"><div class="num"><small>Art.</small><span id="cNum">1</span></div><div class="hd"><span class="zone" id="cZone"></span><h2 id="cTit"></h2></div><button class="x" id="cClose" type="button" aria-label="Cerrar ficha">×</button></div>
+    <p id="cText"></p>
+    <div class="acts"><button class="pri" id="cSpeak" type="button">Escuchar</button><button id="cPrev" type="button">‹ Anterior</button><button id="cNext" type="button">Siguiente ›</button></div>
+  </aside>
+  <div class="toast" id="toast" hidden></div>
+  <button class="prompt" id="prompt" type="button" hidden><kbd id="promptKey">E</kbd><span id="promptText"></span></button>
+  <div class="keys"><b>WASD</b> caminar · <b>Shift</b> correr · <b>F</b> coche<br><b>← →</b> o arrastrar: cámara · <b>E</b> ficha · <b>L</b> escuchar · <b>M</b> índice</div>
+  <div class="touch"><div id="stick"><div id="knob"></div></div><button class="tb" id="runBtn" type="button">Correr</button><button class="tb" id="actBtn" type="button">Acción</button></div>
+</div>
+<div class="index" id="index" hidden>
+  <header><div><h2>Índice de la Constitución</h2><p>Toca un número para ir directamente a su parcela. Los rellenos ya los has visitado.</p></div><button class="btn" id="idxClose" type="button">Volver (M)</button></header>
+  <div id="idxGrid"></div>
+</div>
+<div class="intro" id="intro">
+  <div class="sheet">
+    <div class="eb">Paseo 3D por la Constitución Española de 1978</div>
+    <h1>Calle de la Constitución</h1>
+    <p class="lead">Una calle con 169 números: cada parcela es un artículo y en cada una pasa algo que te lo recuerda. Huelgas con el 28, tanques con el 8, el Rey firmando leyes en el 62. Entra en la parcela para leer el artículo, o súbete al coche para recorrerla entera.</p>
+    <div class="rule"><span>← Pares a la izquierda</span><span>Impares a la derecha →</span></div>
+    <div class="ctl">
+      <section><h3>Teclado</h3><dl><dt>WASD</dt><dd>Caminar (Shift corre)</dd><dt>F</dt><dd>Subir o bajar del coche</dd><dt>E · L</dt><dd>Ver ficha · escucharla</dd><dt>M</dt><dd>Índice: saltar a un artículo</dd></dl></section>
+      <section><h3>Móvil</h3><dl><dt>Joystick</dt><dd>Caminar o conducir</dd><dt>Arrastrar</dt><dd>Girar la cámara</dd><dt>Acción</dt><dd>Ver ficha o subir al coche</dd><dt>Índice</dt><dd>Saltar a cualquier artículo</dd></dl></section>
+    </div>
+    <button class="go" id="startBtn" type="button" disabled>Construyendo la calle…</button>
+    <p class="note">Los textos son resúmenes para estudiar, no el texto literal: contrástalos con el BOE.</p>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{
+'use strict';
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const isTouch = matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+if (isTouch) document.body.classList.add('is-touch');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function rng(seed){ return () => { seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- Estructura de la Constitución ---------- */
+const TITULOS=[
+ {id:'Preliminar',name:'Título Preliminar',from:1,to:9,col:0xd9b75f},
+ {id:'I',name:'Título I · De los derechos y deberes fundamentales',from:10,to:55,col:0x6fae8f},
+ {id:'II',name:'Título II · De la Corona',from:56,to:65,col:0xa27cc0},
+ {id:'III',name:'Título III · De las Cortes Generales',from:66,to:96,col:0xd9855e},
+ {id:'IV',name:'Título IV · Del Gobierno y de la Administración',from:97,to:107,col:0x6a96d2},
+ {id:'V',name:'Título V · Relaciones entre el Gobierno y las Cortes',from:108,to:116,col:0x8a9db3},
+ {id:'VI',name:'Título VI · Del Poder Judicial',from:117,to:127,col:0x7a6cc0},
+ {id:'VII',name:'Título VII · Economía y Hacienda',from:128,to:136,col:0xd1a93a},
+ {id:'VIII',name:'Título VIII · De la Organización Territorial del Estado',from:137,to:158,col:0x5aa66a},
+ {id:'IX',name:'Título IX · Del Tribunal Constitucional',from:159,to:165,col:0xc46a80},
+ {id:'X',name:'Título X · De la reforma constitucional',from:166,to:169,col:0x9a9a88}];
+const CAPS=[
+ [11,13,'Capítulo I · De los españoles y los extranjeros'],
+ [14,14,'Capítulo II · Derechos y libertades'],
+ [15,29,'Capítulo II · Sección 1ª · Derechos fundamentales y libertades públicas'],
+ [30,38,'Capítulo II · Sección 2ª · Derechos y deberes de los ciudadanos'],
+ [39,52,'Capítulo III · Principios rectores de la política social y económica'],
+ [53,54,'Capítulo IV · Garantías de las libertades y derechos'],
+ [55,55,'Capítulo V · Suspensión de los derechos y libertades'],
+ [66,80,'Capítulo I · De las Cámaras'],[81,92,'Capítulo II · De la elaboración de las leyes'],[93,96,'Capítulo III · De los Tratados Internacionales'],
+ [137,139,'Capítulo I · Principios generales'],[140,142,'Capítulo II · De la Administración Local'],[143,158,'Capítulo III · De las Comunidades Autónomas']];
+const tituloOf=n=>TITULOS.find(t=>n>=t.from&&n<=t.to);
+const capOf=n=>{ const c=CAPS.find(c=>n>=c[0]&&n<=c[1]); return c?c[2]:''; };
+
+/* Posición en la calle: impares a la derecha (x>0), pares a la izquierda */
+const LOT=16, Z0=-14;
+const gIdx=n=>TITULOS.findIndex(t=>n>=t.from&&n<=t.to);
+const slotOf=n=>Math.ceil(n/2)-1+gIdx(n);
+const zOfSlot=s=>Z0-s*LOT;
+const sideOf=n=>n%2?1:-1;
+
+/* ---------- Geometría agrupada ---------- */
+class Batch{
+  constructor(){ this.p=[]; this.n=[]; this.c=[]; this.i=[]; this.v=0; }
+  box(x0,x1,y0,y1,z0,z1,col){
+    if (x0>x1){const t=x0;x0=x1;x1=t;} if (y0>y1){const t=y0;y0=y1;y1=t;} if (z0>z1){const t=z0;z0=z1;z1=t;}
+    const r=((col>>16)&255)/255, g=((col>>8)&255)/255, b=(col&255)/255, P=this.p, N=this.n, K=this.c, I=this.i;
+    const f=(ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz,nx,ny,nz)=>{ const v=this.v; P.push(ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz); for(let k=0;k<4;k++){N.push(nx,ny,nz);K.push(r,g,b);} I.push(v,v+1,v+2,v,v+2,v+3); this.v+=4; };
+    f(x1,y0,z1, x1,y0,z0, x1,y1,z0, x1,y1,z1, 1,0,0);
+    f(x0,y0,z0, x0,y0,z1, x0,y1,z1, x0,y1,z0, -1,0,0);
+    f(x0,y1,z1, x1,y1,z1, x1,y1,z0, x0,y1,z0, 0,1,0);
+    f(x0,y0,z1, x1,y0,z1, x1,y1,z1, x0,y1,z1, 0,0,1);
+    f(x1,y0,z0, x0,y0,z0, x0,y1,z0, x1,y1,z0, 0,0,-1);
+  }
+  geo(){ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(this.p,3)); g.setAttribute('normal',new THREE.Float32BufferAttribute(this.n,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(this.c,3));
+    g.setIndex(this.v>65000?new THREE.Uint32BufferAttribute(this.i,1):new THREE.Uint16BufferAttribute(this.i,1)); g.computeBoundingSphere(); return g; }
+  mesh(mat){ return this.v?new THREE.Mesh(this.geo(),mat||worldMat):null; }
+}
+
+/* ---------- Escena ---------- */
+const canvas=$('#gl');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:!isTouch||devicePixelRatio<2,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,isTouch?1.6:2));
+const scene=new THREE.Scene();
+(()=>{ const c=document.createElement('canvas'); c.width=4; c.height=256; const x=c.getContext('2d'); const g=x.createLinearGradient(0,0,0,256);
+  g.addColorStop(0,'#5f9bd0'); g.addColorStop(.6,'#bcd8ec'); g.addColorStop(1,'#f3ead6'); x.fillStyle=g; x.fillRect(0,0,4,256); scene.background=new THREE.CanvasTexture(c); })();
+scene.fog=new THREE.Fog(0xe9e6d8,70,300);
+const camera=new THREE.PerspectiveCamera(58,1,0.1,900);
+scene.add(new THREE.HemisphereLight(0xeaf2ff,0x8a7a5c,0.68));
+const sun=new THREE.DirectionalLight(0xfff0d8,0.62); sun.position.set(0.5,1,0.35); scene.add(sun);
+const worldMat=new THREE.MeshLambertMaterial({vertexColors:true});
+const basicCol=c=>new THREE.MeshBasicMaterial({color:c});
+
+/* Lotes estáticos por tramos de calle (para descartar lo que no se ve) */
+const CHUNK=120, chunks=new Map();
+function chunkFor(z){ const k=Math.floor(-z/CHUNK); let b=chunks.get(k); if(!b){b=new Batch();chunks.set(k,b);} return b; }
+const colliders=[];
+function addCol(x0,x1,z0,z1){ const c={x0:Math.min(x0,x1),x1:Math.max(x0,x1),z0:Math.min(z0,z1),z1:Math.max(z0,z1)}; colliders.push(c); return c; }
+function B(x0,x1,y0,y1,z0,z1,col,solid){ chunkFor((z0+z1)/2).box(x0,x1,y0,y1,z0,z1,col); if (solid&&Math.min(y0,y1)<1.5) addCol(x0,x1,z0,z1); }
+
+/* Caja en un plano definido por un punto c, una dirección de frente F=[fx,fz] (r = derecha, u = arriba, d = hacia delante) */
+function plBox(bt,c,F,ra,rb,ua,ub,da,db,col,solid){
+  const R0=F[1], R1=-F[0];
+  const xa=c.x+R0*ra+F[0]*da, xb=c.x+R0*rb+F[0]*db, za=c.z+R1*ra+F[1]*da, zb=c.z+R1*rb+F[1]*db;
+  if (bt) bt.box(xa,xb,c.y+ua,c.y+ub,za,zb,col); else B(xa,xb,c.y+ua,c.y+ub,za,zb,col,solid);
+}
+/* Dígitos de 7 segmentos (el número del artículo aparece en todas partes) */
+const SEG={'0':'abcdef','1':'bc','2':'abged','3':'abgcd','4':'fgbc','5':'afgcd','6':'afgedc','7':'abc','8':'abcdefg','9':'abcdfg','-':'g'};
+function digits(bt,str,c,F,h,col,th=0.08){
+  str=String(str); const w=h*0.55, t=h*0.15, gap=h*0.22, total=str.length*w+(str.length-1)*gap; let r0=-total/2;
+  const S={a:[0,w,h-t,h],b:[w-t,w,h/2,h],c:[w-t,w,0,h/2],d:[0,w,0,t],e:[0,t,0,h/2],f:[0,t,h/2,h],g:[0,w,h/2-t/2,h/2+t/2]};
+  for (const ch of str){ for (const s of (SEG[ch]||'')){ const q=S[s]; plBox(bt,c,F,r0+q[0],r0+q[1],q[2]-h/2,q[3]-h/2,0,th,col); } r0+=w+gap; }
+}
+function digitsG(str,cx,cz,U,h,col,y=0.075){
+  str=String(str); const R=[-U[1],U[0]], w=h*0.55, t=h*0.15, gap=h*0.22, total=str.length*w+(str.length-1)*gap; let r0=-total/2;
+  const S={a:[0,w,h-t,h],b:[w-t,w,h/2,h],c:[w-t,w,0,h/2],d:[0,w,0,t],e:[0,t,0,h/2],f:[0,t,h/2,h],g:[0,w,h/2-t/2,h/2+t/2]};
+  for (const ch of str){ for (const s of (SEG[ch]||'')){ const q=S[s];
+    const pts=[[r0+q[0],q[2]-h/2],[r0+q[1],q[3]-h/2]].map(([r,u])=>[cx+R[0]*r+U[0]*u, cz+R[1]*r+U[1]*u]);
+    B(pts[0][0],pts[1][0],y,y+0.02,pts[0][1],pts[1][1],col); } r0+=w+gap; }
+}
+
+/* ---------- Personas de bloques (estáticas o animadas) ---------- */
+const SKIN=[0xf0c8a8,0xe0ac86,0xc68d64,0x9a6644,0x6e4630], HAIR=[0x2a1f1a,0x3b2a20,0x5a3e2b,0x1a1a1a,0x8a8a88,0xb08a58,0xd9c7a0];
+const CLOTH=[0x3d5a80,0xb13b3b,0x2f7d5a,0x444a52,0x8a8f96,0xd9d4c8,0x1f2a38,0x6c4f8e,0xc97a3c,0x28303a,0xe0c040,0x4f9fb0];
+function person(bt,c,F,o,R){
+  R=R||Math.random; const sc=o.sc||1, sk=o.skin??SKIN[(R()*5)|0], hr=o.hair??HAIR[(R()*7)|0], sh=o.c??CLOTH[(R()*12)|0], pa=o.p??(o.c!=null?0x2a2f38:CLOTH[(R()*12)|0]);
+  const sit=o.pose==='sit', dy=sit?-0.42:0;
+  const q=(ra,rb,ua,ub,da,db,col)=>plBox(bt,c,F,ra*sc,rb*sc,ua*sc,ub*sc,da*sc,db*sc,col);
+  if (o.robe){ q(-0.26,0.26,0.05,1.45,-0.15,0.15,o.robe); }
+  if (sit){ q(-0.2,-0.02,0.42,0.52,-0.08,0.5,pa); q(0.02,0.2,0.42,0.52,-0.08,0.5,pa); q(-0.2,-0.02,0,0.45,0.42,0.52,pa); q(0.02,0.2,0,0.45,0.42,0.52,pa); }
+  else if (!o.robe){ q(-0.2,-0.02,0,0.86,-0.1,0.1,pa); q(0.02,0.2,0,0.86,-0.1,0.1,pa); q(-0.21,-0.01,0,0.1,-0.12,0.17,0x222222); q(0.01,0.21,0,0.1,-0.12,0.17,0x222222); }
+  q(-0.23,0.23,0.85+dy,1.45+dy,-0.13,0.13,o.robe||sh);
+  if (o.tie) q(-0.04,0.04,1.0+dy,1.42+dy,0.13,0.15,o.tie);
+  q(-0.14,0.14,1.48+dy,1.76+dy,-0.14,0.14,sk);
+  q(-0.15,0.15,1.72+dy,1.83+dy,-0.15,0.12,hr); q(-0.15,0.15,1.5+dy,1.8+dy,-0.15,-0.1,hr);
+  q(-0.085,-0.04,1.62+dy,1.66+dy,0.14,0.15,0x1d1d1d); q(0.04,0.085,1.62+dy,1.66+dy,0.14,0.15,0x1d1d1d);
+  const arm=o.robe||sh, p=o.pose||'down';
+  const A=(side,kind)=>{ const a=side<0?[-0.37,-0.25]:[0.25,0.37];
+    if (kind==='up') q(a[0],a[1],1.42+dy,2.08+dy,-0.08,0.08,arm);
+    else if (kind==='fwd') q(a[0],a[1],1.28+dy,1.42+dy,0,0.62,arm);
+    else if (kind==='hold') { q(a[0],a[1],1.3+dy,1.42+dy,0,0.35,arm); q(a[0],a[1],1.3+dy,1.95+dy,0.3,0.42,arm); }
+    else q(a[0],a[1],0.8+dy,1.42+dy,-0.08,0.08,arm); };
+  if (p==='wave'){ A(-1,'down'); A(1,'up'); } else if (p==='sit') { A(-1,'fwd'); A(1,'fwd'); } else { A(-1,p); A(1,p); }
+  if (o.hat==='cap') { q(-0.16,0.16,1.78+dy,1.9+dy,-0.16,0.16,o.hc??0x1f2b45); q(-0.15,0.15,1.78+dy,1.81+dy,0.14,0.3,o.hc??0x1f2b45); }
+  if (o.hat==='helmet') q(-0.18,0.18,1.7+dy,1.96+dy,-0.18,0.18,o.hc??0x4b5a32);
+  if (o.hat==='tricorn') { q(-0.22,0.22,1.78+dy,1.95+dy,-0.12,0.12,0x111111); q(-0.12,0.12,1.95+dy,2.02+dy,-0.08,0.02,0x111111); }
+  if (o.hat==='crown') { q(-0.16,0.16,1.8+dy,1.9+dy,-0.16,0.16,0xf2c230); for (const r of [-0.13,0,0.13]) q(r-0.03,r+0.03,1.9+dy,2.02+dy,-0.03,0.03,0xf2c230); q(-0.03,0.03,1.86+dy,1.9+dy,0.16,0.17,0xc0283a); }
+  if (o.hat==='chef') q(-0.14,0.14,1.8+dy,2.1+dy,-0.14,0.14,0xffffff);
+  if (o.hat==='hard') q(-0.17,0.17,1.78+dy,1.92+dy,-0.17,0.17,o.hc??0xf2c230);
+  if (o.band) q(-0.24,0.24,1.1+dy,1.2+dy,-0.14,0.14,o.band);
+  if (o.num!=null){ digits(bt,o.num,{x:c.x+F[0]*0.14*sc,y:c.y+(1.17+dy)*sc,z:c.z+F[1]*0.14*sc},F,0.22*sc,o.nc??0xffffff,0.02);
+    digits(bt,o.num,{x:c.x-F[0]*0.14*sc,y:c.y+(1.15+dy)*sc,z:c.z-F[1]*0.14*sc},[-F[0],-F[1]],0.3*sc,o.nc??0xffffff,0.02); }
+}
+/* Persona animada (piernas y brazos articulados) */
+const charMat=new THREE.MeshLambertMaterial({vertexColors:true});
+const shadowGeo=new THREE.CircleGeometry(0.36,14), shadowMat=new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:0.22,depthWrite:false});
+function human(o){
+  const g=new THREE.Group(), bd=new Batch(), F=[0,1], c={x:0,y:0,z:0};
+  const q=(ra,rb,ua,ub,da,db,col)=>plBox(bd,c,F,ra,rb,ua,ub,da,db,col);
+  q(-0.23,0.23,0.86,1.44,-0.13,0.13,o.c); q(-0.07,0.07,1.44,1.5,-0.07,0.07,o.skin);
+  q(-0.14,0.14,1.5,1.78,-0.14,0.14,o.skin); q(-0.15,0.15,1.74,1.83,-0.15,0.12,o.hair); q(-0.15,0.15,1.52,1.8,-0.15,-0.1,o.hair);
+  q(-0.085,-0.04,1.63,1.67,0.14,0.15,0x1d1d1d); q(0.04,0.085,1.63,1.67,0.14,0.15,0x1d1d1d);
+  if (o.tie) q(-0.04,0.04,1.0,1.42,0.13,0.15,o.tie);
+  if (o.vest) { q(-0.235,-0.12,1.0,1.44,0.13,0.14,o.vest); q(0.12,0.235,1.0,1.44,0.13,0.14,o.vest); }
+  if (o.num!=null) digits(bd,o.num,{x:0,y:1.15,z:-0.14},[0,-1],0.3,0xffffff,0.02);
+  g.add(bd.mesh(charMat));
+  const lb=new Batch(); lb.box(-0.09,0.09,-0.86,0,-0.1,0.1,o.p); lb.box(-0.1,0.1,-0.86,-0.76,-0.12,0.17,0x222222); const lg=lb.geo();
+  const ab=new Batch(); ab.box(-0.07,0.07,-0.56,0.02,-0.08,0.08,o.c); ab.box(-0.06,0.06,-0.7,-0.56,-0.06,0.06,o.skin); const ag=ab.geo();
+  const mk=(geo,x,y)=>{ const p=new THREE.Group(); p.position.set(x,y,0); p.add(new THREE.Mesh(geo,charMat)); g.add(p); return p; };
+  const h={g,legL:mk(lg,-0.11,0.86),legR:mk(lg,0.11,0.86),armL:mk(ag,-0.31,1.42),armR:mk(ag,0.31,1.42),phase:0};
+  const sh=new THREE.Mesh(shadowGeo,shadowMat); sh.rotation.x=-Math.PI/2; sh.position.y=0.03; g.add(sh);
+  return h;
+}
+function walkAnim(h,amt,dt,run){ h.phase+=dt*(run?11:7.2)*(amt>0?1:0); const s=Math.sin(h.phase)*(run?0.85:0.6)*Math.min(1,amt);
+  h.legL.rotation.x=s; h.legR.rotation.x=-s; h.armL.rotation.x=-s*0.8; h.armR.rotation.x=s*0.8; }
+
+/* ---------- Rótulos con texto (se crean solo cerca del jugador) ---------- */
+const SIGN={
+  tile:{bg:'#f6f1e3',fg:'#1d4f91',sub:'#35557f',rule:'#1d4f91',font:'"Fraunces",Georgia,serif'},
+  blue:{bg:'#1d4f91',fg:'#f6f1e3',sub:'#cfe0f5',rule:'#ffc400',font:'"Fraunces",Georgia,serif'},
+  red:{bg:'#b3122a',fg:'#fff4d6',sub:'#ffd9a0',rule:'#ffc400',font:'"Archivo Narrow","Arial Narrow",sans-serif'},
+  dark:{bg:'#1f2430',fg:'#f6f1e3',sub:'#c9cfdb',rule:'#ffc400',font:'"Archivo Narrow","Arial Narrow",sans-serif'},
+  white:{bg:'#ffffff',fg:'#1f2430',sub:'#4a5160',rule:'#b3122a',font:'"Archivo Narrow","Arial Narrow",sans-serif'},
+  yellow:{bg:'#ffc400',fg:'#1f2430',sub:'#3b3b3b',rule:'#1f2430',font:'"Archivo Narrow","Arial Narrow",sans-serif'},
+  green:{bg:'#2f6b3a',fg:'#f6f1e3',sub:'#d3ecd6',rule:'#ffc400',font:'"Archivo Narrow","Arial Narrow",sans-serif'}};
+function signTexture(title,sub,style,w,h){
+  const S=SIGN[style]||SIGN.tile, pw=512, ph=Math.max(64,Math.round(pw*h/w)), cv=document.createElement('canvas'); cv.width=pw; cv.height=ph; const c=cv.getContext('2d');
+  c.fillStyle=S.bg; c.fillRect(0,0,pw,ph);
+  if (style==='tile'){ c.strokeStyle=S.rule; c.lineWidth=Math.max(6,ph*0.06); c.strokeRect(c.lineWidth/2+4,c.lineWidth/2+4,pw-c.lineWidth-8,ph-c.lineWidth-8); }
+  else { c.fillStyle=S.rule; c.fillRect(0,0,pw,Math.max(5,ph*0.07)); }
+  const pad=ph*0.2; let fs=sub?ph*0.4:ph*0.52; const T=title;
+  c.textAlign='center'; c.textBaseline='middle'; c.fillStyle=S.fg;
+  const font=s=>`700 ${s}px ${S.font}`; c.font=font(fs);
+  while (c.measureText(T).width>pw-pad*2&&fs>10){ fs-=1; c.font=font(fs); }
+  c.fillText(T,pw/2,sub?ph*0.42:ph*0.54);
+  if (sub){ let s2=ph*0.2; c.font=`500 ${s2}px "Source Sans 3",sans-serif`; while (c.measureText(sub).width>pw-pad*2&&s2>8){ s2-=1; c.font=`500 ${s2}px "Source Sans 3",sans-serif`; } c.fillStyle=S.sub; c.fillText(sub,pw/2,ph*0.76); }
+  const t=new THREE.CanvasTexture(cv); t.anisotropy=4; return t;
+}
+const planeGeo=new THREE.PlaneGeometry(1,1);
+function makeLabel(L){ const m=new THREE.Mesh(planeGeo,new THREE.MeshBasicMaterial({map:signTexture(L.t,L.s,L.style,L.w,L.h),side:L.two?THREE.DoubleSide:THREE.FrontSide})); m.scale.set(L.w,L.h,1); m.position.set(L.x,L.y,L.z); m.rotation.y=L.rot; scene.add(m); return m; }
+function dropLabel(m){ scene.remove(m); m.material.map.dispose(); m.material.dispose(); }
+
+const ART=[null,
+['Estado social y democrático de Derecho','España se constituye en un Estado social y democrático de Derecho. Sus valores superiores son la libertad, la justicia, la igualdad y el pluralismo político. La soberanía nacional reside en el pueblo español, del que emanan los poderes del Estado. La forma política del Estado es la Monarquía parlamentaria.'],
+['Unidad de la Nación y autonomía','La Constitución se fundamenta en la indisoluble unidad de la Nación española y reconoce y garantiza el derecho a la autonomía de las nacionalidades y regiones que la integran y la solidaridad entre todas ellas.'],
+['Las lenguas','El castellano es la lengua española oficial del Estado: todos tienen el deber de conocerla y el derecho a usarla. Las demás lenguas españolas son también oficiales en sus Comunidades Autónomas. La riqueza de las modalidades lingüísticas es un patrimonio cultural que será objeto de especial respeto y protección.'],
+['La bandera','La bandera de España está formada por tres franjas horizontales, roja, amarilla y roja, siendo la amarilla de doble anchura que cada una de las rojas. Los Estatutos podrán reconocer banderas y enseñas propias de las Comunidades Autónomas, que se usarán junto a la de España.'],
+['La capital','La capital del Estado es la villa de Madrid.'],
+['Partidos políticos','Los partidos políticos expresan el pluralismo político, concurren a la formación y manifestación de la voluntad popular y son instrumento fundamental para la participación política. Su creación y actividad son libres; su estructura interna y funcionamiento deberán ser democráticos.'],
+['Sindicatos y asociaciones empresariales','Los sindicatos de trabajadores y las asociaciones empresariales contribuyen a la defensa y promoción de los intereses económicos y sociales que les son propios. Su creación y actividad son libres dentro del respeto a la Constitución y a la ley; su estructura interna y funcionamiento deberán ser democráticos.'],
+['Fuerzas Armadas','Las Fuerzas Armadas, constituidas por el Ejército de Tierra, la Armada y el Ejército del Aire, tienen como misión garantizar la soberanía e independencia de España, defender su integridad territorial y el ordenamiento constitucional. Una ley orgánica regula las bases de la organización militar.'],
+['Sujeción a la Constitución','Los ciudadanos y los poderes públicos están sujetos a la Constitución y al resto del ordenamiento jurídico. Los poderes públicos deben promover la libertad y la igualdad reales y efectivas. Se garantizan la legalidad, la jerarquía normativa, la publicidad de las normas, la irretroactividad de las disposiciones sancionadoras no favorables o restrictivas de derechos, la seguridad jurídica, la responsabilidad y la interdicción de la arbitrariedad de los poderes públicos.'],
+['Dignidad de la persona','La dignidad de la persona, los derechos inviolables que le son inherentes, el libre desarrollo de la personalidad, el respeto a la ley y a los derechos de los demás son fundamento del orden político y de la paz social. Los derechos fundamentales se interpretan conforme a la Declaración Universal de Derechos Humanos y a los tratados ratificados por España.'],
+['Nacionalidad','La nacionalidad española se adquiere, se conserva y se pierde de acuerdo con lo establecido por la ley. Ningún español de origen puede ser privado de su nacionalidad. El Estado puede concertar tratados de doble nacionalidad con los países iberoamericanos o con los que hayan tenido o tengan una particular vinculación con España.'],
+['Mayoría de edad','Los españoles son mayores de edad a los dieciocho años.'],
+['Extranjeros, extradición y asilo','Los extranjeros gozan en España de las libertades públicas del Título I en los términos de los tratados y la ley. Solo los españoles son titulares de los derechos del art. 23, salvo el sufragio activo y pasivo en las elecciones municipales, que puede reconocerse por reciprocidad. La extradición solo se concede en cumplimiento de un tratado o de la ley, excluidos los delitos políticos (sin que se consideren tales los actos de terrorismo). La ley regula el derecho de asilo.'],
+['Igualdad ante la ley','Los españoles son iguales ante la ley, sin que pueda prevalecer discriminación alguna por razón de nacimiento, raza, sexo, religión, opinión o cualquier otra condición o circunstancia personal o social.'],
+['Derecho a la vida','Todos tienen derecho a la vida y a la integridad física y moral, sin que puedan ser sometidos a tortura ni a penas o tratos inhumanos o degradantes. Queda abolida la pena de muerte, salvo lo que puedan disponer las leyes penales militares para tiempos de guerra (excepción suprimida por la LO 11/1995).'],
+['Libertad ideológica y religiosa','Se garantiza la libertad ideológica, religiosa y de culto. Nadie puede ser obligado a declarar sobre su ideología, religión o creencias. Ninguna confesión tiene carácter estatal: los poderes públicos mantienen relaciones de cooperación con la Iglesia Católica y las demás confesiones.'],
+['Libertad y seguridad. Detención','Toda persona tiene derecho a la libertad y a la seguridad. La detención preventiva no puede durar más del tiempo estrictamente necesario y, como máximo, 72 horas; después, el detenido debe ser puesto en libertad o a disposición judicial. Debe ser informado de sus derechos, no está obligado a declarar y tiene derecho a abogado. La ley regula el habeas corpus.'],
+['Honor, intimidad y domicilio','Se garantiza el derecho al honor, a la intimidad personal y familiar y a la propia imagen. El domicilio es inviolable: no se puede entrar sin consentimiento del titular o resolución judicial, salvo flagrante delito. Se garantiza el secreto de las comunicaciones y la ley limitará el uso de la informática.'],
+['Residencia y circulación','Los españoles tienen derecho a elegir libremente su residencia y a circular por el territorio nacional, así como a entrar y salir libremente de España. Este derecho no puede limitarse por motivos políticos o ideológicos.'],
+['Libertad de expresión e información','Se reconocen los derechos a expresar y difundir libremente pensamientos, ideas y opiniones; a la producción y creación literaria, artística, científica y técnica; a la libertad de cátedra, y a comunicar o recibir libremente información veraz. No pueden restringirse mediante censura previa, y solo una resolución judicial puede acordar el secuestro de publicaciones.'],
+['Derecho de reunión','Se reconoce el derecho de reunión pacífica y sin armas, que no necesita autorización previa. Las reuniones en lugares de tránsito público y las manifestaciones requieren comunicación previa a la autoridad, que solo puede prohibirlas cuando existan razones fundadas de alteración del orden público, con peligro para personas o bienes.'],
+['Derecho de asociación','Se reconoce el derecho de asociación. Son ilegales las asociaciones que persigan fines o utilicen medios tipificados como delito, y se prohíben las secretas y las de carácter paramilitar. Deben inscribirse en un registro a los solos efectos de publicidad y solo pueden disolverse o suspenderse por resolución judicial motivada.'],
+['Participación y acceso a cargos públicos','Los ciudadanos tienen derecho a participar en los asuntos públicos, directamente o por medio de representantes libremente elegidos en elecciones periódicas por sufragio universal. También tienen derecho a acceder en condiciones de igualdad a las funciones y cargos públicos, con los requisitos que señalen las leyes.'],
+['Tutela judicial efectiva','Todas las personas tienen derecho a la tutela efectiva de jueces y tribunales, sin que pueda producirse indefensión. Todos tienen derecho al juez ordinario predeterminado por la ley, a la defensa y asistencia de letrado, a ser informados de la acusación, a un proceso público sin dilaciones indebidas y con todas las garantías, a no declarar contra sí mismos, a no confesarse culpables y a la presunción de inocencia.'],
+['Legalidad penal y reinserción','Nadie puede ser condenado o sancionado por acciones u omisiones que en el momento de producirse no constituyan delito, falta o infracción administrativa según la legislación vigente. Las penas privativas de libertad y las medidas de seguridad se orientan hacia la reeducación y reinserción social y no pueden consistir en trabajos forzados. La Administración civil no puede imponer sanciones que impliquen privación de libertad.'],
+['Prohibición de Tribunales de Honor','Se prohíben los Tribunales de Honor en el ámbito de la Administración civil y de las organizaciones profesionales.'],
+['Educación','Todos tienen el derecho a la educación y se reconoce la libertad de enseñanza. La enseñanza básica es obligatoria y gratuita. Los poderes públicos garantizan el derecho de los padres a que sus hijos reciban la formación religiosa y moral que esté de acuerdo con sus convicciones. Se reconoce la autonomía de las Universidades.'],
+['Libertad sindical y huelga','Todos tienen derecho a sindicarse libremente; la ley puede limitar o exceptuar este derecho a las Fuerzas Armadas y demás cuerpos sometidos a disciplina militar. Se reconoce el derecho a la huelga de los trabajadores para la defensa de sus intereses, garantizando el mantenimiento de los servicios esenciales de la comunidad.'],
+['Derecho de petición','Todos los españoles tienen el derecho de petición individual y colectiva, por escrito. Los miembros de las Fuerzas o Institutos armados solo pueden ejercerlo individualmente y con arreglo a su legislación específica.'],
+['Defensa de España y servicio civil','Los españoles tienen el derecho y el deber de defender a España. La ley fija las obligaciones militares y regula la objeción de conciencia. Puede establecerse un servicio civil para fines de interés general y regularse los deberes de los ciudadanos en casos de grave riesgo, catástrofe o calamidad pública.'],
+['Sistema tributario justo','Todos contribuyen al sostenimiento de los gastos públicos de acuerdo con su capacidad económica, mediante un sistema tributario justo inspirado en los principios de igualdad y progresividad que, en ningún caso, tendrá alcance confiscatorio. El gasto público realizará una asignación equitativa de los recursos públicos.'],
+['Matrimonio','El hombre y la mujer tienen derecho a contraer matrimonio con plena igualdad jurídica. La ley regula las formas de matrimonio, la edad y capacidad para contraerlo, los derechos y deberes de los cónyuges y las causas de separación y disolución.'],
+['Propiedad privada y herencia','Se reconoce el derecho a la propiedad privada y a la herencia, con la función social que delimitan las leyes. Nadie puede ser privado de sus bienes y derechos salvo por causa justificada de utilidad pública o interés social, mediante la correspondiente indemnización y de conformidad con la ley (expropiación).'],
+['Derecho de fundación','Se reconoce el derecho de fundación para fines de interés general, con arreglo a la ley.'],
+['Derecho y deber de trabajar','Todos los españoles tienen el deber de trabajar y el derecho al trabajo, a la libre elección de profesión u oficio, a la promoción a través del trabajo y a una remuneración suficiente para satisfacer sus necesidades y las de su familia, sin discriminación por razón de sexo. La ley regula un estatuto de los trabajadores.'],
+['Colegios profesionales','La ley regula las peculiaridades del régimen jurídico de los Colegios Profesionales y el ejercicio de las profesiones tituladas. Su estructura interna y funcionamiento deberán ser democráticos.'],
+['Negociación colectiva','La ley garantiza el derecho a la negociación colectiva laboral entre los representantes de los trabajadores y los empresarios, así como la fuerza vinculante de los convenios. Se reconoce el derecho de trabajadores y empresarios a adoptar medidas de conflicto colectivo.'],
+['Libertad de empresa','Se reconoce la libertad de empresa en el marco de la economía de mercado. Los poderes públicos garantizan y protegen su ejercicio y la defensa de la productividad, de acuerdo con las exigencias de la economía general y, en su caso, de la planificación.'],
+['Protección de la familia','Los poderes públicos aseguran la protección social, económica y jurídica de la familia, y la protección integral de los hijos, iguales ante la ley con independencia de su filiación, y de las madres, cualquiera que sea su estado civil. Los padres deben prestar asistencia de todo orden a sus hijos. Los niños gozan de la protección de los acuerdos internacionales que velan por sus derechos.'],
+['Progreso social, empleo y descanso','Los poderes públicos promueven el progreso social y económico y una distribución de la renta más equitativa, con una política orientada al pleno empleo. Fomentan la formación profesional, velan por la seguridad e higiene en el trabajo y garantizan el descanso necesario mediante la limitación de la jornada laboral, las vacaciones periódicas retribuidas y la promoción de centros adecuados.'],
+['Seguridad Social','Los poderes públicos mantienen un régimen público de Seguridad Social para todos los ciudadanos, que garantice la asistencia y prestaciones sociales suficientes ante situaciones de necesidad, especialmente en caso de desempleo. La asistencia y las prestaciones complementarias son libres.'],
+['Trabajadores en el extranjero','El Estado vela especialmente por la salvaguardia de los derechos económicos y sociales de los trabajadores españoles en el extranjero y orienta su política hacia su retorno.'],
+['Protección de la salud','Se reconoce el derecho a la protección de la salud. Compete a los poderes públicos organizar y tutelar la salud pública a través de medidas preventivas y de las prestaciones y servicios necesarios. También fomentan la educación sanitaria, la educación física y el deporte y la adecuada utilización del ocio.'],
+['Acceso a la cultura y la ciencia','Los poderes públicos promueven y tutelan el acceso a la cultura, a la que todos tienen derecho, y promueven la ciencia y la investigación científica y técnica en beneficio del interés general.'],
+['Medio ambiente','Todos tienen el derecho a disfrutar de un medio ambiente adecuado para el desarrollo de la persona, así como el deber de conservarlo. Los poderes públicos velan por la utilización racional de todos los recursos naturales. Quien lo viole tendrá sanciones penales o administrativas y la obligación de reparar el daño causado.'],
+['Patrimonio histórico y artístico','Los poderes públicos garantizan la conservación y promueven el enriquecimiento del patrimonio histórico, cultural y artístico de los pueblos de España y de los bienes que lo integran. La ley penal sanciona los atentados contra este patrimonio.'],
+['Vivienda digna','Todos los españoles tienen derecho a disfrutar de una vivienda digna y adecuada. Los poderes públicos promueven las condiciones necesarias y regulan la utilización del suelo de acuerdo con el interés general para impedir la especulación. La comunidad participa en las plusvalías que genere la acción urbanística de los entes públicos.'],
+['Participación de la juventud','Los poderes públicos promueven las condiciones para la participación libre y eficaz de la juventud en el desarrollo político, social, económico y cultural.'],
+['Personas con discapacidad','Las personas con discapacidad ejercen los derechos del Título I en condiciones de libertad e igualdad reales y efectivas. Los poderes públicos impulsan políticas que garanticen su plena autonomía personal y su inclusión social, en entornos universalmente accesibles (redacción reformada en 2024).'],
+['Tercera edad y pensiones','Los poderes públicos garantizan, mediante pensiones adecuadas y periódicamente actualizadas, la suficiencia económica de los ciudadanos durante la tercera edad, y promueven su bienestar mediante un sistema de servicios sociales que atienda sus problemas de salud, vivienda, cultura y ocio.'],
+['Consumidores y usuarios','Los poderes públicos garantizan la defensa de los consumidores y usuarios, protegiendo su seguridad, su salud y sus legítimos intereses económicos. Promueven su información y educación y fomentan sus organizaciones.'],
+['Organizaciones profesionales','La ley regula las organizaciones profesionales que contribuyan a la defensa de los intereses económicos que les sean propios. Su estructura interna y funcionamiento deberán ser democráticos.'],
+['Garantías y recurso de amparo','Los derechos del Capítulo II vinculan a todos los poderes públicos, y solo por ley, que respete su contenido esencial, puede regularse su ejercicio. Cualquier ciudadano puede recabar la tutela de los derechos del art. 14 y de la Sección 1ª del Capítulo II ante los tribunales ordinarios, por un procedimiento preferente y sumario, y mediante el recurso de amparo ante el Tribunal Constitucional (también para la objeción de conciencia). Los principios del Capítulo III informan la legislación y la actuación de los poderes públicos.'],
+['Defensor del Pueblo','Una ley orgánica regula la institución del Defensor del Pueblo, alto comisionado de las Cortes Generales designado por estas para la defensa de los derechos del Título I. Puede supervisar la actividad de la Administración, dando cuenta a las Cortes.'],
+['Suspensión de derechos','Los derechos de los arts. 17, 18.2 y 3, 19, 20.1 a) y d) y 5, 21, 28.2 y 37.2 pueden suspenderse cuando se declare el estado de excepción o de sitio (en el de excepción no se suspende el art. 17.3). Una ley orgánica puede suspender de forma individual los derechos de los arts. 17.2 y 18.2 y 3 para investigaciones sobre bandas armadas o elementos terroristas, con intervención judicial y control parlamentario.'],
+['El Rey, Jefe del Estado','El Rey es el Jefe del Estado, símbolo de su unidad y permanencia; arbitra y modera el funcionamiento regular de las instituciones y asume la más alta representación del Estado en las relaciones internacionales. Su persona es inviolable y no está sujeta a responsabilidad; sus actos deben estar siempre refrendados.'],
+['Sucesión a la Corona','La Corona es hereditaria en los sucesores de S. M. Don Juan Carlos I de Borbón, por el orden de primogenitura y representación: la línea anterior a las posteriores, el grado más próximo al más remoto, en el mismo grado el varón a la mujer y, en el mismo sexo, la persona de más edad. El heredero tiene la dignidad de Príncipe de Asturias. Abdicaciones y renuncias se resuelven por ley orgánica.'],
+['El consorte','La Reina consorte o el consorte de la Reina no pueden asumir funciones constitucionales, salvo lo dispuesto para la Regencia.'],
+['La Regencia','Si el Rey es menor de edad, ejerce la Regencia el padre o la madre del Rey y, en su defecto, el pariente mayor de edad más próximo a suceder en la Corona. Si el Rey se inhabilita y las Cortes lo reconocen, ejerce la Regencia el Príncipe heredero, si es mayor de edad. Si no hay nadie, las Cortes nombran una Regencia de una, tres o cinco personas.'],
+['Tutor del Rey menor','Es tutor del Rey menor la persona que haya nombrado en su testamento el Rey difunto, siempre que sea mayor de edad y español de nacimiento; si no, el padre o la madre mientras permanezcan viudos, y en su defecto la nombran las Cortes. Regente y tutor solo pueden coincidir en el padre, la madre o los ascendientes directos del Rey.'],
+['Juramento del Rey','El Rey, al ser proclamado ante las Cortes Generales, jura desempeñar fielmente sus funciones, guardar y hacer guardar la Constitución y las leyes y respetar los derechos de los ciudadanos y de las Comunidades Autónomas. El Príncipe heredero presta el mismo juramento, y el de fidelidad al Rey, al alcanzar la mayoría de edad.'],
+['Funciones del Rey','Corresponde al Rey: sancionar y promulgar las leyes; convocar y disolver las Cortes y convocar elecciones y referéndum; proponer el candidato a Presidente del Gobierno y nombrarlo; nombrar y separar a los ministros; expedir los decretos del Consejo de Ministros; conferir empleos civiles y militares y conceder honores; el mando supremo de las Fuerzas Armadas; ejercer el derecho de gracia (sin indultos generales) y el Alto Patronazgo de las Reales Academias.'],
+['El Rey y las relaciones internacionales','El Rey acredita a los embajadores y otros representantes diplomáticos, y los representantes extranjeros en España están acreditados ante él. Manifiesta el consentimiento del Estado para obligarse internacionalmente por medio de tratados y, previa autorización de las Cortes Generales, declara la guerra y hace la paz.'],
+['El refrendo','Los actos del Rey son refrendados por el Presidente del Gobierno y, en su caso, por los ministros competentes. La propuesta y el nombramiento del Presidente del Gobierno y la disolución del art. 99 los refrenda el Presidente del Congreso. De los actos del Rey son responsables las personas que los refrendan.'],
+['La Casa del Rey','El Rey recibe de los Presupuestos del Estado una cantidad global para el sostenimiento de su Familia y Casa, y la distribuye libremente. Nombra y releva libremente a los miembros civiles y militares de su Casa.'],
+['Las Cortes Generales','Las Cortes Generales representan al pueblo español y están formadas por el Congreso de los Diputados y el Senado. Ejercen la potestad legislativa del Estado, aprueban sus Presupuestos, controlan la acción del Gobierno y tienen las demás competencias que les atribuya la Constitución. Son inviolables.'],
+['Estatuto de los parlamentarios','Nadie puede ser miembro de las dos Cámaras simultáneamente, ni acumular el acta de una Asamblea autonómica con la de Diputado al Congreso. Los miembros de las Cortes no están ligados por mandato imperativo. Las reuniones sin convocatoria reglamentaria no vinculan a las Cámaras.'],
+['El Congreso de los Diputados','El Congreso se compone de un mínimo de 300 y un máximo de 400 Diputados, elegidos por sufragio universal, libre, igual, directo y secreto. La circunscripción electoral es la provincia; Ceuta y Melilla eligen un Diputado cada una. La elección atiende a criterios de representación proporcional. Los Diputados son elegidos por cuatro años.'],
+['El Senado','El Senado es la Cámara de representación territorial. Cada provincia elige cuatro Senadores; las islas mayores (Gran Canaria, Mallorca y Tenerife) eligen tres y las menores o agrupaciones, uno; Ceuta y Melilla, dos cada una. Las Comunidades Autónomas designan además un Senador y otro más por cada millón de habitantes. El mandato es de cuatro años.'],
+['Inelegibilidad e incompatibilidad','La ley electoral fija las causas de inelegibilidad e incompatibilidad, que incluyen, entre otros, a los miembros del Tribunal Constitucional, los altos cargos, el Defensor del Pueblo, los magistrados, jueces y fiscales en activo, los militares profesionales y miembros de las Fuerzas y Cuerpos de Seguridad y policías en activo, y los miembros de las Juntas Electorales. La validez de las actas está sometida a control judicial.'],
+['Inviolabilidad e inmunidad','Diputados y Senadores gozan de inviolabilidad por las opiniones manifestadas en el ejercicio de sus funciones. Tienen inmunidad: solo pueden ser detenidos en caso de flagrante delito y no pueden ser inculpados ni procesados sin la previa autorización de su Cámara (suplicatorio). Sus causas corresponden a la Sala de lo Penal del Tribunal Supremo.'],
+['Autonomía de las Cámaras','Las Cámaras establecen sus propios Reglamentos, que se aprueban por mayoría absoluta; aprueban autónomamente sus presupuestos y regulan el Estatuto del Personal de las Cortes. Eligen a sus Presidentes y a los demás miembros de sus Mesas. Las sesiones conjuntas las preside el Presidente del Congreso.'],
+['Periodos de sesiones','Las Cámaras se reúnen anualmente en dos periodos ordinarios de sesiones: de septiembre a diciembre y de febrero a junio. Pueden reunirse en sesiones extraordinarias a petición del Gobierno, de la Diputación Permanente o de la mayoría absoluta de los miembros de cualquiera de las Cámaras.'],
+['Sesiones conjuntas','Las Cámaras se reúnen en sesión conjunta para ejercer las competencias no legislativas del Título II (la Corona). Algunas decisiones, como los tratados del art. 94.1, el Fondo de Compensación o los acuerdos entre Comunidades Autónomas, se adoptan por mayoría de cada Cámara, con una posible Comisión Mixta paritaria si no hay acuerdo.'],
+['Pleno y Comisiones','Las Cámaras funcionan en Pleno y por Comisiones. Pueden delegar en las Comisiones Legislativas Permanentes la aprobación de proyectos o proposiciones de ley, salvo la reforma constitucional, las cuestiones internacionales, las leyes orgánicas y de bases y los Presupuestos Generales del Estado.'],
+['Comisiones de investigación','El Congreso, el Senado o ambos pueden nombrar Comisiones de investigación sobre cualquier asunto de interés público. Sus conclusiones no vinculan a los Tribunales, aunque pueden comunicarse al Ministerio Fiscal. Es obligatorio comparecer cuando lo requieran las Cámaras.'],
+['Peticiones a las Cámaras','Las Cámaras pueden recibir peticiones individuales y colectivas, siempre por escrito; está prohibida su presentación directa por manifestaciones ciudadanas. Pueden remitirlas al Gobierno, que debe explicarse sobre su contenido si las Cámaras lo exigen.'],
+['La Diputación Permanente','En cada Cámara hay una Diputación Permanente de un mínimo de 21 miembros, que representan a los grupos parlamentarios en proporción a su importancia numérica. La preside el Presidente de la Cámara y vela por sus poderes cuando no está reunida, cuando ha sido disuelta o ha expirado su mandato.'],
+['Adopción de acuerdos','Para adoptar acuerdos, las Cámaras deben estar reunidas reglamentariamente y con asistencia de la mayoría de sus miembros. Los acuerdos se aprueban por mayoría de los miembros presentes, salvo las mayorías especiales. El voto de Senadores y Diputados es personal e indelegable.'],
+['Publicidad de las sesiones','Las sesiones plenarias de las Cámaras son públicas, salvo acuerdo en contrario de cada Cámara, adoptado por mayoría absoluta o con arreglo al Reglamento.'],
+['Leyes orgánicas','Son leyes orgánicas las relativas al desarrollo de los derechos fundamentales y de las libertades públicas, las que aprueban los Estatutos de Autonomía y el régimen electoral general y las demás previstas en la Constitución. Su aprobación, modificación o derogación exige mayoría absoluta del Congreso en una votación final sobre el conjunto del proyecto.'],
+['Delegación legislativa','Las Cortes pueden delegar en el Gobierno la potestad de dictar normas con rango de ley, de forma expresa, para materia concreta y con plazo fijado. Se otorga mediante una ley de bases cuando se trata de formar textos articulados, o mediante una ley ordinaria cuando se trata de refundir varios textos legales en uno solo.'],
+['Límites de las leyes de bases','Las leyes de bases no pueden en ningún caso autorizar la modificación de la propia ley de bases ni facultar para dictar normas con carácter retroactivo.'],
+['Proposiciones contrarias a la delegación','Cuando una proposición de ley o una enmienda sea contraria a una delegación legislativa en vigor, el Gobierno está facultado para oponerse a su tramitación. En tal caso, puede presentarse una proposición de ley para derogar total o parcialmente la ley de delegación.'],
+['Decretos Legislativos','Las disposiciones del Gobierno que contengan legislación delegada reciben el título de Decretos Legislativos.'],
+['Decretos-leyes','En caso de extraordinaria y urgente necesidad, el Gobierno puede dictar disposiciones legislativas provisionales en forma de Decretos-leyes. No pueden afectar a las instituciones básicas del Estado, a los derechos del Título I, al régimen de las Comunidades Autónomas ni al Derecho electoral general. El Congreso debe convalidarlos o derogarlos en el plazo de 30 días.'],
+['Iniciativa legislativa','La iniciativa legislativa corresponde al Gobierno, al Congreso y al Senado; las Asambleas de las Comunidades Autónomas pueden solicitarla. La iniciativa legislativa popular exige no menos de 500.000 firmas acreditadas y no procede en materias de ley orgánica, tributarias, de carácter internacional ni en lo relativo a la prerrogativa de gracia.'],
+['Proyectos de ley','Los proyectos de ley se aprueban en Consejo de Ministros, que los somete al Congreso acompañados de una exposición de motivos y de los antecedentes necesarios para pronunciarse sobre ellos.'],
+['Proposiciones de ley','La tramitación de las proposiciones de ley la regulan los Reglamentos de las Cámaras, sin que la prioridad de los proyectos de ley impida el ejercicio de la iniciativa legislativa. Las proposiciones tomadas en consideración por el Senado se remiten al Congreso.'],
+['El Senado: veto y enmiendas','Aprobado un proyecto por el Congreso, el Senado dispone de dos meses para oponer su veto, por mayoría absoluta, o introducir enmiendas. El Congreso puede levantar el veto por mayoría absoluta o, pasados dos meses, por mayoría simple, y aceptar o no las enmiendas por mayoría simple. En los proyectos declarados urgentes, el plazo del Senado es de 20 días naturales.'],
+['Sanción y promulgación','El Rey sanciona en el plazo de quince días las leyes aprobadas por las Cortes Generales, y las promulga y ordena su inmediata publicación.'],
+['Referéndum consultivo','Las decisiones políticas de especial trascendencia pueden someterse a referéndum consultivo de todos los ciudadanos. Lo convoca el Rey, mediante propuesta del Presidente del Gobierno, previamente autorizada por el Congreso de los Diputados.'],
+['Organizaciones internacionales','Mediante ley orgánica se puede autorizar la celebración de tratados por los que se atribuya a una organización o institución internacional el ejercicio de competencias derivadas de la Constitución; así entró España en la Unión Europea. Corresponde a las Cortes o al Gobierno garantizar su cumplimiento.'],
+['Tratados con autorización de las Cortes','El consentimiento del Estado para obligarse por tratados requiere la autorización previa de las Cortes cuando son de carácter político o militar, afectan a la integridad territorial o a los derechos del Título I, implican obligaciones financieras para la Hacienda Pública o suponen modificar o derogar alguna ley. Del resto de tratados, Congreso y Senado son informados.'],
+['Tratados contrarios a la Constitución','Un tratado internacional con estipulaciones contrarias a la Constitución exige la previa revisión constitucional. El Gobierno o cualquiera de las Cámaras pueden requerir al Tribunal Constitucional para que declare si existe esa contradicción.'],
+['Los tratados en el Derecho interno','Los tratados internacionales válidamente celebrados, una vez publicados oficialmente en España, forman parte del ordenamiento interno. Sus disposiciones solo pueden ser derogadas, modificadas o suspendidas en la forma prevista en los propios tratados o de acuerdo con el Derecho internacional.'],
+['El Gobierno','El Gobierno dirige la política interior y exterior, la Administración civil y militar y la defensa del Estado. Ejerce la función ejecutiva y la potestad reglamentaria de acuerdo con la Constitución y las leyes.'],
+['Composición del Gobierno','El Gobierno se compone del Presidente, de los Vicepresidentes en su caso, de los Ministros y de los demás miembros que establezca la ley. El Presidente dirige la acción del Gobierno y coordina las funciones de sus miembros. Estos no pueden ejercer otras funciones representativas que las del mandato parlamentario, ni otra función pública ni actividad profesional o mercantil.'],
+['Investidura del Presidente','Tras cada renovación del Congreso, el Rey, previa consulta con los representantes de los grupos políticos y a través del Presidente del Congreso, propone un candidato, que expone su programa. Si obtiene la mayoría absoluta, el Rey lo nombra; si no, 48 horas después basta la mayoría simple. Si en dos meses desde la primera votación nadie obtiene la confianza, el Rey disuelve las Cámaras y convoca elecciones.'],
+['Nombramiento de los Ministros','Los demás miembros del Gobierno son nombrados y separados por el Rey, a propuesta de su Presidente.'],
+['Cese del Gobierno','El Gobierno cesa tras la celebración de elecciones generales, en los casos de pérdida de la confianza parlamentaria o por dimisión o fallecimiento de su Presidente. El Gobierno cesante continúa en funciones hasta la toma de posesión del nuevo Gobierno.'],
+['Responsabilidad penal del Gobierno','La responsabilidad criminal del Presidente y de los demás miembros del Gobierno es exigible ante la Sala de lo Penal del Tribunal Supremo. Si la acusación es por traición o delito contra la seguridad del Estado, solo puede plantearse por iniciativa de la cuarta parte del Congreso y con la aprobación de su mayoría absoluta. La prerrogativa real de gracia no se aplica a estos casos.'],
+['La Administración Pública','La Administración Pública sirve con objetividad los intereses generales y actúa de acuerdo con los principios de eficacia, jerarquía, descentralización, desconcentración y coordinación, con sometimiento pleno a la ley y al Derecho. La ley regula el estatuto de los funcionarios, el acceso a la función pública de acuerdo con los principios de mérito y capacidad, su sindicación y sus incompatibilidades.'],
+['Fuerzas y Cuerpos de Seguridad','Las Fuerzas y Cuerpos de Seguridad, bajo la dependencia del Gobierno, tienen como misión proteger el libre ejercicio de los derechos y libertades y garantizar la seguridad ciudadana. Una ley orgánica determina sus funciones, principios básicos de actuación y estatutos.'],
+['Audiencia y acceso a archivos','La ley regula la audiencia de los ciudadanos en la elaboración de las disposiciones administrativas que les afecten; su acceso a los archivos y registros administrativos, salvo en lo que afecte a la seguridad y defensa del Estado, la investigación de delitos y la intimidad; y el procedimiento administrativo, garantizando la audiencia del interesado.'],
+['Control judicial de la Administración','Los Tribunales controlan la potestad reglamentaria y la legalidad de la actuación administrativa. Los particulares tienen derecho a ser indemnizados por toda lesión que sufran en sus bienes y derechos como consecuencia del funcionamiento de los servicios públicos, salvo en casos de fuerza mayor.'],
+['El Consejo de Estado','El Consejo de Estado es el supremo órgano consultivo del Gobierno. Una ley orgánica regula su composición y competencia.'],
+['Responsabilidad política del Gobierno','El Gobierno responde solidariamente en su gestión política ante el Congreso de los Diputados.'],
+['Información a las Cámaras','Las Cámaras y sus Comisiones pueden recabar, a través de sus Presidentes, la información y ayuda que precisen del Gobierno, de sus Departamentos y de cualesquiera autoridades del Estado y de las Comunidades Autónomas.'],
+['Comparecencia del Gobierno','Las Cámaras y sus Comisiones pueden reclamar la presencia de los miembros del Gobierno. Estos tienen acceso a las sesiones y la facultad de hacerse oír en ellas, y pueden pedir que informen ante ellas funcionarios de sus Departamentos.'],
+['Interpelaciones y preguntas','El Gobierno y cada uno de sus miembros están sometidos a las interpelaciones y preguntas que se les formulen en las Cámaras, con un tiempo mínimo semanal fijado por los Reglamentos. Toda interpelación puede dar lugar a una moción en la que la Cámara manifieste su posición.'],
+['Cuestión de confianza','El Presidente del Gobierno, previa deliberación del Consejo de Ministros, puede plantear ante el Congreso la cuestión de confianza sobre su programa o sobre una declaración de política general. La confianza se entiende otorgada cuando vota a favor la mayoría simple de los Diputados.'],
+['Moción de censura','El Congreso puede exigir la responsabilidad política del Gobierno mediante la adopción, por mayoría absoluta, de una moción de censura. Debe proponerla al menos la décima parte de los Diputados e incluir un candidato a la Presidencia del Gobierno (moción constructiva). No puede votarse hasta que pasen cinco días desde su presentación.'],
+['Efectos de la confianza y la censura','Si el Congreso niega su confianza, el Gobierno presenta su dimisión al Rey y se designa Presidente según el art. 99. Si el Congreso aprueba una moción de censura, el Gobierno dimite y el candidato incluido en ella se entiende investido de la confianza de la Cámara, y el Rey lo nombra Presidente.'],
+['Disolución anticipada','El Presidente del Gobierno, previa deliberación del Consejo de Ministros y bajo su exclusiva responsabilidad, puede proponer la disolución del Congreso, del Senado o de las Cortes Generales, que decreta el Rey fijando la fecha de las elecciones. No puede hacerlo mientras esté en trámite una moción de censura, ni antes de que pase un año desde la anterior disolución, salvo el caso del art. 99.5.'],
+['Estados de alarma, excepción y sitio','El estado de alarma lo declara el Gobierno por decreto acordado en Consejo de Ministros, por un plazo máximo de 15 días, dando cuenta al Congreso, sin cuya autorización no puede prorrogarse. El de excepción lo declara el Gobierno con autorización previa del Congreso, por 30 días prorrogables otros 30. El de sitio lo declara el Congreso por mayoría absoluta, a propuesta exclusiva del Gobierno.'],
+['La Justicia','La justicia emana del pueblo y se administra en nombre del Rey por Jueces y Magistrados integrantes del poder judicial, independientes, inamovibles, responsables y sometidos únicamente al imperio de la ley. La unidad jurisdiccional es la base de la organización de los Tribunales. Se prohíben los Tribunales de excepción.'],
+['Cumplimiento de las sentencias','Es obligado cumplir las sentencias y demás resoluciones firmes de los Jueces y Tribunales, así como prestar la colaboración que estos requieran en el curso del proceso y en la ejecución de lo resuelto.'],
+['Justicia gratuita','La justicia es gratuita cuando así lo disponga la ley y, en todo caso, respecto de quienes acrediten insuficiencia de recursos para litigar.'],
+['Publicidad y oralidad','Las actuaciones judiciales son públicas, con las excepciones que prevean las leyes de procedimiento. El procedimiento es predominantemente oral, sobre todo en materia criminal. Las sentencias son siempre motivadas y se pronuncian en audiencia pública.'],
+['Error judicial','Los daños causados por error judicial, así como los que sean consecuencia del funcionamiento anormal de la Administración de Justicia, dan derecho a una indemnización a cargo del Estado, conforme a la ley.'],
+['Consejo General del Poder Judicial','La Ley Orgánica del Poder Judicial regula los juzgados y tribunales. El Consejo General del Poder Judicial es su órgano de gobierno: lo preside el Presidente del Tribunal Supremo y lo forman 20 miembros nombrados por el Rey por cinco años, 12 entre Jueces y Magistrados y 4 a propuesta del Congreso y 4 del Senado, elegidos por mayoría de tres quintos.'],
+['El Tribunal Supremo','El Tribunal Supremo, con jurisdicción en toda España, es el órgano jurisdiccional superior en todos los órdenes, salvo en materia de garantías constitucionales. Su Presidente es nombrado por el Rey, a propuesta del Consejo General del Poder Judicial.'],
+['El Ministerio Fiscal','El Ministerio Fiscal promueve la acción de la justicia en defensa de la legalidad, de los derechos de los ciudadanos y del interés público, y vela por la independencia de los Tribunales. Actúa con unidad de actuación y dependencia jerárquica, con sujeción a la legalidad y a la imparcialidad. El Fiscal General del Estado es nombrado por el Rey a propuesta del Gobierno, oído el CGPJ.'],
+['Acción popular y Jurado','Los ciudadanos pueden ejercer la acción popular y participar en la Administración de Justicia mediante la institución del Jurado, en los procesos penales que la ley determine, así como en los Tribunales consuetudinarios y tradicionales, como el Tribunal de las Aguas de Valencia.'],
+['La policía judicial','La policía judicial depende de los Jueces, de los Tribunales y del Ministerio Fiscal en sus funciones de averiguación del delito y descubrimiento y aseguramiento del delincuente.'],
+['Incompatibilidades de jueces y fiscales','Los Jueces, Magistrados y Fiscales en activo no pueden desempeñar otros cargos públicos ni pertenecer a partidos políticos o sindicatos. La ley regula su sistema de asociación profesional y su régimen de incompatibilidades, que debe asegurar su total independencia.'],
+['La riqueza y el interés general','Toda la riqueza del país, en sus distintas formas y sea cual fuere su titularidad, está subordinada al interés general. Se reconoce la iniciativa pública en la actividad económica. Mediante ley se pueden reservar al sector público recursos o servicios esenciales, especialmente en caso de monopolio, y acordar la intervención de empresas cuando lo exija el interés general.'],
+['Participación y cooperativas','La ley establece las formas de participación de los interesados en la Seguridad Social y en los organismos públicos que afecten a la calidad de vida o al bienestar general. Los poderes públicos promueven la participación en la empresa, fomentan las sociedades cooperativas y facilitan el acceso de los trabajadores a la propiedad de los medios de producción.'],
+['Modernización de la economía','Los poderes públicos atienden a la modernización y desarrollo de todos los sectores económicos y, en particular, de la agricultura, la ganadería, la pesca y la artesanía, para equiparar el nivel de vida de todos los españoles. Las zonas de montaña reciben un tratamiento especial.'],
+['Planificación económica','El Estado, mediante ley, puede planificar la actividad económica general para atender a las necesidades colectivas, equilibrar y armonizar el desarrollo regional y sectorial y estimular el crecimiento de la renta y la riqueza y su más justa distribución. El Gobierno elabora los proyectos con las previsiones de las Comunidades Autónomas y el asesoramiento de sindicatos y organizaciones empresariales y económicas.'],
+['Dominio público','La ley regula los bienes de dominio público y los comunales, con los principios de inalienabilidad, imprescriptibilidad e inembargabilidad. Son bienes de dominio público estatal la zona marítimo-terrestre, las playas, el mar territorial y los recursos naturales de la zona económica y la plataforma continental.'],
+['Potestad tributaria','La potestad originaria para establecer los tributos corresponde exclusivamente al Estado, mediante ley. Las Comunidades Autónomas y las Corporaciones locales pueden establecer y exigir tributos de acuerdo con la Constitución y las leyes. Todo beneficio fiscal que afecte a los tributos del Estado debe establecerse por ley.'],
+['Presupuestos Generales del Estado','Corresponde al Gobierno elaborar los Presupuestos Generales del Estado y a las Cortes examinarlos, enmendarlos y aprobarlos. Son anuales e incluyen la totalidad de gastos e ingresos del sector público estatal. El Gobierno debe presentarlos al Congreso al menos tres meses antes de que expiren los del año anterior; si no se aprueban a tiempo, se prorrogan automáticamente.'],
+['Estabilidad presupuestaria','Todas las Administraciones Públicas adecuan sus actuaciones al principio de estabilidad presupuestaria (reforma de 2011). El Estado y las Comunidades Autónomas no pueden incurrir en un déficit estructural que supere los márgenes de la Unión Europea. Los créditos para pagar la deuda pública gozan de prioridad absoluta.'],
+['El Tribunal de Cuentas','El Tribunal de Cuentas es el supremo órgano fiscalizador de las cuentas y de la gestión económica del Estado y del sector público. Depende directamente de las Cortes Generales, a las que remite un informe anual. Sus miembros tienen la misma independencia e inamovilidad que los Jueces.'],
+['Organización territorial','El Estado se organiza territorialmente en municipios, en provincias y en las Comunidades Autónomas que se constituyan. Todas estas entidades gozan de autonomía para la gestión de sus respectivos intereses.'],
+['Principio de solidaridad','El Estado garantiza la realización efectiva del principio de solidaridad, velando por un equilibrio económico adecuado y justo entre las diversas partes del territorio y atendiendo en particular al hecho insular. Las diferencias entre los Estatutos no pueden implicar privilegios económicos o sociales.'],
+['Mismos derechos en todo el territorio','Todos los españoles tienen los mismos derechos y obligaciones en cualquier parte del territorio del Estado. Ninguna autoridad puede adoptar medidas que obstaculicen la libertad de circulación y establecimiento de las personas y la libre circulación de bienes en todo el territorio español.'],
+['El municipio','La Constitución garantiza la autonomía de los municipios, que gozan de personalidad jurídica plena. Su gobierno y administración corresponden a los Ayuntamientos, integrados por Alcaldes y Concejales. Los Concejales se eligen por sufragio universal; los Alcaldes, por los Concejales o por los vecinos. La ley regula el régimen de concejo abierto.'],
+['La provincia y las islas','La provincia es una entidad local con personalidad jurídica propia, formada por la agrupación de municipios y división territorial para el cumplimiento de las actividades del Estado. Su gobierno corresponde a las Diputaciones u otras Corporaciones representativas. En los archipiélagos, cada isla tiene su administración propia en forma de Cabildos o Consejos.'],
+['Haciendas locales','Las Haciendas locales deben disponer de los medios suficientes para el desempeño de sus funciones y se nutren fundamentalmente de tributos propios y de su participación en los del Estado y de las Comunidades Autónomas.'],
+['Derecho a la autonomía','Las provincias limítrofes con características históricas, culturales y económicas comunes, los territorios insulares y las provincias con entidad regional histórica pueden acceder a su autogobierno y constituirse en Comunidades Autónomas. La iniciativa corresponde a las Diputaciones interesadas o al órgano interinsular y a las dos terceras partes de los municipios que representen la mayoría del censo electoral.'],
+['Autonomía por interés nacional','Las Cortes, mediante ley orgánica y por motivos de interés nacional, pueden autorizar una Comunidad Autónoma cuyo ámbito no supere el de una provincia (como Madrid), autorizar o acordar un Estatuto para territorios no integrados en la organización provincial (Ceuta y Melilla) y sustituir la iniciativa de las Corporaciones locales.'],
+['Prohibición de federación','En ningún caso se admite la federación de Comunidades Autónomas. Los Estatutos pueden prever convenios entre Comunidades para la gestión y prestación de servicios propios, comunicándolos a las Cortes; los demás acuerdos de cooperación necesitan su autorización.'],
+['Elaboración del Estatuto','El proyecto de Estatuto lo elabora una asamblea formada por los miembros de la Diputación u órgano interinsular de las provincias afectadas y por los Diputados y Senadores elegidos en ellas, y se eleva a las Cortes Generales para su tramitación como ley.'],
+['El Estatuto de Autonomía','Los Estatutos son la norma institucional básica de cada Comunidad Autónoma, y el Estado los reconoce y ampara como parte de su ordenamiento. Contienen la denominación de la Comunidad, la delimitación de su territorio, la denominación, organización y sede de sus instituciones y las competencias asumidas. Su reforma requiere aprobación de las Cortes mediante ley orgánica.'],
+['Competencias de las Comunidades','Las Comunidades Autónomas pueden asumir competencias como la organización de sus instituciones, la ordenación del territorio, el urbanismo y la vivienda, obras públicas, ferrocarriles y carreteras dentro de su territorio, agricultura y ganadería, montes, medio ambiente, museos y bibliotecas, fomento de la cultura y la lengua, turismo, deporte y ocio, asistencia social y sanidad e higiene. Pasados cinco años pueden ampliarlas.'],
+['Competencias exclusivas del Estado','El Estado tiene competencia exclusiva sobre 32 materias, entre ellas: nacionalidad, inmigración y asilo; relaciones internacionales; defensa y Fuerzas Armadas; Administración de Justicia; legislación mercantil, penal y penitenciaria; legislación laboral; sistema monetario; Hacienda general y Deuda del Estado; sanidad exterior; marina mercante, puertos y aeropuertos de interés general; seguridad pública, y autorización de consultas por referéndum.'],
+['Leyes marco y de armonización','Las Cortes pueden atribuir a las Comunidades Autónomas facultades legislativas en el marco de principios fijados por una ley estatal (leyes marco), y el Estado puede transferirles o delegarles, mediante ley orgánica, facultades de su titularidad. El Estado puede dictar leyes de armonización, aprobadas por mayoría absoluta de cada Cámara, cuando lo exija el interés general.'],
+['La vía rápida del art. 151','No hace falta esperar cinco años para asumir el máximo nivel de competencias cuando la iniciativa la acuerdan las Diputaciones y las tres cuartas partes de los municipios de cada provincia afectada que representen la mayoría del censo, y se ratifica en referéndum por la mayoría absoluta de los electores de cada provincia.'],
+['Instituciones autonómicas','En los Estatutos aprobados por el procedimiento del art. 151, la organización institucional se basa en una Asamblea Legislativa elegida por sufragio universal con representación proporcional, un Consejo de Gobierno y un Presidente elegido por la Asamblea y nombrado por el Rey. Un Tribunal Superior de Justicia culmina la organización judicial en su territorio.'],
+['Control de las Comunidades','El control de la actividad de los órganos de las Comunidades Autónomas lo ejercen el Tribunal Constitucional (disposiciones con rango de ley), el Gobierno, previo dictamen del Consejo de Estado (funciones delegadas), la jurisdicción contencioso-administrativa (administración autonómica y reglamentos) y el Tribunal de Cuentas (lo económico y presupuestario).'],
+['El Delegado del Gobierno','Un Delegado nombrado por el Gobierno dirige la Administración del Estado en el territorio de la Comunidad Autónoma y la coordina, cuando proceda, con la administración propia de la Comunidad.'],
+['Coerción estatal','Si una Comunidad Autónoma no cumple las obligaciones que la Constitución u otras leyes le imponen, o actúa atentando gravemente contra el interés general de España, el Gobierno, previo requerimiento a su Presidente y, si no es atendido, con la aprobación por mayoría absoluta del Senado, puede adoptar las medidas necesarias para obligarla al cumplimiento forzoso o para proteger el interés general.'],
+['Autonomía financiera','Las Comunidades Autónomas gozan de autonomía financiera para el desarrollo y ejecución de sus competencias, con arreglo a los principios de coordinación con la Hacienda estatal y de solidaridad entre todos los españoles. Pueden actuar como delegados o colaboradores del Estado para recaudar sus tributos.'],
+['Recursos de las Comunidades','Los recursos de las Comunidades Autónomas son los impuestos cedidos total o parcialmente por el Estado, los recargos y otras participaciones; sus propios impuestos, tasas y contribuciones especiales; las transferencias del Fondo de Compensación y otras asignaciones de los Presupuestos; los rendimientos de su patrimonio e ingresos privados, y las operaciones de crédito. No pueden gravar bienes situados fuera de su territorio.'],
+['Fondo de Compensación Interterritorial','Los Presupuestos Generales del Estado pueden asignar recursos a las Comunidades Autónomas en función de los servicios que hayan asumido. Para corregir desequilibrios económicos entre territorios y hacer efectivo el principio de solidaridad, se constituye un Fondo de Compensación destinado a gastos de inversión, cuyos recursos distribuyen las Cortes Generales.'],
+['El Tribunal Constitucional','El Tribunal Constitucional se compone de 12 miembros nombrados por el Rey: 4 a propuesta del Congreso y 4 del Senado, por mayoría de tres quintos, 2 del Gobierno y 2 del Consejo General del Poder Judicial. Son juristas de reconocida competencia con más de quince años de ejercicio profesional, designados por nueve años y renovados por terceras partes cada tres. Son independientes e inamovibles.'],
+['Presidente del Tribunal Constitucional','El Presidente del Tribunal Constitucional es nombrado entre sus miembros por el Rey, a propuesta del propio Tribunal en Pleno, por un periodo de tres años.'],
+['Competencias del Tribunal Constitucional','El Tribunal Constitucional tiene jurisdicción en toda España y conoce del recurso de inconstitucionalidad contra leyes y normas con fuerza de ley, del recurso de amparo por violación de los derechos del art. 53.2, de los conflictos de competencia entre el Estado y las Comunidades Autónomas o de estas entre sí, y de las demás materias que le atribuyan la Constitución o las leyes orgánicas. Si el Gobierno impugna ante él una disposición autonómica, esta queda suspendida.'],
+['Legitimación ante el Tribunal','Pueden interponer el recurso de inconstitucionalidad el Presidente del Gobierno, el Defensor del Pueblo, 50 Diputados, 50 Senadores y los órganos colegiados ejecutivos de las Comunidades Autónomas y, en su caso, sus Asambleas. El recurso de amparo puede interponerlo toda persona natural o jurídica que invoque un interés legítimo, además del Defensor del Pueblo y el Ministerio Fiscal.'],
+['Cuestión de inconstitucionalidad','Cuando un órgano judicial considere, en algún proceso, que una norma con rango de ley aplicable al caso, y de cuya validez dependa el fallo, puede ser contraria a la Constitución, plantea la cuestión ante el Tribunal Constitucional. Sus efectos nunca son suspensivos.'],
+['Sentencias del Tribunal Constitucional','Las sentencias del Tribunal Constitucional se publican en el Boletín Oficial del Estado con los votos particulares, si los hay. Tienen valor de cosa juzgada desde el día siguiente a su publicación y no cabe recurso contra ellas. Las que declaran la inconstitucionalidad de una ley tienen plenos efectos frente a todos.'],
+['Ley Orgánica del Tribunal Constitucional','Una ley orgánica regula el funcionamiento del Tribunal Constitucional, el estatuto de sus miembros, el procedimiento ante el mismo y las condiciones para el ejercicio de las acciones.'],
+['Iniciativa de reforma','La iniciativa de reforma constitucional se ejerce en los términos del art. 87.1 y 2: Gobierno, Congreso, Senado y Asambleas de las Comunidades Autónomas. No cabe la iniciativa legislativa popular.'],
+['Reforma ordinaria','Los proyectos de reforma constitucional deben aprobarse por una mayoría de tres quintos de cada Cámara. Si no hay acuerdo, una Comisión paritaria de Diputados y Senadores presenta un texto; si tampoco prospera, basta la mayoría absoluta del Senado si el Congreso lo aprueba por dos tercios. Se somete a referéndum si lo solicita, en los quince días siguientes, una décima parte de los miembros de cualquiera de las Cámaras.'],
+['Reforma agravada','La revisión total de la Constitución, o una parcial que afecte al Título Preliminar, a la Sección 1ª del Capítulo II del Título I o al Título II, exige aprobar el principio por dos tercios de cada Cámara y disolver inmediatamente las Cortes. Las nuevas Cámaras ratifican la decisión y aprueban el nuevo texto por dos tercios de ambas. Después, referéndum obligatorio.'],
+['Límite temporal de la reforma','No puede iniciarse la reforma constitucional en tiempo de guerra ni mientras esté vigente alguno de los estados del art. 116 (alarma, excepción o sitio).']
+];
+
+/* ---------- Colores ---------- */
+const RED=0xc60b1e, YEL=0xffc400, BLU=0x1d4f91, GOLD=0xe0b43c, WOOD=0x7a5236, WHITE=0xf4f1ea, GREY=0x8f969e, DARK=0x2a2f38,
+      GREEN=0x3f7f4a, SUIT=0x2b3140, OLIVE=0x55633a, STONE=0xd8cfbd, BRICK=0xb5654a, CREAM=0xefe4c8, ROBE=0x16181d, POL=0x1f3f7a, GC=0x4f6b3a;
+const tint=(c,k)=>{ const r=(c>>16)&255,g=(c>>8)&255,b=c&255; return ((r+(255-r)*k)|0)<<16|((g+(255-g)*k)|0)<<8|((b+(255-b)*k)|0); };
+const shade=(c,k)=>{ const r=(c>>16)&255,g=(c>>8)&255,b=c&255; return ((r*k)|0)<<16|((g*k)|0)<<8|((b*k)|0); };
+
+const lots=[], anims=[];
+/* ---------- Parcela de un artículo: coordenadas locales u (fondo desde la acera) y w (a lo largo de la calle) ---------- */
+function Lot(n,side,zc,col){
+  const s=side, R=rng(n*7919+13);
+  const X=u=>s*(10+u), Z=w=>zc+s*w;
+  const FW={road:[-s,0],back:[s,0],wp:[0,s],wm:[0,-s]};
+  const HD=f=>Math.atan2(FW[f][0],FW[f][1]);
+  const L={n,s,zc,R,X,Z,FW,HD,col,labels:[],anims:[],meshes:[]};
+  const c=(u,y,w)=>({x:X(u),y,z:Z(w)});
+  L.c=c;
+  L.b=(u0,u1,y0,y1,w0,w1,col,solid)=>B(X(u0),X(u1),y0,y1,Z(w0),Z(w1),col,solid);
+  L.num=(u,y,w,face,h,col=WHITE,str=n)=>digits(null,str,c(u,y,w),FW[face],h,col);
+  L.gnum=(u,w,h,col=WHITE,str=n)=>digitsG(str,X(u),Z(w),FW.back,h,col,0.08);
+  L.p=(u,w,face,o={})=>person(null,c(u,0,w),FW[face],o,R);
+  L.label=(t,sub,u,y,w,face,wd,ht,style='tile')=>{ const F=FW[face]; L.labels.push({t,s:sub,x:X(u)+F[0]*0.03,y,z:Z(w)+F[1]*0.03,rot:Math.atan2(F[0],F[1]),w:wd,h:ht,style}); };
+  L.q=(u,y,w,face,ra,rb,ua,ub,da,db,col,solid)=>plBox(null,c(u,y,w),FW[face],ra,rb,ua,ub,da,db,col,solid);
+  /* Edificio con puerta, ventanas, rótulo y placa de número */
+  L.bld=(u0,u1,w0,w1,h,col,o={})=>{
+    L.b(u0,u1,0,h,w0,w1,col,true); L.b(u0-0.2,u1+0.2,h,h+0.3,w0-0.2,w1+0.2,o.roof??shade(col,0.55));
+    const dw=o.dw??(w0+w1)/2;
+    for (let y=1.2; y+1.3<h-0.5; y+=2.6) for (let w=w0+1.1; w+0.5<w1; w+=2.2){ if (y<2.6&&Math.abs(w-dw)<1.6) continue; L.b(u0-0.05,u0,y,y+1.2,w-0.45,w+0.45,0x2d3a4a); }
+    if (o.door!==false){ L.b(u0-0.06,u0,0,2.4,dw-0.8,dw+0.8,o.dc??0x5a3a26); }
+    L.b(u0-0.05,u0,1.35,2.25,dw+1.0,dw+2.1,BLU); L.num(u0-0.07,1.8,dw+1.55,'road',0.55,WHITE);
+    if (o.label) L.label(o.label,o.sub||null,u0-0.07,Math.min(h-0.75,3.6),dw,'road',Math.min(w1-w0-0.6,7.5),o.sub?1.1:0.8,o.style||'blue');
+  };
+  /* Edificio clásico con columnas y frontón */
+  L.temple=(u0,u1,w0,w1,h,col,label,sub)=>{
+    L.b(u0-1.4,u1,0,0.3,w0-0.5,w1+0.5,STONE); L.b(u0-0.9,u1,0.3,0.6,w0-0.3,w1+0.3,STONE);
+    L.b(u0+1.3,u1,0.6,h,w0,w1,col,true);
+    for (let w=w0+0.4; w<=w1-0.3; w+=1.5) L.b(u0-0.2,u0+0.35,0.6,h-0.5,w-0.25,w+0.25,0xf3efe4,true);
+    L.b(u0-0.4,u1,h-0.5,h,w0-0.2,w1+0.2,col);
+    const ww=w1-w0; for (let i=0;i<4;i++) L.b(u0-0.4,u1,h+i*0.4,h+(i+1)*0.4,w0+i*ww/9,w1-i*ww/9,i%2?col:shade(col,0.92));
+    L.num(u0+1.25,h*0.55,(w0+w1)/2,'road',1.3,GOLD);
+    if (label) L.label(label,sub||null,u0-0.45,h+0.75,(w0+w1)/2,'road',ww*0.62,sub?1.0:0.75,'tile');
+  };
+  L.table=(u0,u1,w0,w1,col=WOOD,o={})=>{
+    L.b(u0,u1,0.74,0.8,w0,w1,col,true); L.b(u0+0.1,u0+0.2,0,0.74,w0+0.1,w0+0.2,DARK); L.b(u1-0.2,u1-0.1,0,0.74,w1-0.2,w1-0.1,DARK); L.b(u0+0.1,u0+0.2,0,0.74,w1-0.2,w1-0.1,DARK); L.b(u1-0.2,u1-0.1,0,0.74,w0+0.1,w0+0.2,DARK);
+    if (o.people===false) return;
+    const along=(w1-w0)>=(u1-u0), sp=o.sp||1.0, A=o.a||{}, Bo=o.b||{};
+    if (along){ for (let w=w0+0.5; w<w1-0.2; w+=sp){ L.p(u0-0.62,w,'back',Object.assign({pose:'sit'},A)); L.p(u1+0.62,w,'road',Object.assign({pose:'sit'},Bo)); } }
+    else { for (let u=u0+0.5; u<u1-0.2; u+=sp){ L.p(u,w0-0.62,'wp',Object.assign({pose:'sit'},A)); L.p(u,w1+0.62,'wm',Object.assign({pose:'sit'},Bo)); } }
+  };
+  L.lectern=(u,w,face,col=WOOD)=>{ const F=FW[face], cc=c(u,0,w); plBox(null,cc,F,-0.42,0.42,0,1.15,-0.3,0.3,col,true); plBox(null,cc,F,-0.48,0.48,1.15,1.22,-0.36,0.36,shade(col,0.8));
+    digits(null,n,{x:cc.x+F[0]*0.31,y:0.68,z:cc.z+F[1]*0.31},F,0.42,YEL); plBox(null,cc,F,-0.03,0.03,1.22,1.5,0.05,0.09,0x222222); };
+  L.flag=(u,w,face,kind='es',h=6,withNum=true)=>{
+    L.b(u-0.07,u+0.07,0,h,w-0.07,w+0.07,0xd6dade,true); L.b(u-0.12,u+0.12,h,h+0.18,w-0.12,w+0.12,GOLD);
+    const F=FW[face], cc=c(u,h-1.5,w), fl=(ua,ub,col)=>plBox(null,cc,F,0.08,2.3,ua,ub,-0.02,0.02,col);
+    if (kind==='es'){ fl(0,0.35,RED); fl(0.35,1.05,YEL); fl(1.05,1.4,RED); }
+    else if (kind==='eu'){ fl(0,1.4,0x1f47a8); for (let i=0;i<12;i++){ const a=i/12*Math.PI*2; plBox(null,cc,F,1.19+Math.cos(a)*0.45-0.04,1.19+Math.cos(a)*0.45+0.04,0.7+Math.sin(a)*0.45-0.04,0.7+Math.sin(a)*0.45+0.04,0.02,0.04,YEL); } }
+    else if (Array.isArray(kind)){ const k=1.4/kind.length; kind.forEach((col,i)=>fl(i*k,(i+1)*k,col)); }
+    if (withNum) { digits(null,n,{x:cc.x+F[1]*1.19,y:cc.y+0.7,z:cc.z-F[0]*1.19+0},F,0.5,kind==='es'?0x8a0f1f:WHITE,0.03); }
+  };
+  L.tree=(u,w,sc=1)=>{ L.b(u-0.18,u+0.18,0,1.8*sc,w-0.18,w+0.18,0x6b4f35,true); L.b(u-1.2*sc,u+1.2*sc,1.6*sc,3.6*sc,w-1.2*sc,w+1.2*sc,0x5d8a45); L.b(u-0.8*sc,u+0.8*sc,3.6*sc,4.6*sc,w-0.8*sc,w+0.8*sc,0x6a9a4e); };
+  L.bench=(u,w,along='w')=>{ if (along==='w'){ L.b(u-0.25,u+0.25,0.4,0.48,w-1,w+1,WOOD,true); L.b(u+0.2,u+0.28,0.48,0.9,w-1,w+1,WOOD); } else { L.b(u-1,u+1,0.4,0.48,w-0.25,w+0.25,WOOD,true); } };
+  L.book=(u,w,face,col,label,sub)=>{ const F=FW[face], cc=c(u,0,w); plBox(null,cc,F,-1.1,1.1,0,2.9,-0.3,0.3,col,true); plBox(null,cc,F,-1.05,1.05,0.05,2.85,-0.34,-0.3,0xf3eedc);
+    plBox(null,cc,F,-1.12,-0.9,0,2.9,-0.32,0.32,shade(col,0.7)); plBox(null,cc,F,-0.8,0.9,2.3,2.36,0.3,0.32,GOLD); plBox(null,cc,F,-0.8,0.9,0.5,0.56,0.3,0.32,GOLD);
+    digits(null,n,{x:cc.x+F[0]*0.31,y:0.95,z:cc.z+F[1]*0.31},F,0.55,GOLD,0.02);
+    if (label) L.labels.push({t:label,s:sub||null,x:cc.x+F[0]*0.33,y:1.8,z:cc.z+F[1]*0.33,rot:Math.atan2(F[0],F[1]),w:1.7,h:sub?0.7:0.5,style:'blue'}); };
+  L.scale=(u,w,face,h=3.2,col=GOLD)=>{ const F=FW[face], cc=c(u,0,w); plBox(null,cc,F,-0.5,0.5,0,0.2,-0.5,0.5,DARK,true); plBox(null,cc,F,-0.08,0.08,0,h,-0.08,0.08,col);
+    plBox(null,cc,F,-1.6,1.6,h-0.1,h,-0.06,0.06,col); for (const r of [-1.5,1.5]){ plBox(null,cc,F,r-0.02,r+0.02,h-1.3,h,-0.02,0.02,0x555555); plBox(null,cc,F,r-0.45,r+0.45,h-1.4,h-1.3,-0.45,0.45,col); } };
+  L.ballot=(u,w,face)=>{ const F=FW[face], cc=c(u,0,w); plBox(null,cc,F,-0.5,0.5,0,0.75,-0.5,0.5,WOOD,true); plBox(null,cc,F,-0.4,0.4,0.75,1.45,-0.4,0.4,0xd9ecf2); plBox(null,cc,F,-0.2,0.2,1.45,1.48,-0.03,0.03,DARK);
+    plBox(null,cc,F,-0.12,0.12,1.25,1.6,-0.01,0.01,WHITE); digits(null,n,{x:cc.x+F[0]*0.41,y:1.08,z:cc.z+F[1]*0.41},F,0.32,BLU,0.02); };
+  L.car=(u,w,face,col,kind)=>{ const F=FW[face], cc=c(u,0,w); const q=(a,b,ua,ub,da,db,co,so)=>plBox(null,cc,F,a,b,ua,ub,da,db,co,so);
+    q(-0.9,0.9,0.35,1.05,-2.1,2.1,col,true); q(-0.8,0.8,1.05,1.6,-1.1,0.9,kind?WHITE:shade(col,0.85)); q(-0.78,0.78,1.1,1.55,-1.12,0.92,0x2d3a4a);
+    for (const d of [-1.35,1.35]){ q(-0.95,-0.75,0,0.62,d-0.32,d+0.32,0x1a1a1a); q(0.75,0.95,0,0.62,d-0.32,d+0.32,0x1a1a1a); }
+    if (kind==='police'){ q(-0.92,0.92,0.62,0.85,-2.12,2.12,POL); q(-0.5,0.5,1.6,1.75,-0.2,0.2,0x2a4fd0); }
+    if (kind==='gc'){ q(-0.92,0.92,0.62,0.85,-2.12,2.12,0x2f6b3a); q(-0.5,0.5,1.6,1.75,-0.2,0.2,0x2a4fd0); }
+    if (kind==='amb'){ q(-0.92,0.92,0.62,0.85,-2.12,2.12,0xd21f2b); q(-0.5,0.5,1.6,1.75,-0.2,0.2,0xd21f2b); }
+    digits(null,n,{x:cc.x+F[1]*0.93,y:0.95,z:cc.z-F[0]*0.93},[F[1],-F[0]],0.4,kind?DARK:WHITE,0.02);
+    digits(null,n,{x:cc.x-F[1]*0.93,y:0.95,z:cc.z+F[0]*0.93},[-F[1],F[0]],0.4,kind?DARK:WHITE,0.02); };
+  /* Hemiciclo: escaños en arco abiertos hacia 'face' */
+  L.hemi=(u,w,face,R0,rows,col,o={})=>{ const F=FW[face], cc=c(u,0,w); const Rv=[F[1],-F[0]];
+    for (let r=0;r<rows;r++){ const rad=R0+r*1.05, yb=r*0.28, cnt=Math.round(rad*2.2);
+      for (let i=0;i<=cnt;i++){ const a=-Math.PI*0.45+Math.PI*0.9*i/cnt, dx=-F[0]*Math.cos(a)*rad+Rv[0]*Math.sin(a)*rad, dz=-F[1]*Math.cos(a)*rad+Rv[1]*Math.sin(a)*rad;
+        const x=cc.x+dx, z=cc.z+dz; B(x-0.28,x+0.28,0,yb+0.45,z-0.28,z+0.28,col);
+        if (o.people!==false && (i+r)%(o.every||2)===0){ const fx=-dx, fz=-dz, ax=Math.abs(fx)>Math.abs(fz); const FF=ax?[Math.sign(fx),0]:[0,Math.sign(fz)];
+          person(null,{x:x-FF[0]*0.2,y:yb+0.02,z:z-FF[1]*0.2},FF,{pose:'sit',c:o.c??(R()<0.5?SUIT:CLOTH[(R()*12)|0]),tie:R()<0.4?RED:null,sc:0.9},R); } } } };
+  L.throne=(u,w,face,col=0xb3122a)=>{ L.q(u,0,w,face,-0.55,0.55,0,0.5,-0.5,0.5,GOLD,true); L.q(u,0,w,face,-0.5,0.5,0.5,0.62,-0.45,0.45,col); L.q(u,0,w,face,-0.55,0.55,0.5,2.3,-0.62,-0.45,GOLD); L.q(u,0,w,face,-0.45,0.45,0.6,2.1,-0.45,-0.42,col); };
+  L.crown=(u,y,w,sc=1)=>{ const q=(a,b,ya,yb,d0,d1,co)=>L.b(u+a*sc,u+b*sc,y+ya*sc,y+yb*sc,w+d0*sc,w+d1*sc,co);
+    q(-0.8,0.8,0,0.35,-0.8,0.8,GOLD); for (const [a,d] of [[-0.7,-0.7],[0.7,-0.7],[-0.7,0.7],[0.7,0.7],[0,-0.75],[0,0.75],[-0.75,0],[0.75,0]]) q(a-0.12,a+0.12,0.35,0.8,d-0.12,d+0.12,GOLD);
+    q(-0.12,0.12,0.8,1.05,-0.12,0.12,RED); q(-0.05,0.05,1.05,1.35,-0.05,0.05,GOLD); q(-0.15,0.15,1.2,1.26,-0.05,0.05,GOLD); };
+  L.pix=(rows,u,y,w,face,px,pal)=>{ const F=FW[face], cc=c(u,y,w), H=rows.length, Wd=rows[0].length;
+    rows.forEach((row,j)=>{ for (let i=0;i<row.length;i++){ const ch=row[i]; if (ch===' '||!pal[ch]) continue; const r0=(i-Wd/2)*px, u0=(H-1-j)*px; plBox(null,cc,F,r0,r0+px,u0,u0+px,-px*0.3,px*0.3,pal[ch]); } }); };
+  L.board=(u,w,face,wd,ht,t,sub,style='tile',y=1.6)=>{ const F=FW[face], cc=c(u,0,w), Rv=[F[1],-F[0]];
+    for (const r of [-wd/2+0.2,wd/2-0.2]) plBox(null,cc,F,r-0.07,r+0.07,0,y,-0.07,0.07,DARK,true);
+    plBox(null,cc,F,-wd/2-0.08,wd/2+0.08,y-0.08,y+ht+0.08,-0.09,-0.03,DARK);
+    L.labels.push({t,s:sub||null,x:cc.x+F[0]*0.0,y:y+ht/2,z:cc.z+F[1]*0.0,rot:Math.atan2(F[0],F[1]),w:wd,h:ht,style}); };
+  L.fence=(u0,u1,w0,w1,h=1,col=0x9aa3a8)=>{ L.b(u0,u1,0,h,w0-0.05,w0+0.05,col,true); L.b(u0,u1,0,h,w1-0.05,w1+0.05,col,true); L.b(u1-0.05,u1+0.05,0,h,w0,w1,col,true); };
+  L.water=(u0,u1,w0,w1,col=0x3f86c6)=>{ L.b(u0,u1,0.06,0.16,w0,w1,col); L.b(u0-0.2,u1+0.2,0.06,0.3,w0-0.2,w0,STONE); L.b(u0-0.2,u1+0.2,0.06,0.3,w1,w1+0.2,STONE); L.b(u0-0.2,u0,0.06,0.3,w0,w1,STONE); L.b(u1,u1+0.2,0.06,0.3,w0,w1,STONE); };
+  L.coins=(u,w,h=1.2,col=GOLD)=>{ for (let y=0;y<h;y+=0.12) L.b(u-0.3+(y*7%3)*0.02,u+0.3,y,y+0.1,w-0.3,w+0.3,y%0.24<0.12?col:shade(col,0.85)); };
+  L.bag=(u,w,sc=1,col=0x9c7a3c)=>{ L.b(u-0.5*sc,u+0.5*sc,0,0.9*sc,w-0.5*sc,w+0.5*sc,col,true); L.b(u-0.2*sc,u+0.2*sc,0.9*sc,1.15*sc,w-0.2*sc,w+0.2*sc,shade(col,0.8)); L.num(u-0.52*sc,0.45*sc,w,'road',0.4*sc,GOLD); };
+  L.boxes=(u,w,n2=3,col=0xc49a62)=>{ for (let i=0;i<n2;i++) L.b(u-0.35+(i%2)*0.1,u+0.35,i*0.6,i*0.6+0.58,w-0.35,w+0.35,i%2?col:shade(col,0.9)); };
+  L.shelf=(u0,u1,w,h=2.2)=>{ L.b(u0,u1,0,h,w-0.25,w+0.25,0x6e4a2e,true); const bc=[0xa33b2f,0x2f5d8a,0xc9a23a,0x3f7d5c,0x6b4c8a,0xd8d2c4]; let i=0;
+    for (let y=0.25;y<h-0.3;y+=0.45) for (let u=u0+0.05;u<u1-0.12;u+=0.14){ L.b(u,u+0.1,y,y+0.32,w-0.3,w-0.24,bc[i++%6]); L.b(u,u+0.1,y,y+0.32,w+0.24,w+0.3,bc[(i+2)%6]); } };
+  L.anim=(o)=>{ o.lot=L; L.anims.push(o); anims.push(o); if (o.g){ o.g.visible=false; scene.add(o.g); } return o; };
+  return L;
+}
+
+/* ---------- Animaciones ---------- */
+function canon(){ const bt=new Batch(); bt.Q=(ra,rb,ua,ub,da,db,col)=>plBox(bt,{x:0,y:0,z:0},[0,1],ra,rb,ua,ub,da,db,col); return bt; }
+function grp(...bs){ const g=new THREE.Group(); for (const b of bs){ const m=b.isObject3D?b:b.mesh(); if (m) g.add(m); } return g; }
+const A={
+  tank(L,u,w,rad=3.4){ const hb=canon(), tb=canon(), n=L.n;
+    hb.Q(-1.3,1.3,0.35,1.1,-2.1,2.1,OLIVE); hb.Q(-1.6,-1.25,0,0.8,-2.3,2.3,0x2b2b24); hb.Q(1.25,1.6,0,0.8,-2.3,2.3,0x2b2b24); hb.Q(-1.2,1.2,1.1,1.2,-1.8,1.8,shade(OLIVE,0.9));
+    digits(hb,n,{x:1.61,y:0.72,z:0},[1,0],0.55,WHITE,0.02); digits(hb,n,{x:-1.61,y:0.72,z:0},[-1,0],0.55,WHITE,0.02); digits(hb,n,{x:0,y:0.72,z:2.11},[0,1],0.4,WHITE,0.02);
+    tb.Q(-0.85,0.85,0,0.62,-1.0,0.9,shade(OLIVE,1.1)); tb.Q(-0.08,0.08,0.22,0.38,0.8,3.3,0x3a3f2e); tb.Q(-0.2,0.2,0.62,0.85,-0.5,-0.1,0x3a3f2e);
+    digits(tb,n,{x:0.86,y:0.32,z:0},[1,0],0.38,YEL,0.02); digits(tb,n,{x:-0.86,y:0.32,z:0},[-1,0],0.38,YEL,0.02);
+    const tur=grp(tb); tur.position.y=1.2; const g=grp(hb,tur); const C={x:L.X(u),z:L.Z(w)};
+    return L.anim({g,up(t){ const a=t*0.32; g.position.set(C.x+Math.cos(a)*rad,0.06,C.z+Math.sin(a)*rad); g.rotation.y=Math.atan2(-Math.sin(a),Math.cos(a)); tur.rotation.y=Math.sin(t*0.8)*0.9; }}); },
+  plane(L,u,w,alt=13,rad=7){ const b=canon(), n=L.n; b.Q(-0.35,0.35,-0.3,0.35,-2.2,2.2,0xb8c2c8); b.Q(-3,3,-0.05,0.08,-0.4,0.6,0x9aa6ad); b.Q(-1.1,1.1,-0.05,0.06,-2.2,-1.7,0x9aa6ad); b.Q(-0.05,0.05,0.35,1.1,-2.2,-1.6,0x9aa6ad); digits(b,n,{x:0.36,y:0.05,z:0},[1,0],0.4,RED,0.02); digits(b,n,{x:-0.36,y:0.05,z:0},[-1,0],0.4,RED,0.02);
+    const g=grp(b), C={x:L.X(u),z:L.Z(w)};
+    return L.anim({g,up(t){ const a=t*0.45; g.position.set(C.x+Math.cos(a)*rad,alt+Math.sin(t*1.3)*0.4,C.z+Math.sin(a)*rad); g.rotation.set(0,Math.atan2(-Math.sin(a),Math.cos(a)),0); g.rotation.z=0.25; }}); },
+  flag(L,u,w,face,h=9,kind='es'){ const n=L.n; L.b(u-0.08,u+0.08,0,h,w-0.08,w+0.08,0xd6dade,true); L.b(u-0.14,u+0.14,h,h+0.2,w-0.14,w+0.14,GOLD);
+    const b=canon(); const fl=(ua,ub,col)=>b.Q(0.1,2.9,ua,ub,-0.02,0.02,col);
+    if (kind==='es'){ fl(0,0.45,RED); fl(0.45,1.35,YEL); fl(1.35,1.8,RED); } else if (Array.isArray(kind)){ const k=1.8/kind.length; kind.forEach((c2,i)=>fl(i*k,(i+1)*k,c2)); }
+    digits(b,n,{x:1.5,y:0.9,z:0.025},[0,1],0.62,0x8a0f1f,0.02); digits(b,n,{x:1.5,y:0.9,z:-0.025},[0,-1],0.62,0x8a0f1f,0.02);
+    const g=grp(b); g.position.set(L.X(u),1,L.Z(w)); g.rotation.y=L.HD(face)+Math.PI/2*0; const top=h-2.2;
+    const hm=human({c:0x2d3a2a,p:0x2d3a2a,skin:0xe0ac86,hair:0x2a1f1a,num:n}); const F=L.FW[face]; hm.g.position.set(L.X(u)-F[0]*0.7,0.06,L.Z(w)-F[1]*0.7); hm.g.rotation.y=Math.atan2(F[0],F[1]); scene.add(hm.g); hm.g.visible=false;
+    const o=L.anim({g,up(t){ const k=(Math.sin(t*0.35-1.5)*0.5+0.5); g.position.y=1+k*top; g.rotation.y=L.HD(face)+Math.sin(t*2.2)*0.12; hm.armL.rotation.x=-2.6+Math.sin(t*4)*0.4; hm.armR.rotation.x=-2.6-Math.sin(t*4)*0.4; }});
+    o.extra=[hm.g]; return o; },
+  crowd(L,u0,u1,w0,w1,count,face,o={}){ const a=new Batch(), b2=new Batch(), F=L.FW[face], n=L.n, R=L.R;
+    for (let i=0;i<count;i++){ const u=u0+R()*(u1-u0), w=w0+R()*(w1-w0), c=L.c(u,0,w), bt=i%2?a:b2;
+      person(bt,c,F,{pose:o.sign?'hold':(o.pose||(R()<0.5?'up':'down')),num:o.num?n:null,c:o.c,hat:o.hat,hc:o.hc},R);
+      if (o.sign){ plBox(bt,c,F,-0.5,0.5,1.95,2.65,0.42,0.47,o.sc??WHITE); digits(bt,n,{x:c.x+F[0]*0.48,y:2.3,z:c.z+F[1]*0.48},F,0.45,o.dc??RED,0.02); } }
+    const ma=a.mesh(), mb=b2.mesh(), g=grp(ma,mb);
+    return L.anim({g,up(t){ ma.position.y=Math.max(0,Math.sin(t*(o.speed||5)))*(o.amp??0.14); mb.position.y=Math.max(0,Math.sin(t*(o.speed||5)+Math.PI))*(o.amp??0.14); }}); },
+  speaker(L,u,w,face,o={}){ L.lectern(u,w,face); const F=L.FW[face];
+    const h=human({c:o.c??SUIT,p:o.p??SUIT,skin:o.skin??0xe0ac86,hair:o.hair??0x3b2a20,tie:o.tie??RED,num:L.n}); h.g.position.set(L.X(u)-F[0]*0.75,0.06,L.Z(w)-F[1]*0.75); h.g.rotation.y=Math.atan2(F[0],F[1]);
+    return L.anim({g:h.g,up(t){ h.armR.rotation.x=-1.3+Math.sin(t*3.1)*0.5; h.armR.rotation.z=-0.2+Math.sin(t*1.7)*0.2; h.armL.rotation.x=-0.4+Math.sin(t*2.3)*0.15; h.g.rotation.y=Math.atan2(F[0],F[1])+Math.sin(t*0.7)*0.25; }}); },
+  siren(L,u,y,w,cols=[0x2a55ff,0xff2a2a],sz=0.22){ const g=new THREE.Group(); const m1=new THREE.Mesh(new THREE.BoxGeometry(sz*1.6,sz,sz),basicCol(cols[0])), m2=new THREE.Mesh(new THREE.BoxGeometry(sz*1.6,sz,sz),basicCol(cols[1]));
+    m1.position.set(-sz,0,0); m2.position.set(sz,0,0); g.add(m1,m2); g.position.set(L.X(u),y,L.Z(w)); g.rotation.y=L.s>0?0:0;
+    return L.anim({g,up(t){ const k=Math.floor(t*6)%2; m1.visible=!!k; m2.visible=!k; }}); },
+  mover(L,kind,u,w0,w1,o={}){ const b=canon(), n=L.n, col=o.col??0x2f6fb0;
+    if (kind==='truck'){ b.Q(-1,1,0.4,2.8,-2.8,1.2,o.box??WHITE); b.Q(-1,1,0.4,2.2,1.3,2.8,col); b.Q(-0.95,0.95,1.3,2.0,2.8,2.82,0x2d3a4a); }
+    else if (kind==='box'){ b.Q(-0.5,0.5,0,0.8,-0.5,0.5,o.box??0xc49a62); }
+    else { b.Q(-0.9,0.9,0.35,1.05,-2.1,2.1,col); b.Q(-0.8,0.8,1.05,1.6,-1.1,0.9,0x2d3a4a); if (o.bags){ b.Q(-0.6,0.2,1.6,2.0,-0.8,0.2,0x8a5a3a); b.Q(0.25,0.7,1.6,1.9,-0.6,0.4,0x3a6a8a); } }
+    if (kind!=='box') for (const d of [-1.5,1.5]){ b.Q(-1.05,-0.85,0,0.65,d-0.33,d+0.33,0x1a1a1a); b.Q(0.85,1.05,0,0.65,d-0.33,d+0.33,0x1a1a1a); }
+    const side=kind==='box'?0.51:(kind==='truck'?1.01:0.91), hy=kind==='box'?0.4:(kind==='truck'?1.6:0.75), dh=kind==='box'?0.4:(kind==='truck'?1.0:0.42);
+    digits(b,n,{x:side,y:hy,z:0},[1,0],dh,kind==='box'?DARK:(o.dc??WHITE),0.02); digits(b,n,{x:-side,y:hy,z:0},[-1,0],dh,kind==='box'?DARK:(o.dc??WHITE),0.02);
+    if (kind==='amb'){ b.Q(-0.2,0.2,0.5,0.9,2.11,2.13,0xd21f2b); }
+    const g=grp(b), sp=o.speed||0.35, y0=o.y||0.06;
+    return L.anim({g,up(t){ const ph=(t*sp)%2, k=ph<1?ph:2-ph, e=k*k*(3-2*k), w=w0+(w1-w0)*e; g.position.set(L.X(u),y0,L.Z(w)); const dir=(ph<1?1:-1)*(w1>w0?1:-1)*L.s; g.rotation.y=dir>0?0:Math.PI; }}); },
+  spin(L,u,y,w,face,build,axis='z',speed=1.5){ const b=canon(); build(b); const inner=grp(b), g=new THREE.Group(); g.add(inner); g.position.set(L.X(u),y,L.Z(w)); g.rotation.y=L.HD(face);
+    return L.anim({g,up(t){ inner.rotation[axis]=t*speed; }}); },
+  swing(L,u,y,w,face,build,axis='x',amp=0.8,speed=3,base=0){ const b=canon(); build(b); const inner=grp(b), g=new THREE.Group(); g.add(inner); g.position.set(L.X(u),y,L.Z(w)); g.rotation.y=L.HD(face);
+    return L.anim({g,up(t){ inner.rotation[axis]=base+Math.sin(t*speed)*amp; }}); },
+  bob(L,build,amp=0.25,speed=1.4,rot=0){ const b=new Batch(); build(b); const g=grp(b); return L.anim({g,up(t){ g.position.y=Math.sin(t*speed)*amp; if (rot) g.rotation.z=Math.sin(t*speed*0.8)*rot*0.02; }}); },
+  blink(L,build,rate=2){ const b=new Batch(); build(b); const g=grp(b); return L.anim({g,up(t){ g.children[0].visible=Math.floor(t*rate)%2===0; }}); },
+  stamp(L,u,w,face,col=RED){ const b=canon(); b.Q(-0.08,0.08,0.3,1.4,-0.08,0.08,WOOD); b.Q(-0.25,0.25,1.3,1.55,-0.25,0.25,WOOD); b.Q(-0.55,0.55,0,0.3,-0.4,0.4,col);
+    digits(b,L.n,{x:0,y:0.15,z:0.41},[0,1],0.22,WHITE,0.02); const g=grp(b), base={x:L.X(u),z:L.Z(w)};
+    return L.anim({g,up(t){ const k=Math.abs(Math.sin(t*2)); g.position.set(base.x,0.9+k*1.1,base.z); g.rotation.y=L.HD(face); }}); },
+  gavel(L,u,w,face,sc=1.6){ const b=canon(); b.Q(-0.08*sc,0.08*sc,0,0.08*sc,0,1.3*sc,WOOD); b.Q(-0.28*sc,0.28*sc,-0.2*sc,0.28*sc,1.1*sc,1.5*sc,0x5a3a26);
+    digits(b,L.n,{x:0.29*sc,y:0.04*sc,z:1.3*sc},[1,0],0.22*sc,GOLD,0.02); digits(b,L.n,{x:-0.29*sc,y:0.04*sc,z:1.3*sc},[-1,0],0.22*sc,GOLD,0.02);
+    const inner=grp(b), g=new THREE.Group(); g.add(inner); g.position.set(L.X(u),1.2*sc,L.Z(w)); g.rotation.y=L.HD(face)+Math.PI/2;
+    return L.anim({g,up(t){ const k=Math.pow(Math.abs(Math.sin(t*1.8)),3); inner.rotation.x=-0.1-k*1.1; }}); },
+  crane(L,u,w,h=10,o={}){ L.b(u-0.4,u+0.4,0,h,w-0.4,w+0.4,YEL,true); for (let y=0.5;y<h;y+=1) L.b(u-0.45,u+0.45,y,y+0.08,w-0.45,w+0.45,0x333333);
+    const b=canon(); b.Q(-0.35,0.35,0,0.5,-2.5,7,YEL); b.Q(-0.6,0.6,-0.6,0.8,-3.2,-2.2,GREY); b.Q(-0.03,0.03,-4,0,6,6.06,0x333333); b.Q(-0.6,0.6,-5.2,-4,5.4,6.6,o.load??0xc49a62);
+    digits(b,L.n,{x:0.61,y:-4.6,z:6},[1,0],0.6,DARK,0.02); digits(b,L.n,{x:-0.61,y:-4.6,z:6},[-1,0],0.6,DARK,0.02); digits(b,L.n,{x:0.36,y:0.25,z:2},[1,0],0.4,DARK,0.02);
+    const g=grp(b); g.position.set(L.X(u),h,L.Z(w)); return L.anim({g,up(t){ g.rotation.y=o.stopped?0.8:t*0.25; }}); },
+  tilt(L,u,w,face,h=3.4,col=GOLD){ const beam=canon(), pl=canon(), pr=canon(); beam.Q(-1.7,1.7,-0.06,0.06,-0.06,0.06,col);
+    for (const [b2] of [[pl],[pr]]){ b2.Q(-0.02,0.02,-1.3,0,-0.02,0.02,0x555555); b2.Q(-0.5,0.5,-1.4,-1.3,-0.5,0.5,col); }
+    const inner=grp(beam), L1=grp(pl), R1=grp(pr); L1.position.x=-1.6; R1.position.x=1.6; inner.add(L1,R1);
+    const g=new THREE.Group(); g.add(inner); g.position.set(L.X(u),h,L.Z(w)); g.rotation.y=L.HD(face);
+    return L.anim({g,up(t){ const a=Math.sin(t*1.2)*0.18; inner.rotation.z=a; L1.rotation.z=-a; R1.rotation.z=-a; }}); },
+  jump(L,u0,u1,w0,w1,count,o={}){ const hs=[], g=new THREE.Group(), R=L.R;
+    for (let i=0;i<count;i++){ const h=human({c:CLOTH[(R()*12)|0],p:CLOTH[(R()*12)|0],skin:SKIN[(R()*5)|0],hair:HAIR[(R()*7)|0],num:L.n}); h.g.position.set(L.X(u0+R()*(u1-u0)),0.06,L.Z(w0+R()*(w1-w0))); h.g.rotation.y=L.HD(o.face||'road')+(R()-0.5); h.ph=R()*6; g.add(h.g); hs.push(h); }
+    return L.anim({g,up(t){ for (const h of hs){ const k=Math.max(0,Math.sin(t*4+h.ph)); h.g.position.y=0.06+k*(o.amp??0.5); h.armL.rotation.x=h.armR.rotation.x=-2.8*k; } }}); },
+  walker(L,u0,u1,w0,w1,o={}){ const R=L.R, h=human({c:o.c??CLOTH[(R()*12)|0],p:o.p??0x2a2f38,skin:SKIN[(R()*5)|0],hair:HAIR[(R()*7)|0],num:L.n,tie:o.tie}); let tx=0,tz=0,wait=0, x=L.X((u0+u1)/2), z=L.Z((w0+w1)/2);
+    return L.anim({g:h.g,up(t,dt){ if (wait>0){ wait-=dt; walkAnim(h,0,dt); } else { const dx=tx-x, dz=tz-z, d=Math.hypot(dx,dz); if (d<0.2){ wait=1+R()*3; tx=L.X(u0+R()*(u1-u0)); tz=L.Z(w0+R()*(w1-w0)); } else { const st=Math.min(d,1.2*dt); x+=dx/d*st; z+=dz/d*st; h.g.rotation.y=Math.atan2(dx,dz); walkAnim(h,1,dt); } }
+      h.g.position.set(x,0.06,z); }}); },
+  press(L,u,w,face){ const b=canon(); b.Q(-1.2,1.2,0,1.0,-0.8,0.8,0x4a5058); b.Q(-1.1,1.1,1.0,1.02,-0.7,0.7,WHITE);
+    const r1=canon(), r2=canon(); for (const r of [r1,r2]){ r.Q(-1.0,1.0,-0.22,0.22,-0.22,0.22,0x2a2f38); r.Q(-1.0,1.0,-0.24,0.24,-0.05,0.05,0x60666e); }
+    const g=new THREE.Group(), base=grp(b), a=grp(r1), c2=grp(r2); a.position.set(0,1.3,-0.3); c2.position.set(0,1.3,0.3); g.add(base,a,c2);
+    const sheets=canon(); for (let i=0;i<6;i++) sheets.Q(-0.45,0.45,i*0.012,i*0.012+0.01,-0.6,0.6,WHITE); const sh=grp(sheets); sh.position.set(0,1.02,0); g.add(sh);
+    digits(b,L.n,{x:0,y:0.5,z:0.81},[0,1],0.45,YEL,0.02); g.position.set(L.X(u),0.06,L.Z(w)); g.rotation.y=L.HD(face);
+    return L.anim({g,up(t){ a.rotation.x=t*4; c2.rotation.x=-t*4; sh.position.z=((t*0.8)%1.6)-0.8; }}); }
+};
+
+/* ---------- Una escena por artículo. u: 3..15 hacia el fondo, w: -6.5..6.5 a lo largo de la calle ---------- */
+const HEART=['.##.##.','#######','#######','.#####.','..###..','...#...'].map(r=>r.replace(/\./g,' '));
+const XMARK=['#...#','.#.#.','..#..','.#.#.','#...#'].map(r=>r.replace(/\./g,' '));
+const QMARK=['.###.','#...#','...#.','..#..','.....','..#..'].map(r=>r.replace(/\./g,' '));
+const CROSS=['.#.','###','.#.'].map(r=>r.replace(/\./g,' '));
+const SHIELD=['#######','#..#..#','#..#..#','#######','.#...#.','..#.#..','...#...'].map(r=>r.replace(/\./g,' '));
+const STOP=['.###.','#####','#####','#####','.###.'].map(r=>r.replace(/\./g,' '));
+const EQ=['#####','.....','#####'].map(r=>r.replace(/\./g,' '));
+const WHEEL=['..#..','.###.','..#..','.##..','#..#.','#..##','.##..'].map(r=>r.replace(/\./g,' '));
+const civ=R=>({c:CLOTH[(R()*12)|0]});
+const suit=(tie=RED)=>({c:SUIT,p:SUIT,tie});
+const judge={robe:ROBE};
+const SC={
+1:L=>{ L.b(7.5,9.5,0,1.2,-1,1,STONE,true); L.crown(8.5,1.2,0,1); for (const [u,w,t] of [[5,-4.5,'Libertad'],[5,4.5,'Justicia'],[13,-4.5,'Igualdad'],[13,4.5,'Pluralismo']]){ L.b(u-0.4,u+0.4,0,4,w-0.4,w+0.4,WHITE,true); L.b(u-0.55,u+0.55,4,4.3,w-0.55,w+0.55,GOLD); L.label(t,null,u-0.43,3.4,w,'road',1.5,0.42,'blue'); }
+  A.crowd(L,9.5,14,-3.5,3.5,12,'road',{num:true,pose:'up'}); L.board(15,0,'road',6,1,'Soberanía nacional','reside en el pueblo español'); L.ballot(6,1.8,'road'); },
+2:L=>{ const cs=[RED,YEL,0x2f7d5a,BLU,0xc97a3c,0x6c4f8e,0x4f9fb0,0xb13b3b,0xe0c040,0x3d5a80,0x8a5a3a,0x5aa66a,0xd9855e,0x7a6cc0,0xc46a80,0x9a9a88,0x2f6b3a];
+  let k=0; for (let i=0;i<5;i++) for (let j=0;j<4&&k<17;j++){ L.b(5+i*1.9,6.8+i*1.9,0.06,0.2,-3.8+j*1.9,-2+j*1.9,cs[k++]); }
+  for (let i=0;i<10;i++){ const a=i/10*Math.PI*2; L.p(9.5+Math.cos(a)*4.6,Math.sin(a)*4.6*0.9,Math.abs(Math.cos(a))>Math.abs(Math.sin(a))?(Math.cos(a)>0?'road':'back'):(Math.sin(a)>0?'wm':'wp'),{pose:'fwd',num:L.n}); }
+  L.flag(9.5,0,'road','es',7); L.board(15,0,'road',6.4,1,'Unidad · Autonomía · Solidaridad'); },
+3:L=>{ L.bld(11,15,-5.5,5.5,6,0xe7dcc3,{label:'Escuela de lenguas'}); const langs=[['Castellano','oficial del Estado'],['Català'],['Euskara'],['Galego'],['Valencià']];
+  langs.forEach(([t,s],i)=>{ const w=-5+i*2.5; L.board(4.5+(i%2)*1.2,w,'road',2.2,0.6,t,s||null,i?'white':'red',1.6); });
+  for (let i=0;i<4;i++){ const w=-4+i*2.6; L.p(8,w,'wp',civ(L.R)); L.p(8,w+1,'wm',civ(L.R)); L.b(8.2,8.4,2.1,2.6,w+0.1,w+0.9,WHITE); } },
+4:L=>{ A.flag(L,9,0,'road',9,'es'); L.flag(12,-4.5,'road',[0xffd400,RED,0xffd400,RED],5,false); L.flag(12,4.5,'road',[WHITE,0x2f7d5a,WHITE],5,false);
+  for (const w of [-2.2,2.2]) L.p(7,w,'road',{c:0x2d3a2a,p:0x2d3a2a,hat:'helmet',hc:0x2d3a2a,num:L.n}); L.board(14.5,0,'road',6,1,'Roja · amarilla (doble) · roja','franjas horizontales'); },
+5:L=>{ L.b(7,11,0,1,-2.5,2.5,STONE,true); L.b(8.8,9.3,1,3.2,1.2,1.7,0x6b4f35); L.b(7.8,10.2,3,5.4,0.3,2.7,0x3f7f3a); for (let i=0;i<10;i++) L.b(7.8+((i*37)%24)/10,8+((i*37)%24)/10,3.4+(i%4)*0.5,3.6+(i%4)*0.5,0.2+((i*53)%24)/10,0.4+((i*53)%24)/10,RED);
+  const bear=0x5a3a22; L.b(8.5,9.6,1,2.6,-1.4,-0.4,bear); L.b(8.6,9.5,2.6,3.3,-1.3,-0.5,bear); L.b(8.8,9.3,3.3,3.5,-1.3,-1.1,bear); L.b(8.8,9.3,3.3,3.5,-0.7,-0.5,bear); L.b(8.7,9.2,2.1,2.3,-0.4,0.5,bear);
+  L.num(6.95,0.5,0,'road',0.6,GOLD); L.board(14,0,'road',5.5,1.1,'Madrid','capital del Estado','red'); L.gnum(5,4,1.6,GOLD,'0'); L.label('Km 0',null,4.9,0.2,5.4,'road',1,0.4,'white'); },
+6:L=>{ const cols=[RED,BLU,0x7a4fb0,0x3f9f5a,0xe08a2a]; cols.forEach((c,i)=>{ const w=-5.5+i*2.75; L.b(8,10.5,2.4,2.6,w-1.1,w+1.1,c); L.b(8.05,8.2,0,2.4,w-1.05,w-0.9,GREY); L.b(8.05,8.2,0,2.4,w+0.9,w+1.05,GREY); L.b(8.2,9,0,0.9,w-0.8,w+0.8,WHITE,true); L.p(9.5,w,'road',{c}); L.num(8.15,1.8,w,'road',0.45,c); });
+  L.ballot(5,0,'road'); L.board(14,0,'road',6,1,'Pluralismo político','partidos democráticos'); },
+7:L=>{ L.table(8,10,-4,4,WOOD,{a:{c:0x2f6fb0,hat:'hard',num:L.n},b:suit(BLU)}); L.board(5.5,-4.5,'road',3,0.8,'Sindicatos',null,'red'); L.board(13.5,4,'road',3.4,0.8,'Empresarios',null,'blue'); L.board(15,-2,'road',5,1,'Defensa de intereses','económicos y sociales'); },
+8:L=>{ A.tank(L,9.5,0,3.6); A.plane(L,9,0,15,7); for (const [u,w] of [[4.5,-4.5],[4.5,4.5],[14.5,-5.5],[14.5,5.5]]) L.p(u,w,'road',{c:OLIVE,p:OLIVE,hat:'helmet',hc:OLIVE,num:L.n}); L.board(14.5,0,'road',6,1,'Tierra · Armada · Aire','Fuerzas Armadas','green'); },
+9:L=>{ const lv=[[9,6,0xe9e0c9],[7.4,4.6,0xdfd2b3],[5.8,3.2,0xd3c49c],[4.2,1.8,GOLD]]; lv.forEach(([a,b,c],i)=>L.b(9.5-a/2,9.5+a/2,i*0.8,(i+1)*0.8,-b,b,c,i===0));
+  L.book(9.5,0,'road',0x8a1c2b,'Constitución'); L.label('Leyes',null,5,1.2,-4,'road',2,0.5,'white'); L.label('Reglamentos',null,5,0.4,4,'road',2.6,0.5,'white');
+  L.p(4,-2,'road',judge); L.p(4,2,'road',civ(L.R)); L.board(15,0,'road',6.4,1,'Jerarquía normativa','legalidad · seguridad jurídica'); },
+10:L=>{ L.b(8.5,10.5,0,1,-1,1,STONE,true); for (let i=0;i<7;i++){ const r=[0.6,1.0,1.25,1.35,1.25,1.0,0.6][i]; L.b(9.5-r,9.5+r,1+i*0.38,1.38+i*0.38,-r,r,i%3===1?0x3f9f5a:0x3f86c6); }
+  L.label('Declaración Universal','de Derechos Humanos',8.45,0.5,0,'road',1.9,0.5,'blue'); for (let i=0;i<8;i++){ const a=i/8*Math.PI*2; L.p(9.5+Math.cos(a)*3.8,Math.sin(a)*3.8,Math.abs(Math.cos(a))>0.7?(Math.cos(a)>0?'road':'back'):(Math.sin(a)>0?'wm':'wp'),{pose:'fwd',skin:SKIN[i%5],num:L.n}); }
+  L.board(15,0,'road',6,1,'Dignidad de la persona','derechos inviolables'); },
+11:L=>{ L.bld(11,15,-5.5,5.5,5,0xe4d8bd,{label:'Registro Civil'}); L.book(7.5,0,'road',0x7a1b2a,'Pasaporte','España'); L.p(6,-2.8,'wp',civ(L.R)); L.p(6,2.8,'wm',{c:BLU,tie:RED});
+  L.board(4.5,-4.5,'road',2.6,0.7,'Doble nacionalidad',null,'white'); },
+12:L=>{ L.table(7.5,10,-2,2,WHITE,{people:false}); L.b(8.3,9.2,0.8,1.3,-1,1,0xf3c9d6); L.b(8.3,9.2,1.3,1.35,-1,1,WHITE); for (let i=0;i<18;i++) L.b(8.4+(i%3)*0.3,8.45+(i%3)*0.3,1.35,1.7,-0.9+Math.floor(i/3)*0.35,-0.85+Math.floor(i/3)*0.35,[RED,YEL,BLU][i%3]);
+  for (const [u,w] of [[6.5,-4],[6.5,4],[11.5,-3.5],[11.5,3.5],[12,0]]) L.p(u,w,'road',{pose:'up',...civ(L.R)}); L.num(13.5,3.5,0,'road',2.2,0xe0508a,'18');
+  A.bob(L,b=>{ for (const [u,w,c] of [[12,-5,RED],[13,-4,YEL],[12.5,5,BLU],[13.5,4.2,0x2f7d5a]]){ const x=L.X(u),z=L.Z(w); b.box(x-0.4,x+0.4,4.6,5.5,z-0.4,z+0.4,c); b.box(x-0.01,x+0.01,2.2,4.6,z-0.01,z+0.01,0x333333); digits(b,L.n,{x:x-L.s*0.41,y:5.05,z},[-L.s,0],0.3,WHITE,0.02);} },0.3,1.3);
+  L.board(15,0,'road',5,1,'Mayores de edad','a los 18 años','red'); },
+13:L=>{ L.b(8,10,0,2.8,-5.5,-3,WHITE,true); L.b(7.8,10.2,2.8,3.1,-5.7,-2.8,BLU); L.label('Frontera',null,7.95,2.4,-4.25,'road',2,0.5,'blue');
+  A.swing(L,9,1.1,-2.5,'wp',b=>{ b.Q(-0.1,0.1,-0.1,0.1,0,5,WHITE); for (let z=0.5;z<5;z+=1) b.Q(-0.11,0.11,-0.11,0.11,z,z+0.5,RED); },'x',0.6,0.8,-0.6);
+  for (const w of [0.5,2,3.5]) { L.p(6,w,'back',civ(L.R)); L.b(6.3,6.8,0,0.6,w+0.2,w+0.6,0x3a6a8a); } L.board(14.5,1,'road',6,1,'Extradición · Asilo','derechos de los extranjeros'); },
+14:L=>{ L.b(7,12,0,0.8,-5.5,5.5,STONE,true); const sk=[0xf0c8a8,0x6e4630,0xc68d64,0xe0ac86,0x9a6644]; for (let i=0;i<5;i++){ const b=L.c(9.5,0.8,-4+i*2); person(null,b,L.FW.road,{skin:sk[i],c:CLOTH[i*2],robe:i===2?0x2f7d5a:null,num:L.n},L.R); }
+  L.pix(EQ,13.5,2.2,0,'road',0.8,{'#':GOLD}); L.board(15,-4.5,'road',4.5,1,'Iguales ante la ley',null,'blue'); },
+15:L=>{ L.b(9,10,0,1.5,-0.5,0.5,STONE,true); L.pix(HEART,9.5,1.5,0,'road',0.6,{'#':0xd0202a}); L.p(6,-3,'road',{c:WHITE,p:WHITE}); L.p(6,3,'road',civ(L.R)); L.p(6.5,4,'road',{sc:0.6,...civ(L.R)});
+  L.board(14.5,0,'road',6,1,'Vida e integridad física y moral','abolida la pena de muerte'); },
+16:L=>{ L.bld(9,15,-6.3,-2.5,5,0xefe6d2,{label:'Iglesia'}); L.b(12,13.5,5,9,-5,-3.8,0xefe6d2); L.b(12.6,12.9,9,10.2,-4.55,-4.25,GOLD); L.b(12.3,13.2,9.6,9.8,-4.55,-4.25,GOLD);
+  L.bld(9,15,-1.8,1.8,4.5,0xe8f0f4,{label:'Mezquita',door:true}); for (let i=0;i<4;i++){ const r=1.6-i*0.4; L.b(12-r,12+r,4.5+i*0.4,4.9+i*0.4,-r,r,0x3f86c6); } L.b(14,14.6,0,8,1.2,1.7,0xe8f0f4);
+  L.bld(9,15,2.5,6.3,5,0xe9dcb8,{label:'Sinagoga'}); L.board(4.5,0,'road',6,0.9,'Ninguna confesión estatal','libertad religiosa y de culto'); },
+17:L=>{ L.car(6,-3,'wp',WHITE,'police'); A.siren(L,6,1.72,-3); L.p(9,1,'road',{c:POL,p:POL,hat:'cap',hc:POL}); L.p(9,2.2,'road',civ(L.R)); L.p(9,3.4,'road',{c:POL,p:POL,hat:'cap',hc:POL}); L.p(10,5,'road',{robe:ROBE});
+  L.b(13,15,0,4,-1.5,1.5,DARK,true); L.num(12.95,2.6,0,'road',1.2,0xff5040,'72'); L.label('horas máximo',null,12.95,1.3,0,'road',2.6,0.45,'dark'); L.board(14.5,4.5,'road',3,0.8,'Habeas corpus',null,'blue'); },
+18:L=>{ L.bld(9,15,-4.5,4.5,5,0xe9d6c0,{label:'Domicilio inviolable',dc:0x3a2616}); L.pix(['.###.','#...#','#####','##.##','#####'],8.9,1.2,-3,'road',0.25,{'#':GOLD});
+  L.b(6.5,7.5,0.8,1.5,2.5,3.8,WHITE); L.b(6.45,6.5,1.05,1.25,3,3.3,RED); L.board(4.5,-3.5,'road',3.2,0.8,'Secreto de las comunicaciones',null,'white'); L.p(6,1,'road',civ(L.R)); },
+19:L=>{ A.mover(L,'car',8.5,-5,5,{col:0x2f8f6f,bags:true,speed:0.18}); L.b(12,12.2,0,2.6,-3,-2.8,GREY); L.label('Libre circulación',null,12.15,2.4,-2.9,'road',2.6,0.7,'blue'); L.p(13,2,'road',{...civ(L.R)}); L.b(13.3,13.8,0.3,1.3,1.8,2.2,0x3a6a8a); L.board(15,3,'road',5,1,'Entrar y salir de España','residencia libre'); },
+20:L=>{ L.bld(10,13,-6,-2,3.2,0x2f5d8a,{label:'Prensa',style:'yellow'}); L.b(8,8.8,0,0.5,1,2,WOOD,true); L.p(8.4,1.5,'road',{pose:'wave',...civ(L.R)}); L.b(7.8,8.1,1.3,1.6,1.45,1.9,DARK);
+  L.b(6.2,6.3,0,1.4,4,4.1,DARK); L.b(6,6.6,1.4,1.9,3.8,4.4,DARK); L.p(6.8,4.1,'back',civ(L.R)); L.board(14.5,2.5,'road',6,1,'Sin censura previa','libertad de expresión e información'); },
+21:L=>{ A.crowd(L,7,13,-5,5,16,'road',{pose:'down',amp:0.04,speed:2}); L.b(13.5,15,0,0.6,-1.5,1.5,WOOD,true); L.p(14,0,'road',{pose:'wave',...civ(L.R)}); L.board(4.5,-4,'road',3.6,0.8,'Comunicación previa',null,'yellow'); L.board(4.5,3.2,'road',3,0.8,'Pacífica y sin armas',null,'white'); },
+22:L=>{ L.bld(11,15,-6,6,4.5,0xd9e3c9,{label:'Asociación',sub:'inscrita en el Registro'}); L.table(6.5,9,-3,3,WOOD); L.book(5.2,4.8,'road',0x2f5d8a,'Registro'); },
+23:L=>{ L.table(5.5,6.3,-5.5,-2.5,WOOD,{people:false}); L.ballot(5.9,-4,'road'); for (let i=0;i<4;i++) L.p(7.5+i*1.1,-4,'road',civ(L.R));
+  for (let i=0;i<3;i++) for (let j=0;j<2;j++){ const u=8+i*2.2, w=1.5+j*2.8; L.b(u,u+0.9,0.72,0.76,w-0.6,w+0.6,WOOD,true); L.p(u+1.3,w,'road',{pose:'sit',...civ(L.R)}); L.b(u+0.2,u+0.7,0.76,0.78,w-0.3,w+0.3,WHITE); }
+  L.board(15,2.9,'road',5.5,1,'Oposiciones','igualdad · mérito · capacidad','red'); L.board(4.5,3,'road',3,0.8,'Sufragio',null,'blue'); },
+24:L=>{ L.b(12,14.5,0,1.1,-3,3,WOOD,true); L.b(12,12.1,1.1,1.6,-3,3,0x5a3a26); L.p(13.5,0,'road',{robe:ROBE,pose:'sit'}); L.b(13,13.2,0,3.6,-3.5,3.5,0x6e1b25);
+  L.p(8,-3,'back',{robe:ROBE}); L.p(8,0,'back',civ(L.R)); L.p(8,3,'back',{robe:ROBE}); L.board(4.5,0,'road',5.5,1,'Presunción de inocencia','juez predeterminado · defensa'); },
+25:L=>{ L.b(8,15,0,4.5,-6,6,0xcfc6b0,true); for (let w=-5;w<=5;w+=2.2) for (const y of [1.2,3]){ L.b(7.95,8,y,y+1,w-0.4,w+0.4,0x2d3a4a); for (let k=-0.3;k<0.4;k+=0.2) L.b(7.9,7.95,y,y+1,w+k-0.03,w+k+0.03,GREY); }
+  L.b(7.8,15.2,4.5,5,-6.2,6.2,0x9e968a); L.label('Centro penitenciario',null,7.9,5.6,0,'road',6,0.8,'dark'); L.num(7.95,4.1,0,'road',0.5,YEL);
+  L.table(4.5,5.5,-3,1,0xcfc3a5,{a:civ(L.R),b:civ(L.R)}); L.board(5,4.5,'road',3.4,1,'Reeducación','y reinserción social','green'); },
+26:L=>{ L.table(9,10.5,-3,3,0x5a3a26,{b:{robe:0x3a3a3a},people:true,a:{robe:0x3a3a3a}}); L.pix(XMARK,9.8,1.2,0,'road',1.0,{'#':0xd0202a}); L.board(14.5,0,'road',6,1,'Tribunales de Honor','prohibidos en la Administración civil','red'); },
+27:L=>{ L.bld(11,15,-6,6,6,0xf0d9a8,{label:'Colegio',sub:'enseñanza básica obligatoria y gratuita'}); L.b(8,8.2,0,2.4,-4,0,DARK); L.b(7.98,8,1.1,2.2,-3.8,-0.2,0x2f5a3a);
+  L.num(7.95,1.7,-2,'road',0.6,WHITE); for (let i=0;i<6;i++) L.p(6+(i%3)*0.9,-3.5+Math.floor(i/3)*1.2+(i%3)*0.3,'back',{sc:0.62,...civ(L.R)}); L.p(7.5,1.2,'road',{c:0x8a5a9a});
+  A.jump(L,5,7,2,5.5,3,{amp:0.3}); },
+28:L=>{ A.crowd(L,6,14,-5.5,5.5,20,'road',{sign:true,num:true,c:null,amp:0.18,speed:6});
+  for (const w of [-5.8,5.8]) L.b(10.8,11,0,4.6,w-0.1,w+0.1,DARK); L.b(10.85,10.95,3.2,4.6,-5.8,5.8,RED); L.num(10.8,3.9,-2.5,'road',1.0,WHITE); L.num(10.8,3.9,2.5,'road',1.0,WHITE); L.label('Huelga',null,10.78,3.9,0,'road',2.4,0.9,'red');
+  L.flag(14.5,-4.5,'road',[RED,RED],5,true); L.flag(14.5,4.5,'road',[0x2f7d5a,0x2f7d5a],5,true); },
+29:L=>{ L.b(6,7,0,1.4,-3,-2,0xf2c230,true); L.b(6,7,1.4,1.6,-3.1,-1.9,0xd8a820); L.label('Correos',null,5.95,1.1,-2.5,'road',0.9,0.3,'yellow'); L.p(6,-0.8,'wm',{pose:'fwd',...civ(L.R)});
+  L.bld(10,15,-1,6,4.5,0xe2e0d6,{label:'Registro',sub:'peticiones por escrito'}); L.b(7.5,9.5,0.1,0.2,2,4.5,WHITE); L.b(8.3,8.7,0.2,0.25,2.8,3.7,RED); },
+30:L=>{ for (let i=0;i<4;i++) L.p(7+i*1.2,-4,'road',{c:OLIVE,p:OLIVE,hat:'helmet',hc:OLIVE,num:L.n}); for (let i=0;i<4;i++) L.p(7+i*1.2,2,'road',{c:0xf07a1a,p:0x2a3a5a,hat:'helmet',hc:0xf07a1a,num:L.n});
+  L.b(12,15,0,2.4,0,5,0xf07a1a,true); L.b(11.8,15.2,2.4,2.6,-0.2,5.2,0xd96a10); L.label('Protección Civil',null,11.95,1.8,2.5,'road',2.8,0.5,'white'); L.board(14.5,-3.5,'road',4.5,1,'Defender a España','objeción de conciencia · servicio civil','green'); },
+31:L=>{ L.bld(10,15,-6,1,5.5,0xe8e3d6,{label:'Hacienda',sub:'sistema tributario justo'}); L.coins(6,-2,1.2); L.coins(7,-1,1.8); L.coins(6.5,0.2,0.8); L.p(6.5,3,'wm',{pose:'fwd',...civ(L.R)});
+  L.pix(['#..#','..#.','.#..','#..#'],12.5,3,4,'road',0.6,{'#':BLU}); L.b(12.4,12.6,0,2.9,3.8,4.2,DARK); L.board(4.5,4.5,'road',3,0.8,'Progresividad',null,'blue'); },
+32:L=>{ L.b(9,9.3,0,3,-1.8,-1.5,WHITE); L.b(9,9.3,0,3,1.5,1.8,WHITE); L.b(9,9.3,3,3.3,-1.8,1.8,0xf3c9d6); for (let w=-1.6;w<=1.6;w+=0.4) L.b(8.95,9.35,3.3,3.5,w,w+0.25,[0xf06a8a,WHITE,0xf2c230][Math.abs(Math.round(w*5))%3]);
+  L.p(9.8,-0.5,'road',{c:WHITE,p:WHITE}); L.p(9.8,0.5,'road',{c:SUIT,p:SUIT,tie:0xd0c0a0}); for (let i=0;i<3;i++) for (const w of [-4.5,-3.3,3.3,4.5]) L.p(6+i*1.3,w,'back',{pose:'sit',...civ(L.R)});
+  L.board(14.5,0,'road',5.5,1,'Plena igualdad jurídica','de los cónyuges'); },
+33:L=>{ L.bld(9,14,-4,4,4.5,0xe7c9a8,{label:'Propiedad privada'}); L.fence(7,15,-5,5,1,0xffffff); L.b(6,6.1,0,1.6,4.5,4.6,WOOD); L.label('Herencia',null,6.12,1.3,4.5,'road',1.2,0.4,'white');
+  L.p(6.5,-5.5,'road',civ(L.R)); L.board(4.5,-3,'road',3.6,0.9,'Expropiación','con justa indemnización','white'); },
+34:L=>{ L.bld(10,15,-5,5,5,0xdce8e2,{label:'Fundación',sub:'fines de interés general'}); L.b(7,7.8,0,1.1,-1,0,0x2f7d5a,true); L.b(7.1,7.7,1.1,1.14,-0.9,-0.1,GOLD); L.num(6.98,0.6,-0.5,'road',0.35,WHITE); for (const w of [2,3.2]) L.p(7.5,w,'road',{c:0xf07a1a}); },
+35:L=>{ A.crane(L,12,-3,11); L.b(7,11,0,3.5,1,5.5,0xb8b0a0,true); for (let y=0;y<3.5;y+=0.5) L.b(6.95,7,y,y+0.25,1,5.5,BRICK); L.boxes(6,-1,3,BRICK);
+  for (const [u,w] of [[6,-3.5],[8.5,-5.5],[6.5,3]]) L.p(u,w,'road',{c:0xf07a1a,p:0x2a3a5a,hat:'hard',num:L.n}); L.board(14.5,3.5,'road',5,1,'Derecho al trabajo','y remuneración suficiente'); },
+36:L=>{ L.bld(10,15,-5.5,5.5,5.5,0xe8e1cf,{label:'Colegio profesional'}); L.p(7,-3,'road',{c:WHITE,p:WHITE}); L.p(7,0,'road',{robe:ROBE}); L.p(7,3,'road',{c:0xf07a1a,hat:'hard',hc:WHITE}); L.b(7.5,7.6,1.2,1.9,3.3,4,0x3f86c6); },
+37:L=>{ L.table(8,10,-5,5,WOOD,{a:{c:0xf07a1a,hat:'hard',num:L.n},b:suit(BLU)}); L.b(8.7,9.3,0.8,0.82,-0.6,0.6,WHITE); L.board(14.5,0,'road',5.5,1,'Convenio colectivo','fuerza vinculante'); },
+38:L=>{ const cs=[RED,0x2f7d5a,BLU,0xe08a2a]; cs.forEach((c,i)=>{ const w=-5+i*3.3; L.b(8,10,0,1,w-1.2,w+1.2,WOOD,true); for (const k of [-1.1,1.1]) L.b(8,8.15,0,2.6,w+k-0.07,w+k+0.07,GREY); for (let j=0;j<4;j++) L.b(7.8+j*0.6,8.4+j*0.6,2.6,2.8,w-1.4,w+1.4,j%2?WHITE:c); L.p(10.7,w,'road',{c}); for (let j=0;j<3;j++) L.b(8.3,8.8,1,1.3,w-0.9+j*0.6,w-0.5+j*0.6,[RED,YEL,0x3f9f5a][j]); L.num(7.95,0.5,w,'road',0.4,WHITE); });
+  L.board(14.5,0,'road',6,1,'Libertad de empresa','economía de mercado'); },
+39:L=>{ L.bld(10.5,15,-6,1,5,0xf2d6b8,{label:'Familia'}); L.p(8,-3,'road',civ(L.R)); L.p(8,-1.8,'road',civ(L.R)); L.p(7.2,-2.4,'road',{sc:0.6,...civ(L.R)}); L.p(7.4,-0.8,'road',{sc:0.5,...civ(L.R)});
+  for (const w of [2.5,5.5]) L.b(9.5,9.7,0,2.8,w-0.1,w+0.1,RED); L.b(9.5,9.7,2.8,3,2.4,5.6,RED); A.swing(L,9.6,2.8,4,'wp',b=>{ b.Q(-0.02,0.02,-1.9,0,-0.02,0.02,0x333333); b.Q(-0.35,0.35,-2,-1.9,-0.2,0.2,YEL); },'x',0.6,2.2); },
+40:L=>{ L.b(7,9,0.06,0.12,-5,-1,0xf1d9a0); L.b(8,8.1,0,2.6,-3.05,-2.95,WHITE); for (let i=0;i<4;i++){ const r=1.6-i*0.35; L.b(8.05-r,8.05+r,2.5+i*0.15,2.65+i*0.15,-3-r,-3+r,i%2?RED:WHITE); }
+  L.b(7.2,9,0.3,0.5,-4.7,-4,0x3f86c6); L.p(8.2,-4.3,'road',{pose:'sit',c:0xf2c230}); L.b(12,15,0,4,-6,-1,0xd8d2c4,true); L.label('Vacaciones retribuidas',null,11.95,2.6,-3.5,'road',4.4,0.7,'yellow');
+  L.p(7,2,'road',{c:0xf07a1a,hat:'hard',num:L.n}); L.b(12.5,15,0,3.5,1,5,DARK,true); L.num(12.45,2.2,3,'road',1.0,0x7cf07c,'8'); L.label('Jornada limitada',null,12.45,0.8,3,'road',3.4,0.5,'dark'); },
+41:L=>{ L.bld(11,15,-6,6,5,0xdfe6ee,{label:'Seguridad Social'}); L.b(8.1,8.3,0,3.4,-0.1,0.1,DARK); for (let i=0;i<4;i++){ const r=3.4-i*0.8; L.b(8.2-r*0.5,8.2+r*0.5,3.4+i*0.25,3.65+i*0.25,-r,r,i%2?BLU:0x3f86c6); }
+  for (let i=0;i<5;i++) L.p(7+(i%2)*1.5,-2.5+i*1.2,'road',civ(L.R)); L.board(4.3,-4.5,'road',3.2,0.8,'Desempleo',null,'blue'); },
+42:L=>{ L.b(9,9.4,0,2.4,-0.2,0.2,GREY); const q=(a,b,ya,yb,c,d,col)=>L.b(9.2+a,9.2+b,2.4+ya,2.4+yb,c,d,col); q(-0.4,0.4,0,0.8,-2.6,2.6,WHITE); q(-3,3,0.3,0.45,-0.5,0.4,0xd6dde2); q(-0.05,0.05,0.8,1.8,1.8,2.6,RED); L.num(8.75,2.8,0,'road',0.5,RED);
+  L.p(6,-3,'road',{pose:'wave',...civ(L.R)}); L.b(6.3,6.8,0,0.7,-2.6,-2.1,0x3a6a8a); L.board(14.5,0,'road',6,1,'Trabajadores en el extranjero','política de retorno'); },
+43:L=>{ L.bld(10.5,15,-6,6,7,WHITE,{label:'Hospital',sub:'protección de la salud',style:'red'}); L.pix(CROSS,10.4,4.8,-4.5,'road',0.6,{'#':0xd21f2b});
+  L.car(7.5,2.5,'wp',WHITE,'amb'); A.siren(L,7.5,1.82,2.5,[0xff2a2a,0x2a55ff]); L.p(7,-2,'road',{c:WHITE,p:0x9ec9d8}); L.p(7,-3.5,'road',{c:0x9ec9d8,p:0x9ec9d8}); },
+44:L=>{ L.temple(10,15,-6,1,5,0xe9e2d3,'Museo · Biblioteca'); L.b(7.5,8.5,0,0.8,3,4,STONE,true); L.b(7.8,8.2,0.8,2.2,3.3,3.7,DARK); L.b(7.2,8.3,2.2,2.6,3.2,3.8,WHITE); L.num(7.45,0.4,3.5,'road',0.35,GOLD);
+  L.p(7,1.8,'road',{c:WHITE}); L.board(14.5,4,'road',4,1,'Cultura y ciencia',null,'blue'); },
+45:L=>{ for (const [u,w] of [[12,-5],[14,-3],[12.5,-1],[14.5,1],[12,4],[14,5.5]]) L.tree(u,w,1.1); L.water(6,9,-5.5,-2.5); L.b(7.2,7.8,0.16,0.4,-4.4,-3.6,0xf5f5f5);
+  for (const [w,c] of [[1,0x2f7d5a],[2.2,0xf2c230],[3.4,0x2f6fb0]]){ L.b(6.5,7.3,0,1.1,w-0.4,w+0.4,c,true); L.num(6.45,0.6,w,'road',0.3,WHITE); }
+  L.b(9.5,9.8,0,7,5,5.3,WHITE); A.spin(L,9.4,7,5.15,'road',b=>{ for (let i=0;i<3;i++){ const a=i/3*Math.PI*2; } b.Q(-0.12,0.12,0,2.6,0.1,0.2,WHITE); b.Q(-0.12,0.12,-2.6,0,0.1,0.2,WHITE); b.Q(0,2.6,-0.12,0.12,0.1,0.2,WHITE); b.Q(-2.6,0,-0.12,0.12,0.1,0.2,WHITE); },'z',1.2);
+  L.board(4.5,-1,'road',3.8,0.8,'Medio ambiente',null,'green'); },
+46:L=>{ for (let i=0;i<5;i++){ const w=-5.5+i*2.6; L.b(10,11,0,6,w-0.4,w+0.4,0xb89a70,true); } L.b(10,11,6,7.2,-6,6,0xb89a70); for (let i=0;i<4;i++) L.b(10,11,4.8,6,-4.9+i*2.6,-3.3+i*2.6,0xb89a70);
+  L.b(13,15,0,7,-6,-3.5,0xc9b48c,true); for (let w=-6;w<-3.5;w+=0.6) L.b(13,15,7,7.6,w,w+0.3,0xc9b48c); L.num(10-0.05,6.6,0,'road',0.6,WHITE); L.board(5,0,'road',6,1,'Patrimonio histórico','cultural y artístico'); },
+47:L=>{ L.bld(10,15,-6,6,10,0xe8b89a,{label:'Vivienda digna',sub:'y adecuada'}); for (let y=3;y<10;y+=2.6) for (let w=-4.5;w<=4.5;w+=3) L.b(9.3,10,y,y+0.15,w-1,w+1,WHITE);
+  L.boxes(7,-3,3); L.boxes(7.5,-1.8,2,0xb48a52); L.p(7,0,'back',civ(L.R)); L.p(6.5,1.2,'back',{sc:0.6,...civ(L.R)}); },
+48:L=>{ L.b(12,15,0,1,-5,5,DARK,true); L.b(12,15,4,4.2,-5,5,DARK); for (const w of [-5,5]) L.b(12,12.2,1,4,w-0.1,w+0.1,DARK); L.label('Juventud',null,11.95,3.5,0,'road',3,0.7,'red');
+  L.p(13.5,-2,'road',{pose:'up',c:0xe0508a}); L.p(13.5,0,'road',{pose:'fwd',c:0x4f9fb0}); L.p(13.5,2,'road',{pose:'up',c:0xf2c230}); A.jump(L,6,10,-4,4,6,{amp:0.45}); },
+49:L=>{ L.bld(11,15,-6,6,5,0xdce6ee,{label:'Accesible',dw:2}); for (let i=0;i<6;i++) L.b(7+i*0.65,7.65+i*0.65,0,0.12+i*0.13,0.5,3.5,0xb8b0a0); L.b(7,11,0.9,1,0.45,0.5,GREY);
+  L.p(8.5,-2,'road',{pose:'sit',c:0x4f9fb0}); L.b(8.3,8.9,0,0.45,-2.5,-1.5,DARK); for (const w of [-2.55,-1.45]) L.b(8.1,9,0,0.7,w-0.05,w+0.05,0x333333); L.pix(WHEEL,10.95,2.2,-4,'road',0.25,{'#':WHITE}); L.b(10.9,10.95,1.9,4.1,-4.8,-3.2,BLU); },
+50:L=>{ for (const w of [-4,-1]) { L.bench(8,w); L.p(7.6,w-0.5,'road',{pose:'sit',hair:0xd9d9d9,c:0x7a6a5a}); L.p(7.6,w+0.5,'road',{pose:'sit',hair:0xe8e8e8,c:0x6a5a7a}); } L.tree(11,-2.5,1);
+  L.bld(11,15,1,6,4.5,0xe2dccc,{label:'Pensiones'}); L.b(8,9,0,1.2,3,4.5,DARK,true); L.num(7.95,0.8,3.75,'road',0.45,0x7cf07c); },
+51:L=>{ L.bld(10,15,-6,6,5,0xf0f0ea,{label:'Supermercado',style:'red'}); for (let i=0;i<3;i++){ const w=-4+i*1.6; L.b(7,8.2,0.3,1,w-0.4,w+0.4,GREY); L.p(8.6,w,'back',civ(L.R)); L.num(6.98,0.65,w,'road',0.25,RED); }
+  L.board(5,3.5,'road',4,0.9,'Hoja de reclamaciones',null,'yellow'); },
+52:L=>{ L.bld(11,15,-6,1,5,0xb5654a,{label:'Cooperativa agraria'}); L.b(7,9,0.5,1.9,2,4,0x2f7d5a,true); L.b(8.5,9.5,1.9,2.9,2.4,3.6,0x2f7d5a); for (const [u,w,r] of [[7.3,1.9,0.6],[7.3,4.1,0.6],[9.1,1.8,0.9],[9.1,4.2,0.9]]) L.b(u-r,u+r,0,r*2,w-0.12,w+0.12,0x1a1a1a);
+  L.num(6.98,1.2,3,'road',0.45,YEL); L.p(6,-2,'road',{hat:'cap',hc:0x2f7d5a,c:0x6a8a4a}); },
+53:L=>{ L.pix(SHIELD,10,0.6,0,'road',0.7,{'#':BLU}); L.b(9.9,10.1,0,0.6,-0.5,0.5,DARK); L.num(9.7,3.4,0,'road',0.9,GOLD); for (let i=0;i<5;i++) L.p(12.5,-3+i*1.5,'road',civ(L.R));
+  L.bld(13.5,15,-6,-4,3,WHITE,{door:false}); L.board(5,-3.5,'road',4.2,1,'Recurso de amparo','ante el Tribunal Constitucional','blue'); },
+54:L=>{ L.table(9,10,-1.5,1.5,WOOD,{people:false}); L.p(10.7,0,'road',{c:0x6c4f8e}); for (let i=0;i<4;i++) L.p(7.5-i*0.9,-0.3+(i%2)*0.6,'back',civ(L.R));
+  L.bld(12,15,-6,6,5,0xe8dff0,{label:'Defensor del Pueblo',sub:'alto comisionado de las Cortes'}); },
+55:L=>{ for (const w of [-5,-2,1,4]) { L.b(6,6.4,0,1,w-1,w+1,WHITE,true); for (let k=-0.8;k<1;k+=0.5) L.b(5.95,6.45,0.3,0.7,w+k,w+k+0.25,RED); } L.b(9,9.05,0.9,1,-6,6,YEL);
+  A.siren(L,8,1.9,4,[0xff2a2a,0xff2a2a],0.3); L.b(7.9,8.1,0,1.8,3.9,4.1,DARK); L.board(13,0,'road',6.5,1.2,'Derechos suspendidos','estados de excepción y de sitio','red'); },
+56:L=>{ L.temple(10.5,15,-6,6,6,0xefe6d2,'Palacio Real'); L.b(7,9.5,0,0.6,-2,2,0xb3122a,true); L.throne(8.8,0,'road'); L.p(8.5,0,'road',{pose:'sit',hat:'crown',c:0x1f2a4a,num:L.n});
+  for (const w of [-4.5,4.5]) L.p(7,w,'road',{c:0x1f2a4a,hat:'helmet',hc:0xd8d8d8,num:L.n}); },
+57:L=>{ L.p(8,-1.5,'road',{hat:'crown',c:0x1f2a4a}); L.p(8,1.5,'road',{hat:'crown',c:0x8a3a6a,sc:0.9}); L.crown(8,2.3,0,0.4);
+  L.b(12,15,0,4.5,-5,5,0xf6f1e3,true); L.label('Princesa de Asturias','heredera de la Corona',11.95,3.4,0,'road',5,1,'tile'); L.b(11.95,12,1,2.5,-3,3,0x6b4f35); L.num(11.93,1.6,0,'road',0.6,GOLD); },
+58:L=>{ L.b(8,11,0,0.5,-3,3,0xb3122a,true); L.throne(10,-1.2,'road'); L.p(9.7,-1.2,'road',{pose:'sit',hat:'crown',c:0x1f2a4a}); L.q(10,0,1.4,'road',-0.4,0.4,0.5,1.4,-0.4,0.4,0x8a6a4a); L.p(9.7,1.4,'road',{pose:'sit',c:0x6c4f8e});
+  L.board(14.5,0,'road',6,1,'Consorte','sin funciones constitucionales'); },
+59:L=>{ L.throne(9.5,0,'road'); L.p(9.2,0,'road',{pose:'sit',hat:'crown',sc:0.6,c:0x1f2a4a}); L.p(9.3,1.8,'road',{c:0x4a2f5a,num:L.n}); L.b(9,9.1,0,2.4,2.6,2.7,GOLD);
+  L.board(14.5,0,'road',6,1,'Regencia','Rey menor de edad o inhabilitado'); },
+60:L=>{ L.bench(9,0); L.p(8.6,-0.5,'road',{pose:'sit',hat:'crown',sc:0.6}); L.p(8.6,0.6,'road',{pose:'sit',c:0x5a4a3a}); L.b(8.1,8.2,1.0,1.4,-0.3,0.3,0x8a1c2b);
+  L.board(14.5,0,'road',6,1,'Tutor del Rey menor','nombrado en testamento o por las Cortes'); },
+61:L=>{ L.book(9,0,'road',0x8a1c2b,'Constitución'); L.p(7.8,-1.6,'wp',{hat:'crown',c:0x1f2a4a,pose:'fwd'}); L.hemi(12.5,0,'road',2.5,2,0xb3122a,{every:2}); L.board(5,3.5,'road',3.6,0.9,'Juramento',null,'blue'); },
+62:L=>{ L.table(8,9.5,-2,2,0x5a3a26,{people:false}); L.p(10.2,0,'road',{hat:'crown',pose:'sit',c:0x1f2a4a}); L.b(8.5,9,0.8,0.82,-0.8,0.8,WHITE); A.stamp(L,8.7,-1.3,'road');
+  L.board(14.5,0,'road',6,1,'Sanciona y promulga','convoca · nombra · mando supremo'); for (const w of [-5,5]) L.flag(12,w,'road','es',5); },
+63:L=>{ L.throne(12,0,'road'); L.p(11.7,0,'road',{pose:'sit',hat:'crown',c:0x1f2a4a}); const fl=[[RED,WHITE,RED],[BLU,WHITE,RED],[0x2f7d5a,WHITE,RED],[YEL,BLU,RED]];
+  fl.forEach((f,i)=>{ const w=-5+i*1.6+(i>1?3.2:0); L.p(8,w,'back',suit(0x444444)); L.flag(6,w,'road',f,4,false); }); L.board(4.5,0,'road',3,0.8,'Embajadores',null,'blue'); },
+64:L=>{ L.b(10,10.3,0,3.4,-2,2,0x6b4f35); L.b(9.9,10,1,3.4,-1.8,1.8,WHITE); L.b(9.88,9.9,2.2,2.25,-1.4,-0.1,DARK); L.b(9.88,9.9,1.6,1.65,0.2,1.5,DARK); L.num(9.88,2.9,0,'road',0.35,RED);
+  L.p(9,-2.8,'road',{hat:'crown',c:0x1f2a4a}); L.p(9,2.8,'road',suit()); L.board(14.5,0,'road',6,1,'Refrendo','Presidente del Gobierno o ministros'); },
+65:L=>{ L.temple(10,15,-6,6,5.5,0xefe6d2,'Casa del Rey'); L.bag(7.5,-1,1.2); L.bag(7,0.5,0.9); L.p(7,3,'road',{c:0x1f2a4a}); L.p(7,-4,'road',{c:0x1f2a4a,hat:'helmet',hc:0xd8d8d8}); },
+66:L=>{ L.temple(10.5,15,-6,6,6.5,0xefe3cf,'Congreso de los Diputados','Cortes Generales');
+  for (const w of [-4.5,4.5]){ L.b(7.5,9.5,0,0.8,w-0.6,w+0.6,STONE,true); L.b(7.8,9.3,0.8,1.8,w-0.4,w+0.4,0x7a6a4a); L.b(7.4,8.2,1.4,2.3,w-0.35,w+0.35,0x7a6a4a); L.b(7.3,7.5,1.7,1.9,w-0.25,w+0.25,0x5a4a3a); } },
+67:L=>{ L.bld(11,15,-6,-1,4.5,0xefe3cf,{label:'Congreso'}); L.bld(11,15,1,6,4.5,0xd9b3a3,{label:'Senado'}); L.p(8.5,0,'road',{pose:'up',...suit()});
+  L.pix(XMARK,7,0.4,0,'road',0.3,{'#':RED}); L.board(5,-4,'road',4,0.9,'Sin mandato imperativo',null,'white'); },
+68:L=>{ L.hemi(9,0,'road',3.5,4,0x2e8b57,{every:1}); L.lectern(6,0,'back'); L.b(13.5,15.5,0,4.5,-2.5,2.5,DARK,true); L.num(13.45,3,0,'road',1.3,0x7cf07c,'350'); L.label('300 a 400 diputados',null,13.45,1.4,0,'road',4.6,0.6,'dark');
+  L.board(5,-5,'road',2.6,0.8,'Provincia',null,'white'); },
+69:L=>{ L.hemi(9.5,0,'road',3,3,0xb3122a,{every:1}); L.lectern(6.5,0,'back'); L.board(14.5,0,'road',6,1.1,'Senado','4 senadores por provincia','red');
+  for (let i=0;i<4;i++) L.b(5,6,0.06,0.2,-5.5+i*1.1,-4.6+i*1.1,[0x5aa66a,0xd9b75f,0x6a96d2,0xc46a80][i]); },
+70:L=>{ L.b(9,9.3,0,3,-2,-1.7,GREY,true); L.b(9,9.3,0,3,1.7,2,GREY,true); L.b(9,9.3,3,3.3,-2,2,GREY); L.label('Incompatible',null,8.95,2.6,0,'road',3,0.55,'red');
+  L.p(7,-4.5,'road',{robe:ROBE}); L.p(7,-3.3,'road',{c:OLIVE,p:OLIVE,hat:'helmet',hc:OLIVE}); L.p(7,3.3,'road',{c:POL,p:POL,hat:'cap',hc:POL}); L.p(7,4.5,'road',{c:0x6c4f8e}); L.p(11,0,'road',suit()); },
+71:L=>{ L.b(8,11,0,0.3,-1.5,1.5,STONE,true); L.b(8.1,10.9,0.3,3,-1.4,1.4,0xbfe3f0); L.p(9.5,0,'road',suit()); L.num(7.95,2.5,0,'road',0.5,BLU);
+  L.board(13.5,0,'road',6,1,'Inviolabilidad e inmunidad','suplicatorio · Tribunal Supremo'); },
+72:L=>{ L.book(12.5,-3,'road',0x2f5d8a,'Reglamento','mayoría absoluta'); L.table(8,9,-1,4,WOOD,{people:false}); for (const w of [0,1.5,3]) L.p(9.7,w,'road',{pose:'sit',...suit()}); L.b(8.3,8.5,0.8,1.1,1.4,1.6,GOLD); },
+73:L=>{ L.b(12,12.3,0,5.5,-6,6,WHITE,true); const on=[0,1,0,0,0,0,1,1,1,1,1,1], m=['E','F','M','A','M','J','J','A','S','O','N','D'], act=[0,1,1,1,1,1,0,0,1,1,1,1];
+  for (let i=0;i<12;i++){ const r=Math.floor(i/6), k=i%6, w=-5+k*2, y=3.3-r*2; L.b(11.95,12,y,y+1.6,w-0.85,w+0.85,act[i]?0x2f7d5a:0xb8b0a0); L.label(m[i],null,11.93,y+0.8,w,'road',0.8,0.8,act[i]?'green':'white'); }
+  L.board(6,0,'road',5.5,1,'Septiembre-diciembre','y febrero-junio'); },
+74:L=>{ L.table(8,11,-4.5,4.5,WOOD,{a:{c:0x2e8b57},b:{c:0xb3122a}}); L.board(14.5,0,'road',6,1,'Sesión conjunta','Congreso + Senado'); },
+75:L=>{ for (const [u,w] of [[8,-3.5],[8,3.5],[12,0]]) L.table(u-0.6,u+0.6,w-1,w+1,WOOD); L.board(4.8,-0.2,'road',3.4,0.8,'Comisiones',null,'blue'); L.board(14.5,4.5,'road',3.4,0.8,'Pleno',null,'white'); },
+76:L=>{ L.table(8,9,-1.2,1.2,WOOD,{people:false}); L.p(9.6,0,'road',{pose:'sit',...civ(L.R)}); L.p(7.3,0,'back',suit());
+  A.spin(L,10,4,-3,'road',b=>{ for (let i=0;i<16;i++){ const a=i/16*Math.PI*2; b.Q(Math.cos(a)*1.2-0.15,Math.cos(a)*1.2+0.15,Math.sin(a)*1.2-0.15,Math.sin(a)*1.2+0.15,-0.1,0.1,DARK); } b.Q(-1.05,1.05,-1.05,1.05,-0.02,0.02,0xbfe3f0); b.Q(0.8,1.1,-3,-1,-0.12,0.12,WOOD); digits(b,L.n,{x:0,y:0,z:0.03},[0,1],0.7,BLU,0.02); },'z',0.4);
+  L.board(14.5,3,'road',5,1,'Comisión de investigación','comparecer es obligatorio'); },
+77:L=>{ L.b(9,10.5,0,2,-1,1,0xf2c230,true); L.b(9,10.5,2,2.3,-1.1,1.1,0xd8a820); L.num(8.95,1.2,0,'road',0.5,DARK); for (let i=0;i<8;i++) L.b(7+i*0.2,7.6+i*0.2,0.06+i*0.08,0.12+i*0.08,1.5,2.4,WHITE);
+  L.p(6,-2,'road',{pose:'fwd',...civ(L.R)}); L.bld(12,15,-6,6,5,0xefe3cf,{label:'Cortes Generales'}); },
+78:L=>{ L.b(8,14,0,3.6,-5,5,0xf3e3b0,true); for (let r=0;r<3;r++) for (let k=0;k<7;k++) L.p(7.2-r*1.1,-3.6+k*1.2,'back',{pose:'sit',...suit()}); L.num(7.95,2.6,0,'road',1.1,DARK,'21');
+  L.label('Diputación Permanente',null,7.95,1.2,0,'road',5,0.6,'blue'); },
+79:L=>{ L.b(12,14,0,5,-5,5,DARK,true); for (let r=0;r<4;r++) for (let k=0;k<9;k++) L.b(11.95,12,1+r*0.9,1.6+r*0.9,-4.4+k*1.1,-3.8+k*1.1,(r*9+k)%4===0?0xd21f2b:0x3fbf5a);
+  L.num(11.95,4.6,0,'road',0.4,YEL); L.hemi(8,0,'back',2,1,0x2e8b57,{every:1}); L.board(5,-4.5,'road',3.4,0.8,'Voto indelegable',null,'white'); },
+80:L=>{ for (let r=0;r<3;r++){ L.b(9+r*1.2,10.2+r*1.2,0,0.5+r*0.5,-5,5,0x8a6a4a,true); for (let k=0;k<6;k++) L.p(9.6+r*1.2,-4+k*1.6,'road',{pose:'sit',...civ(L.R)}); /* on step */ }
+  L.b(6,6.1,0,1.4,3,3.1,DARK); L.b(5.8,6.4,1.4,1.9,2.8,3.4,DARK); L.board(5,-3,'road',4,0.9,'Sesiones públicas',null,'blue'); },
+81:L=>{ L.book(10,-2,'road',GOLD,'Ley Orgánica'); L.book(10,2,'road',0x8a6a2a,'Estatutos'); L.b(13.5,15,0,4,-2.5,2.5,DARK,true); L.num(13.45,2.6,0,'road',1.1,0x7cf07c,'176'); L.label('mayoría absoluta',null,13.45,1.2,0,'road',4,0.55,'dark'); },
+82:L=>{ L.p(9,-1.5,'wp',{pose:'fwd',...suit(0x2e8b57)}); L.p(9,1.5,'wm',{pose:'fwd',...suit(BLU)}); L.b(9-0.1,9.1,1.3,1.42,-0.9,0.9,0xf3eedc); L.b(9-0.15,9.15,1.25,1.47,-1,-0.8,GOLD);
+  L.board(5,-4,'road',3.4,0.8,'Cortes',null,'green'); L.board(5,4,'road',3.4,0.8,'Gobierno',null,'blue'); L.board(14.5,0,'road',6,1,'Delegación legislativa','ley de bases · texto refundido'); },
+83:L=>{ L.b(9,10,0.06,0.3,-1,1,0xf3eedc); L.fence(7.5,11.5,-2.5,2.5,1.4,0x7a8a90); L.b(7.45,7.55,0,1.4,-2.5,2.5,0x7a8a90); L.board(13.5,0,'road',6,1,'Sin carácter retroactivo','ni modificar la ley de bases','red'); },
+84:L=>{ L.b(9.5,10.5,0,0.8,-1,1,WOOD,true); L.b(9.8,10.2,0.8,0.82,-0.6,0.6,WHITE); L.p(8,0,'road',{pose:'fwd',...suit(BLU)}); L.b(7.1,7.2,0,2.3,-2.1,-2,DARK); L.pix(STOP,7.1,2.3,-2.05,'road',0.3,{'#':0xd21f2b});
+  L.board(14,0,'road',6,1,'El Gobierno se opone','contraria a la delegación'); },
+85:L=>{ L.table(8.5,10,-1.5,1.5,WOOD,{people:false}); L.b(9,9.6,0.8,0.82,-0.6,0.6,WHITE); A.stamp(L,9.2,0,'road'); L.board(14,0,'road',6,1,'Decreto Legislativo','legislación delegada'); },
+86:L=>{ L.b(10,13,0,4,-2,2,DARK,true); L.num(9.95,2.8,0,'road',1.3,0xff5040,'30'); L.label('días para convalidar',null,9.95,1.1,0,'road',3.6,0.55,'dark'); A.siren(L,11.5,4.3,0,[0xff2a2a,0xffb000],0.35);
+  L.p(7,-3.5,'road',suit(BLU)); L.board(5,3.5,'road',3.8,1,'Urgente necesidad','Decreto-ley','red'); },
+87:L=>{ for (let i=0;i<5;i++) for (let j=0;j<3;j++) L.b(11+i*0.9,11.8+i*0.9,j*0.8,j*0.8+0.75,-5.5+(i%2)*0.2,-4.5,0xc49a62,j===0); L.b(10,14,0,3,1,5,DARK,true); L.num(9.95,2.1,3,'road',0.7,0x7cf07c,'500000');
+  L.label('firmas',null,9.95,1.0,3,'road',2,0.5,'dark'); L.table(6.5,7.5,-2,2,WOOD,{a:civ(L.R),b:civ(L.R)}); },
+88:L=>{ L.table(6,8,-5,-1,WOOD,{a:suit(BLU),b:suit(BLU),sp:1.3}); L.b(9,9.8,0.9,1.0,-1,5,0x3a3f46); for (let w=-1;w<5;w+=0.8) L.b(9,9.8,0,0.9,w,w+0.08,GREY);
+  A.mover(L,'box',9.4,-0.5,4.5,{y:1.0,speed:0.25}); L.bld(11.5,15,2,6,4,0xefe3cf,{label:'Congreso'}); L.board(14.5,-3,'road',4,1,'Proyecto de ley','Consejo de Ministros'); },
+89:L=>{ L.b(8,8.8,0.9,1.0,-6,6,0x3a3f46); for (let w=-6;w<6;w+=0.8) L.b(8,8.8,0,0.9,w,w+0.08,GREY); A.mover(L,'box',8.4,-5.5,5.5,{y:1.0,speed:0.18,box:WHITE}); A.mover(L,'box',8.4,5.5,-5.5,{y:1.0,speed:0.18,box:0xf3eedc});
+  L.board(13.5,0,'road',6,1,'Proposiciones de ley','tramitación en las Cámaras'); },
+90:L=>{ L.p(9,0,'road',{pose:'hold',c:0xb3122a}); L.b(8.4,8.5,1.95,3.1,-1.2,1.2,0xd21f2b); L.label('Veto',null,8.38,2.5,0,'road',2.2,0.9,'red'); L.num(8.38,1.95,0,'road',0.3,WHITE);
+  L.b(12,14.5,0,4,-5,-1,DARK,true); L.num(11.95,2.7,-3,'road',1.1,YEL,'2'); L.label('meses (20 días si es urgente)',null,11.95,1.2,-3,'road',3.8,0.55,'dark'); L.hemi(12,3.5,'road',1.8,1,0xb3122a,{every:1}); },
+91:L=>{ L.table(7.5,8.8,-5,-2,0x5a3a26,{people:false}); L.p(9.5,-3.5,'road',{hat:'crown',pose:'sit',c:0x1f2a4a}); A.press(L,9,2.5,'road'); L.label('BOE',null,8.6,2.2,2.5,'road',1.4,0.5,'white');
+  L.b(12.5,15,0,3.6,-2,2,WHITE,true); L.num(12.45,2.2,0,'road',1.2,RED,'15'); L.label('días para sancionar',null,12.45,0.8,0,'road',3.6,0.5,'white'); },
+92:L=>{ L.ballot(8,-2,'road'); L.ballot(8,2,'road'); L.board(8.2,-2,'road',1.4,0.5,'Sí',null,'green',1.9); L.board(8.2,2,'road',1.4,0.5,'No',null,'red',1.9); for (let i=0;i<6;i++) L.p(10+(i%3)*1.2,-3+Math.floor(i/3)*6,'road',civ(L.R));
+  L.board(14.5,0,'road',6,1,'Referéndum consultivo','lo convoca el Rey'); },
+93:L=>{ L.bld(10.5,15,-6,6,6,0x2f55a8,{label:'Unión Europea',style:'blue'}); L.flag(7,-3,'road','eu',6); L.flag(7,3,'road','es',6); },
+94:L=>{ L.table(8.5,10,-4,4,WOOD,{a:suit(BLU),b:suit(0x444444)}); L.flag(13,-4,'road','es',5); L.flag(13,4,'road',[BLU,WHITE,RED],5); L.board(5,0,'road',5,1,'Autorización de las Cortes','tratados internacionales'); },
+95:L=>{ L.scale(9,0,'road',3.4); L.book(8.9,-1.5,'road',0x8a1c2b,null); L.b(8.4,9.4,1.15,1.5,1,2,0xf3eedc); L.board(14,0,'road',6,1,'Revisión constitucional previa','tratado contrario a la Constitución','red'); },
+96:L=>{ for (const w of [-4.5,-2,0.5]) L.shelf(9,13,w); L.p(8,3,'road',{pose:'fwd',...civ(L.R)}); L.b(8.4,8.9,1.2,1.5,2.8,3.2,BLU); L.board(14.5,3.8,'road',4,1,'Publicado en el BOE','forma parte del Derecho interno'); },
+97:L=>{ L.temple(10.5,15,-6,6,5,0xf1ede4,'Gobierno','La Moncloa'); L.flag(7.5,-4.5,'road','es',6); L.flag(7.5,4.5,'road','eu',6); for (const w of [-1.5,0,1.5]) L.p(8.5,w,'road',suit()); },
+98:L=>{ L.table(7.5,13,-1.5,1.5,WOOD,{a:suit(),b:suit(),sp:1.1}); L.b(13.4,14.2,0,1.5,-0.5,0.5,0x3a2a1a); L.p(13.9,0,'road',{pose:'sit',...suit(RED)}); L.board(4.5,-4.5,'road',3.8,0.9,'Consejo de Ministros',null,'blue'); },
+99:L=>{ L.hemi(12.5,0,'road',3,2,0x2e8b57,{every:2}); A.speaker(L,7.5,0,'back'); L.b(4.5,6,0,3,-6,-3.5,DARK,true); L.num(4.45,2.1,-4.75,'road',0.6,0x7cf07c,'176'); L.label('mayoría absoluta',null,4.45,0.9,-4.75,'road',2.4,0.45,'dark');
+  L.board(4.5,4.5,'road',3,0.8,'Investidura',null,'blue'); },
+100:L=>{ L.p(12,0,'road',{hat:'crown',c:0x1f2a4a,pose:'fwd'}); for (let i=0;i<5;i++){ const w=-4+i*2; L.p(9,w,'back',suit()); L.b(9.2,9.6,1.1,1.5,w-0.2,w+0.2,[RED,BLU,0x2f7d5a,0x8a1c2b,0x6c4f8e][i]); }
+  L.board(4.8,0,'road',5,1,'Nombra y separa ministros','a propuesta del Presidente'); },
+101:L=>{ A.mover(L,'truck',8,-5,5,{col:0xe0b43c,speed:0.12}); L.bld(12,15,-6,6,4.5,0xf1ede4,{label:'En funciones'}); L.boxes(10.5,-5,3); },
+102:L=>{ L.temple(11,15,-6,6,5.5,0xe8e0cc,'Tribunal Supremo','Sala de lo Penal'); L.table(7.5,8.5,-3,3,0x5a3a26,{people:false}); for (const w of [-2,0,2]) L.p(9.2,w,'road',{pose:'sit',robe:ROBE}); L.p(6,0,'back',suit()); },
+103:L=>{ L.bld(11,15,-6,6,5,0xe4e2da,{label:'Administración Pública'}); L.b(8,9,0,1.2,-5,5,0xd8d2c4,true); for (let w=-4;w<=4;w+=2){ L.p(9.6,w,'road',{c:0x4f7f9f}); L.num(7.98,0.8,w,'road',0.3,BLU); }
+  for (let i=0;i<4;i++) L.p(6.8-i*0.8,-4,'back',civ(L.R)); L.board(4.5,3,'road',3.6,1,'Mérito y capacidad','acceso a la función pública','red'); },
+104:L=>{ L.car(6.5,-3,'wp',WHITE,'police'); A.siren(L,6.5,1.72,-3); L.car(6.5,3,'wp',WHITE,'gc'); A.siren(L,6.5,1.72,3,[0x2a55ff,0x2a55ff]);
+  L.p(9,-3,'road',{c:POL,p:POL,hat:'cap',hc:POL,num:L.n}); L.p(9,3,'road',{c:GC,p:GC,hat:'tricorn',num:L.n}); L.board(13.5,0,'road',6,1,'Seguridad ciudadana','Fuerzas y Cuerpos de Seguridad','blue'); },
+105:L=>{ for (const w of [-4.5,-2.2,0.1]) L.shelf(10,14,w,2.6); L.table(6.5,7.5,2.5,5,WOOD,{a:civ(L.R),people:true,b:{c:0x4f7f9f}}); L.board(14.5,4,'road',4,1,'Archivos y registros','audiencia del interesado'); },
+106:L=>{ L.b(7,9,0.05,0.08,-3,-1,0x1a1a1a); for (const w of [-3.4,-0.6]) { L.b(6.9,7.3,0,0.8,w-0.2,w+0.2,0xf07a1a); } L.car(8,2.5,'road',0x2f6fb0); L.p(10.5,-1,'road',{c:0x4f7f9f}); L.bag(9.8,-2.2,0.6);
+  L.board(14,0,'road',6,1,'Responsabilidad patrimonial','indemnización por los servicios públicos'); },
+107:L=>{ L.temple(10.5,15,-6,6,5.5,0xe8e3d4,'Consejo de Estado','supremo órgano consultivo'); L.table(7,8.5,-2,2,WOOD,{a:{hair:0xd9d9d9,c:SUIT},b:{hair:0xe8e8e8,c:SUIT}}); },
+108:L=>{ L.b(8,9,0,0.5,-5,-1,BLU,true); for (let w=-4.5;w<-1;w+=1) L.p(8.5,w,'wp',{pose:'sit',...suit()}); L.hemi(10,3,'wm',2.5,2,0x2e8b57,{every:1}); L.board(14.5,-3,'road',5,1,'Responde ante el Congreso','de forma solidaria'); },
+109:L=>{ L.table(8,9,-4,4,WOOD,{people:false}); for (let i=0;i<5;i++) L.b(8.3,8.7,0.8,0.9+i*0.05,-3+i*1.5,-2.6+i*1.5,0xf3e3b0); L.p(7.3,-4.5,'wp',suit(BLU)); L.p(9.7,4.5,'wm',suit(0x2e8b57)); L.board(13.5,0,'road',6,1,'Información y ayuda','del Gobierno a las Cámaras'); },
+110:L=>{ L.table(7,7.8,-1,1,WOOD,{people:false}); L.p(6.4,0,'back',{pose:'sit',...suit(BLU)}); L.table(10,11,-4,4,WOOD,{people:false}); for (let w=-3;w<=3;w+=1.5) L.p(11.6,w,'road',{pose:'sit',...suit()}); L.board(14.5,0,'road',6,1,'Comparecencia','de los miembros del Gobierno'); },
+111:L=>{ L.hemi(10,0,'road',3,2,0x2e8b57,{every:1,people:false}); for (let i=0;i<6;i++) L.p(11+(i%2)*1,-4+i*1.6,'road',{pose:i%2?'up':'wave',...suit()}); L.pix(QMARK,14,2,0,'road',0.5,{'#':YEL}); L.lectern(6,0,'back');
+  L.board(4.5,-4.5,'road',3.4,0.9,'Preguntas','e interpelaciones'); },
+112:L=>{ A.speaker(L,8,0,'back',{tie:BLU}); L.hemi(12,0,'road',2.5,2,0x2e8b57,{every:2}); L.board(4.5,-4,'road',4,1,'Cuestión de confianza','mayoría simple','blue'); },
+113:L=>{ A.speaker(L,8,-2,'back',{tie:0x2e8b57}); L.lectern(8,2.5,'back'); L.p(8.75,2.5,'road',suit()); L.b(12.5,15,0,4,-5,5,DARK,true); L.num(12.45,2.8,-2.5,'road',0.9,YEL,'35'); L.label('firmas (1/10)',null,12.45,1.5,-2.5,'road',2.4,0.5,'dark');
+  L.num(12.45,2.8,2.5,'road',0.9,0x7cf07c,'176'); L.label('mayoría absoluta',null,12.45,1.5,2.5,'road',2.6,0.5,'dark'); L.board(4.5,0,'road',5,1,'Moción de censura','constructiva','red'); },
+114:L=>{ L.b(10,10.3,0,3,-1.5,1.5,0x5a3a26,true); L.b(9.95,10,0,2.6,-1,1,0x3a2616); L.p(8.5,-2.5,'road',suit()); L.boxes(8.3,-3.5,2); L.p(8.5,2.5,'back',suit(0x2e8b57));
+  L.board(14.5,0,'road',6,1,'Dimisión · nuevo Presidente','efectos de la confianza y la censura'); },
+115:L=>{ L.bld(11,15,-6,6,5,0xefe3cf,{label:'Cortes disueltas',style:'red'}); for (const w of [-3,0,3]) L.ballot(7.5,w,'road'); L.board(4.5,-4.5,'road',3.4,0.9,'Elecciones',null,'blue'); },
+116:L=>{ const P=[[YEL,'Alarma','15'],[0xf07a1a,'Excepción','30'],[0xd21f2b,'Sitio','']]; P.forEach(([c,t,d],i)=>{ const w=-4+i*4; L.b(10,11,0,4.8,w-1.2,w+1.2,DARK,true); L.b(9.95,10,2.6,4.6,w-1,w+1,c); if (d) L.num(9.93,3.6,w,'road',1.0,DARK,d); L.label(t,null,9.93,1.6,w,'road',2.2,0.6,'white'); });
+  A.siren(L,10.5,5.2,0,[0xff2a2a,0xffb000],0.35); L.board(14.5,0,'road',5,1,'Estados excepcionales','art. 116'); },
+117:L=>{ L.b(8.5,10.5,0,1.4,-1,1,STONE,true); L.p(9.5,0,'road',{c:0xf3efe4,p:0xf3efe4,robe:0xf3efe4}); L.b(9.3,9.35,1.62,1.68,-0.16,0.16,DARK); A.tilt(L,9.4,0,'road',4.2,GOLD); L.b(9.3,9.4,1.4,3.2,0.35,0.45,0xc0c0c0);
+  L.temple(12,15,-6,6,5,0xe8e0cc,'Palacio de Justicia'); L.board(5,-4.5,'road',3.8,1,'Imperio de la ley','jueces independientes'); },
+118:L=>{ L.b(8.5,11,0,1.1,-2,2,0x5a3a26,true); L.b(9,10.5,1.1,1.3,-0.8,0.8,0x3a2616); A.gavel(L,9.75,-1.6,'road',1.8); L.board(14,0,'road',6,1,'Cumplir las sentencias','resoluciones firmes','red'); },
+119:L=>{ L.table(8,9,-2,2,WOOD,{a:{robe:ROBE},b:civ(L.R)}); L.b(12,14.5,0,3.5,-2,2,WHITE,true); L.num(11.95,2.2,-0.5,'road',1.2,0x2f7d5a,'0'); L.label('€',null,11.95,2.2,0.8,'road',0.8,1,'white'); L.board(5,-4.5,'road',3.8,1,'Justicia gratuita','insuficiencia de recursos','green'); },
+120:L=>{ L.b(12,14,0,1.1,-2.5,2.5,WOOD,true); L.p(13.2,0,'road',{robe:ROBE,pose:'sit'}); for (let r=0;r<2;r++) for (let k=0;k<5;k++) L.p(7-r*1.2,-4+k*2,'back',{pose:'sit',...civ(L.R)}); L.board(4.5,-5,'road',3,0.9,'Audiencia pública',null,'blue'); },
+121:L=>{ L.b(8.5,10.5,0,1.1,-1.5,1.5,0x5a3a26,true); L.b(9,9.5,1.1,1.5,-0.2,0.4,0x3a2616); L.b(9.3,9.9,1.1,1.25,0.5,1.3,0x3a2616); L.bag(7,3,0.8); L.p(7,4.5,'road',civ(L.R)); L.board(14,0,'road',6,1,'Error judicial','indemnización a cargo del Estado'); },
+122:L=>{ L.b(7.5,12.5,0.74,0.8,-3.5,3.5,WOOD,true); let k=0; for (let w=-3;w<=3.01&&k<21;w+=1.2){ L.p(6.9,w,'back',{pose:'sit',robe:ROBE}); L.p(13.1,w,'road',{pose:'sit',robe:ROBE}); k+=2; }
+  for (let u=8.2;u<12;u+=1.3){ L.p(u,-4.1,'wp',{pose:'sit',robe:ROBE}); L.p(u,4.1,'wm',{pose:'sit',robe:ROBE}); } L.board(14.8,0,'road',4,1,'CGPJ','20 vocales + Presidente'); L.gnum(10,0,2.2,GOLD,'20'); },
+123:L=>{ L.temple(9.5,15,-6,6,7,0xe8e0cc,'Tribunal Supremo','jurisdicción en toda España'); L.flag(6,-4.5,'road','es',6); L.p(6.5,2,'road',{robe:ROBE}); },
+124:L=>{ L.lectern(8.5,0,'back'); L.p(9.3,0,'road',{robe:ROBE,pose:'fwd'}); L.p(6,-3,'back',civ(L.R)); L.board(14,0,'road',6,1,'Ministerio Fiscal','legalidad · derechos · interés público','blue'); },
+125:L=>{ L.b(7,9,0,0.6,-6,-1,WOOD,true); for (let r=0;r<2;r++) for (let k=0;k<5;k++){ if (r*5+k>=9) continue; L.p(7.6+r*0.9,-5.5+k*1.1,'road',{pose:'sit',...civ(L.R)}); }
+  L.water(11,12,-5,6,0x3f86c6); for (let i=0;i<8;i++){ const a=Math.PI*(0.1+0.8*i/7); L.p(13-Math.sin(a)*1.8,2.5+Math.cos(a)*2.5,'road',{pose:'sit',c:ROBE,p:ROBE}); }
+  L.label('Tribunal de las Aguas',null,15,2.5,2.5,'road',3.2,0.6,'tile'); L.b(15,15.2,0,3.2,1,4,0xc9b48c); L.board(4.5,-3.5,'road',3,0.8,'Jurado',null,'blue'); },
+126:L=>{ for (const [a,b,c,d] of [[7,13,-5,-4.9],[7,13,4.9,5],[7,7.1,-5,5],[13,13.1,-5,5]]) L.b(a,b,0.8,0.9,c,d,YEL); L.b(9.5,10.5,0.06,0.1,-1,1,0xd8d8d8); L.boxes(11,2.5,2,0xc49a62);
+  L.p(8.5,-2,'road',{c:0x4a4a4a,pose:'fwd'}); L.p(10,3,'road',{c:0x6a5a4a}); L.board(14.5,0,'road',5.5,1,'Policía judicial','depende de jueces y fiscales'); },
+127:L=>{ L.p(8,0,'road',{robe:ROBE}); L.b(9,9.1,0,1.2,-3,3,GREY,true); for (let i=0;i<3;i++){ const w=-4+i*4; L.b(11,12.5,0,2.4,w-1,w+1,[RED,BLU,0x2f7d5a][i],true); } L.pix(XMARK,11,2.8,0,'road',0.5,{'#':0xd21f2b});
+  L.board(14.5,0,'road',6,1,'Sin partidos ni sindicatos','jueces y fiscales en activo','red'); },
+128:L=>{ L.b(8,11,0,1,-2,2,STONE,true); for (let i=0;i<4;i++) for (let j=0;j<4-i;j++) L.b(8.5+j*0.6+i*0.3,9+j*0.6+i*0.3,1+i*0.3,1.3+i*0.3,-0.8,0.8,GOLD); L.num(7.95,0.5,0,'road',0.5,GOLD);
+  for (const w of [-4.5,-3.3,3.3,4.5]) L.p(9.5,w,'road',civ(L.R)); L.board(14,0,'road',6,1,'Interés general','riqueza subordinada'); },
+129:L=>{ L.bld(10,15,-6,6,6,0xc9d6c0,{label:'Cooperativa',sub:'de trabajadores'}); for (let i=0;i<5;i++) L.p(7.5,-4+i*2,'road',{c:0x2f6fb0,hat:'hard',num:L.n}); },
+130:L=>{ L.b(12,15,0,3,-6,6,0x8a9a7a); L.b(12.5,15,3,5,-4,4,0x9aaa8a); L.b(13,15,5,6.5,-2,2,0xf0f0f0); L.b(7,9,0.5,1.9,-5.5,-3.5,0xc63a2a,true); for (const [u,w,r] of [[7.3,-5.6,0.6],[7.3,-3.4,0.6],[9.1,-5.7,0.9],[9.1,-3.3,0.9]]) L.b(u-r,u+r,0,r*2,w-0.12,w+0.12,0x1a1a1a);
+  L.num(6.98,1.2,-4.5,'road',0.45,WHITE); for (const w of [-1,0.5]) { L.b(8,9.6,0.5,1.3,w-0.3,w+0.3,WHITE); L.b(8.5,8.8,0.5,1.3,w-0.31,w+0.31,DARK); L.b(7.7,8.1,1,1.5,w-0.2,w+0.2,WHITE); }
+  L.water(8,11,2,6,0x3f86c6); A.bob(L,b=>{ const x=L.X(9.5),z=L.Z(4); b.box(x-0.6,x+0.6,0.2,0.8,z-1.3,z+1.3,0xd24a2a); b.box(x-0.05,x+0.05,0.8,2.6,z-0.05,z+0.05,WOOD); digits(b,L.n,{x:x-L.s*0.61,y:0.5,z},[-L.s,0],0.35,WHITE,0.02); },0.1,2); },
+131:L=>{ L.b(11,11.3,0,5,-5,5,WHITE,true); for (let i=0;i<6;i++) L.b(10.95,11,0.6,0.6+[1,1.8,1.4,2.6,2.2,3.2][i],-4.2+i*1.5,-3.4+i*1.5,[BLU,0x2f7d5a,YEL,RED,0x6c4f8e,0xf07a1a][i]);
+  L.p(8,-2,'back',{pose:'fwd',...suit()}); L.p(8,2,'back',civ(L.R)); L.board(5,0,'road',5,1,'Planificación económica','mediante ley'); },
+132:L=>{ L.b(6,11,0.06,0.12,-6,6,0xf1d9a0); L.b(11,16,0.06,0.2,-6,6,0x2f86c6); A.bob(L,b=>{ for (let i=0;i<5;i++){ const x=L.X(11.5+i), z0=L.Z(-6), z1=L.Z(6); b.box(x-0.1,x+0.1,0.2,0.32,Math.min(z0,z1),Math.max(z0,z1),0x7fc0e8); } },0.08,1.6);
+  L.b(8,8.1,0,2.4,-3.05,-2.95,WHITE); for (let i=0;i<3;i++){ const r=1.4-i*0.4; L.b(8-r,8+r,2.3+i*0.15,2.45+i*0.15,-3-r,-3+r,i%2?YEL:0x2f86c6); } L.p(7.2,1,'road',{c:0xe0508a});
+  L.board(5,3.5,'road',4,1,'Dominio público','playas · mar territorial','blue'); },
+133:L=>{ L.bld(10.5,15,-6,6,5,0xe8e3d6,{label:'Tributos',sub:'solo por ley'}); L.coins(7,-3,1.5); L.coins(7.8,-2,1); L.p(7.5,2,'road',{pose:'fwd',...civ(L.R)}); },
+134:L=>{ for (let i=0;i<14;i++) L.b(8.5+(i%2)*0.1,11,i*0.32,i*0.32+0.3,-2.5,2.5,i%2?0xf3eedc:0xe8dfc6,i===0); L.label('Presupuestos Generales',null,8.45,3.4,0,'road',4.6,0.7,'blue'); L.num(8.45,1.6,0,'road',0.8,BLU);
+  L.b(12.5,14,0,1.3,3,5,DARK,true); L.board(14.5,-3.5,'road',4.5,1,'Anuales','se presentan 3 meses antes'); },
+135:L=>{ L.scale(9.5,0,'road',3.2); L.bag(9.5,-1.5,0.5); L.bag(9.5,1.5,0.5); L.b(12.5,15,0,3.5,-5,-1,DARK,true); L.num(12.45,2.2,-3,'road',0.8,YEL,'2011'); L.label('reforma',null,12.45,1,-3,'road',2,0.5,'dark');
+  L.board(5,3.5,'road',4,1,'Estabilidad presupuestaria',null,'blue'); },
+136:L=>{ L.bld(11,15,-6,6,5,0xe8e0cc,{label:'Tribunal de Cuentas'}); L.table(7,8.5,-3,3,WOOD,{a:suit(),b:suit()}); for (let i=0;i<3;i++) L.b(7.4,8.1,0.8,0.95,-2+i*1.6,-1.4+i*1.6,0x2f5d8a); },
+137:L=>{ L.b(6,15,0,0.3,-6,6,0x5aa66a,true); L.b(8,14,0.3,0.7,-4,4,0x8ac48a); L.b(10,13,0.7,1.1,-2,2,0xc4e0b8); L.b(11,12,1.1,2.2,-0.6,0.6,WHITE); L.b(10.9,12.1,2.2,2.5,-0.7,0.7,RED);
+  L.label('Comunidad Autónoma',null,5.95,0.9,4,'road',3,0.5,'green'); L.label('Provincia',null,7.95,1.2,2.5,'road',1.8,0.4,'white'); L.label('Municipio',null,9.95,1.6,0,'road',1.8,0.4,'yellow'); },
+138:L=>{ L.b(7,11,0,1.2,-6,-2,0x5aa66a,true); L.b(7,11,0,0.6,2,6,0xd9b75f,true); L.b(8.5,9.5,0.9,1.1,-2,2,0x8a6a4a); for (const w of [-1,0.6]) { L.p(9,w,'wm',{pose:'fwd',...civ(L.R)}); } L.b(8.8,9.2,1.9,2.3,-0.4,0,0xc49a62);
+  L.board(14,0,'road',6,1,'Solidaridad','equilibrio entre territorios','green'); },
+139:L=>{ L.b(7,15,0.06,0.15,-6,6,0x55595d); A.mover(L,'truck',10.5,-5,5,{col:0x2f7d5a,speed:0.2}); L.b(6,6.3,0,1.6,-6,-5.8,RED); L.b(6,6.3,0,1.6,5.8,6,BLU); L.board(4.5,0,'road',5,1,'Mismos derechos','en todo el territorio'); },
+140:L=>{ L.bld(10,15,-6,6,7,0xe8d2a8,{label:'Ayuntamiento'}); L.b(12,13,7,10,-1,1,0xe8d2a8); L.b(11.95,12,8,9.4,-0.7,0.7,WHITE); L.num(11.93,8.7,0,'road',0.6,DARK);
+  L.b(9,10,3.5,3.7,-2,2,GREY); L.b(9,9.05,3.7,4.5,-2,2,GREY); L.p(9.5,0,'road',{pose:'wave',c:SUIT,band:RED}); L.flag(7,-5,'road','es',5); },
+141:L=>{ L.bld(11,15,-6,0,5.5,0xdfd2b8,{label:'Diputación'}); L.water(6,11,1,6,0x3f86c6); L.b(7.5,9.5,0.06,0.9,2.5,4.5,0xd9c48c,true); L.b(8,9,0.9,2.2,3,4,WHITE); L.label('Cabildo',null,7.95,1.9,3.5,'road',1.4,0.4,'blue'); },
+142:L=>{ L.bld(11,15,-6,6,4.5,0xe8d2a8,{label:'Hacienda local'}); L.b(7,8.4,0,0.9,-1,1,0x6b4f35,true); L.b(7,8.4,0.9,1.2,-1,1,GOLD); L.coins(7.7,-2.5,0.8); L.num(6.98,0.45,0,'road',0.4,GOLD); },
+143:L=>{ const cs=[0xd9b75f,0x5aa66a,0x6a96d2]; cs.forEach((c,i)=>L.b(7+i*2,9+i*2,0,0.5,-4,-1,c,true)); L.b(7,13,0.5,0.7,-4,-1,0x8ac48a); L.flag(11,3,'road',[0x5aa66a,WHITE,0x5aa66a],5); L.board(14.5,-2.5,'road',5,1,'Derecho a la autonomía','provincias con características comunes'); },
+144:L=>{ L.water(10,15,-6,1,0x3f86c6); L.b(8,11,0,2,-5,-2,WHITE,true); L.label('Ceuta · Melilla',null,7.95,1.4,-3.5,'road',2.8,0.5,'blue'); L.b(8,13,0,3.5,2,6,0xd9855e,true); L.label('Madrid',null,7.95,2.5,4,'road',2.4,0.6,'red'); L.board(4.5,0,'road',4,1,'Interés nacional','ley orgánica'); },
+145:L=>{ L.b(8,11,0,1,-6,-2,0x5aa66a,true); L.b(8,11,0,1,2,6,0x6a96d2,true); L.p(9.5,-1.5,'wp',{pose:'fwd'}); L.p(9.5,1.5,'wm',{pose:'fwd'}); L.pix(XMARK,12.5,1.2,0,'road',0.5,{'#':0xd21f2b});
+  L.board(14.5,0,'road',6,1,'Prohibida la federación','de Comunidades Autónomas','red'); },
+146:L=>{ L.table(7.5,11,-2,2,WOOD,{a:suit(),b:civ(L.R),sp:1.1}); L.book(12.8,0,'road',0x2f7d5a,'Estatuto','proyecto'); L.board(4.5,-4.5,'road',3.6,0.9,'Asamblea',null,'blue'); },
+147:L=>{ L.b(8,11,0,1,-1.5,1.5,STONE,true); L.book(9.5,0,'road',0x2f7d5a,'Estatuto','norma institucional básica'); L.flag(12.5,-4,'road',[0x2f7d5a,WHITE,0x2f7d5a],5); L.b(12,15,0.06,0.2,1,5,0x8ac48a); },
+148:L=>{ const it=[['Vivienda',0xd9855e],['Montes',0x5aa66a],['Museos',0xe9e2d3],['Deporte',0x4f9fb0],['Sanidad',WHITE]]; it.forEach(([t,c],i)=>{ const w=-5.2+i*2.6; L.b(9,11,0,2.4,w-1,w+1,c,true); L.label(t,null,8.95,1.8,w,'road',1.9,0.45,'white'); L.num(8.95,0.8,w,'road',0.45,DARK); });
+  L.board(14.5,0,'road',6,1,'Competencias autonómicas','art. 148','green'); },
+149:L=>{ L.temple(10,15,-6,6,6,0xefe3cf,'Estado','competencias exclusivas'); L.b(6,8,0,3,-6,-4,DARK,true); L.num(5.95,2,-5,'road',1.0,YEL,'32'); L.label('materias',null,5.95,0.8,-5,'road',1.8,0.4,'dark');
+  L.coins(6.5,-2,1); L.book(7,0,'road',0x7a1b2a,'Nacionalidad'); for (let k=-0.3;k<0.4;k+=0.15) L.b(6.2,6.3,0,2,2.5+k,2.55+k,GREY); L.b(6.2,6.3,2,2.1,2.1,2.9,GREY); L.label('Penitenciaria',null,6.1,2.4,2.5,'road',1.6,0.35,'white'); },
+150:L=>{ L.bld(11,15,-6,-2,5,0xefe3cf,{label:'Estado'}); L.bld(11,15,2,6,4,0x8ac48a,{label:'Comunidad'}); L.b(8,8.8,0.9,1,-4,4,0x3a3f46); A.mover(L,'box',8.4,-3.5,3.5,{y:1.0,speed:0.25});
+  L.board(4.5,0,'road',5,1,'Leyes marco y de armonización','transferencia y delegación'); },
+151:L=>{ L.b(6,15,0.06,0.15,-2,2,0x55595d); for (let u=6.5;u<15;u+=2) L.b(u,u+1,0.15,0.17,-0.1,0.1,WHITE); A.mover(L,'car',10,-5.5,5.5,{col:RED,speed:0.6}); L.ballot(7,-4,'road'); L.board(13.5,4,'road',4,1,'Vía rápida','3/4 municipios + referéndum','red'); },
+152:L=>{ const b=[['Parlamento',0xd9b3a3],['Gobierno',0xe8e0cc],['TSJ',0xd8d2c4]]; b.forEach(([t,c],i)=>L.bld(10,15,-6+i*4.2,-2.4+i*4.2,4.5,c,{label:t,dw:-4.2+i*4.2})); L.flag(7,0,'road',[0x5aa66a,WHITE,0x5aa66a],5); },
+153:L=>{ L.b(9,10,0,5,-0.5,0.5,0x8a8a8a,true); L.b(8.3,10.7,5,5.3,-1.2,1.2,0x8a8a8a); for (const [a,b] of [[-1,0],[1,0],[0,-1],[0,1]]) L.p(9.5+a*0.6,b*0.6,a<0?'road':(a>0?'back':(b<0?'wm':'wp')),{c:SUIT});
+  L.b(11.5,15,0,0.5,-5,5,0x5aa66a,true); L.board(5,0,'road',6,1,'Control de las Comunidades','TC · Gobierno · tribunales · Tribunal de Cuentas'); },
+154:L=>{ L.bld(10.5,15,-6,6,6,0xefe3cf,{label:'Delegación del Gobierno'}); L.flag(7,-3,'road','es',6); L.flag(7,3,'road',[0x5aa66a,WHITE,0x5aa66a],6); },
+155:L=>{ L.b(9,13,0,1.5,-2.5,2.5,0x5aa66a,true); L.board(5,-4,'road',4,1,'Senado','mayoría absoluta','red'); A.swing(L,11,6,0,'road',b=>{ b.Q(-1.4,1.4,-0.6,0,-1,1,0xe0ac86); for (let i=0;i<4;i++) b.Q(-1.3+i*0.7,-0.8+i*0.7,0,1.6,-0.3,0.3,0xe0ac86); digits(b,L.n,{x:0,y:-0.3,z:1.01},[0,1],0.4,DARK,0.02); },'x',0,1);
+  L.anims[L.anims.length-1].up=(function(o){ const g=o.g; return t=>{ g.position.y=4.4+Math.abs(Math.sin(t*1.2))*1.6; }; })(L.anims[L.anims.length-1]); L.board(14.5,4,'road',4,1,'Coerción estatal',null,'yellow'); },
+156:L=>{ const cs=[0x5aa66a,0xd9b75f,0x6a96d2,0xc46a80,0xd9855e]; cs.forEach((c,i)=>{ const w=-5+i*2.5; L.b(9,10.4,0.3,1.4,w-0.6,w+0.6,c,true); L.b(9.4,10,1.4,1.45,w-0.2,w+0.2,DARK); L.b(8.8,9,0.7,1.0,w-0.2,w+0.2,c); L.num(8.95,0.8,w,'road',0.35,WHITE); });
+  L.board(14.5,0,'road',6,1,'Autonomía financiera','coordinación y solidaridad','green'); },
+157:L=>{ L.b(11,14,0,3,-2,2,0x6a96d2,true); L.num(10.95,1.8,0,'road',0.9,WHITE); for (const w of [-5,-3,3,5]) { L.b(12.2,12.6,2.6,3,w<0?w:2,w<0?-2:w,GREY); L.b(12.2,12.6,0,3,w-0.2,w+0.2,GREY); L.coins(11,w,0.6); }
+  L.board(5,0,'road',6,1,'Recursos de las Comunidades','impuestos cedidos · propios · fondos'); },
+158:L=>{ L.b(9.5,10.5,0,1,-0.3,0.3,DARK); A.swing(L,10,1.05,0,'wp',b=>{ b.Q(-0.2,0.2,0,0.15,-4.5,4.5,WOOD); b.Q(-0.6,0.6,0.15,1.3,-4.4,-3.2,0xd9b75f); b.Q(-0.6,0.6,0.15,0.8,3.2,4.4,0x5aa66a); digits(b,L.n,{x:0.61,y:0.6,z:-3.8},[1,0],0.45,DARK,0.02); },'x',0.12,0.9);
+  L.board(14.5,0,'road',6,1,'Fondo de Compensación','interterritorial'); },
+159:L=>{ L.temple(11,15,-6,6,5.5,0xe8d8dc,'Tribunal Constitucional'); for (let i=0;i<12;i++){ const w=-5.5+i*1; L.q(9,0,w,'road',-0.3,0.3,0,0.5,-0.3,0.3,0x6e1b25,true); L.p(8.9,w,'road',{pose:'sit',robe:ROBE,sc:0.9}); }
+  L.gnum(6,0,2.4,GOLD,'12'); L.board(4.5,4.5,'road',2.6,0.8,'9 años',null,'white'); },
+160:L=>{ L.b(9,11,0,1.2,-1,1,0x6e1b25,true); L.throne(10,0,'road',0x6e1b25); L.p(9.7,0,'road',{pose:'sit',robe:ROBE}); for (const w of [-3.5,-2.3,2.3,3.5]) L.p(9,w,'road',{robe:ROBE});
+  L.board(14.5,0,'road',6,1,'Presidente del Tribunal','3 años'); },
+161:L=>{ const d=[['Inconstitucionalidad',0x6e1b25],['Amparo',BLU],['Conflictos',0x2f7d5a]]; d.forEach(([t,c],i)=>{ const w=-4.2+i*4.2; L.b(11,13,0,3.5,w-1.6,w+1.6,0xe8d8dc,true); L.b(10.95,11,0,2.6,w-0.8,w+0.8,c); L.label(t,null,10.93,3.1,w,'road',3,0.45,'white'); L.num(10.93,1.4,w,'road',0.45,WHITE); });
+  L.p(8,-4.2,'back',civ(L.R)); L.p(8,0,'back',civ(L.R)); L.board(14.8,4.5,'road',3.6,1,'Recursos ante el TC',null,'white'); },
+162:L=>{ for (let i=0;i<10;i++){ L.p(7+Math.floor(i/5)*1.1,-5.5+(i%5)*0.9,'road',{...suit(),sc:0.85}); L.p(7+Math.floor(i/5)*1.1,1.5+(i%5)*0.9,'road',{c:0xb3122a,sc:0.85}); }
+  L.b(11,13,0,3.5,-5,-1,DARK,true); L.num(10.95,2.3,-3,'road',1.1,0x7cf07c,'50'); L.label('Diputados',null,10.95,0.9,-3,'road',2,0.45,'dark'); L.b(11,13,0,3.5,1,5,DARK,true); L.num(10.95,2.3,3,'road',1.1,0xff7060,'50'); L.label('Senadores',null,10.95,0.9,3,'road',2,0.45,'dark');
+  L.board(14.5,0,'road',3.4,1.2,'Legitimados','recurso de inconstitucionalidad'); },
+163:L=>{ L.p(7,-3,'road',{robe:ROBE,pose:'fwd'}); L.pix(QMARK,9.5,1,-0.5,'road',0.35,{'#':YEL}); L.temple(12,15,-2,6,4.5,0xe8d8dc,'Tribunal Constitucional'); L.board(4.5,3,'road',4,1,'Cuestión de inconstitucionalidad','la plantea un juez'); },
+164:L=>{ A.press(L,9,-2,'road'); L.label('BOE',null,8.6,2.3,-2,'road',1.4,0.5,'white'); L.book(9.5,3,'road',0x6e1b25,'Sentencia','cosa juzgada'); L.board(14.5,0,'road',6,1,'Efectos frente a todos','sin recurso posible'); },
+165:L=>{ L.b(8.5,10.5,0,0.8,-1.5,1.5,STONE,true); L.book(9.5,0,'road',0x6e1b25,'LOTC','ley orgánica'); L.board(14.5,0,'road',5,1,'Funcionamiento del TC',null,'white'); },
+166:L=>{ A.crane(L,13,-4,11,{load:0x8a1c2b}); L.book(9,2,'road',0x8a1c2b,'Constitución'); for (const w of [-1,5]) L.b(6.8,7.2,0,1,w-1,w+1,YEL); L.board(4.5,-4,'road',4,1,'Iniciativa de reforma','art. 87.1 y 2 (sin ILP)','yellow'); },
+167:L=>{ A.crane(L,13,4,11,{load:0x8a1c2b}); L.book(9.5,-1,'road',0x8a1c2b,'Constitución'); for (let w=-5;w<=5;w+=2) { L.b(6.5,6.9,0,1,w-0.7,w+0.7,WHITE,true); L.b(6.45,6.95,0.3,0.6,w-0.6,w+0.6,RED); }
+  L.b(11,13,0,3.5,-6,-3,DARK,true); L.label('3/5',null,10.95,2.2,-4.5,'road',2.2,1,'dark'); L.label('de cada Cámara',null,10.95,0.9,-4.5,'road',2.4,0.45,'dark'); },
+168:L=>{ L.b(9,13,0,4,-2.5,2.5,0x55595d,true); L.b(8.95,9,0.4,3.6,-2.1,2.1,0x7a8288); for (let i=0;i<8;i++){ const a=i/8*Math.PI*2; L.b(8.9,8.95,2+Math.sin(a)*0.8-0.08,2+Math.sin(a)*0.8+0.08,Math.cos(a)*0.8-0.08,Math.cos(a)*0.8+0.08,GOLD); }
+  L.num(8.93,3.2,0,'road',0.45,YEL); L.label('2/3 · disolución · referéndum',null,8.93,0.9,0,'road',3.8,0.5,'dark'); L.board(14.5,4.5,'road',3.4,1,'Reforma agravada',null,'red'); },
+169:L=>{ A.crane(L,12,0,11,{stopped:true,load:0x8a1c2b}); L.b(6.5,8,0,3.2,-4.5,-1.5,WHITE,true); L.label('Prohibido',null,6.45,2.3,-3,'road',2.8,0.8,'red'); L.label('en guerra o en estados del 116',null,6.45,1.2,-3,'road',2.8,0.5,'white');
+  A.blink(L,b=>{ const x=L.X(12),z=L.Z(0); b.box(x-0.35,x+0.35,11.2,11.9,z-0.35,z+0.35,0xff2a2a); },2); for (let w=1;w<=5;w+=2) { L.b(6.5,6.9,0,1,w-0.7,w+0.7,WHITE,true); L.b(6.45,6.95,0.3,0.6,w-0.6,w+0.6,RED); } }
+};
+
+/* ---------- Construcción de la calle ---------- */
+const LAST_SLOT=Math.max(...Array.from({length:169},(_,i)=>slotOf(i+1)));
+const Z_START=40, Z_END=zOfSlot(LAST_SLOT)-40;
+const arches=[], parks=[];
+function lotBase(L){
+  const T=tituloOf(L.n), g=tint(T.col,0.72), n=L.n;
+  L.b(0,16,0,0.06,-7,7,g);
+  L.b(0,16,0.06,0.22,-7,-6.85,0xd9d2c0); L.b(0,16,0.06,0.22,6.85,7,0xd9d2c0); L.b(15.8,16,0.06,1.2,-7,7,0x5d8a45);
+  L.b(0.3,1.1,0,3.6,-6.6,-5.8,T.col,true); L.b(0.2,1.2,3.6,3.85,-6.7,-5.7,shade(T.col,0.7));
+  L.num(0.28,2.7,-6.2,'road',0.8,WHITE); L.num(0.7,2.7,-5.78,'wp',0.55,WHITE); L.num(0.7,2.7,-6.62,'wm',0.55,WHITE);
+  L.b(0.55,0.7,0,2.95,0.45,0.6,DARK); L.b(0.55,0.7,0,2.95,5.4,5.55,DARK); L.b(0.6,0.72,1.55,2.95,0.35,5.65,0x14213d);
+  L.label(`Art. ${n}`,ART[n][0],0.57,2.25,3,'road',5.1,1.25,'tile');
+  digitsG(n,L.s*3.6,L.zc,[0,-1],3.0,0xf6f1e3,0.062);
+}
+function buildStreet(){
+  const g=new THREE.Mesh(new THREE.PlaneGeometry(900,Z_START-Z_END+400),new THREE.MeshLambertMaterial({color:0x86a35e})); g.rotation.x=-Math.PI/2; g.position.set(0,-0.01,(Z_START+Z_END)/2); scene.add(g);
+  for (let z=Z_START+20; z>Z_END-20; z-=40){ const z1=z-40;
+    B(-7,7,0,0.05,z,z1,0x4d5156); B(7,10,0,0.1,z,z1,0xcfc7b6); B(-10,-7,0,0.1,z,z1,0xcfc7b6); B(6.9,7.05,0,0.16,z,z1,0xe8e2d2); B(-7.05,-6.9,0,0.16,z,z1,0xe8e2d2);
+    for (let k=z; k>z1; k-=8) B(-0.12,0.12,0.05,0.058,k,k-4,0xf6f1e3);
+    B(-6.6,-6.45,0.05,0.058,z,z1,0xf6f1e3); B(6.45,6.6,0.05,0.058,z,z1,0xf6f1e3);
+    for (const s of [-1,1]){ const x=s*9.2; B(x-0.08,x+0.08,0,6,z-0.08,z+0.08,0x3d4550,true); B(x,x-s*1.4,5.9,6.0,z-0.06,z+0.06,0x3d4550); B(x-s*0.8,x-s*1.5,5.72,5.9,z-0.2,z+0.2,0xfff3c8); } }
+  /* Manzanas de fondo, detrás de las parcelas */
+  const R=rng(5); for (let z=Z_START; z>Z_END; z-=16) for (const s of [-1,1]){ const h=8+R()*14, x0=s*29, x1=s*(29+10+R()*6), col=[0xe8d9bf,0xdcc6a4,0xd7b79a,0xe6ddcc,0xc9b89f][(R()*5)|0];
+    B(x0,x1,0,h,z-1,z-15,col); B(x0-s*0.2,x1,h,h+0.4,z-0.8,z-15.2,shade(col,0.6)); for (let y=2; y<h-1; y+=3) B(x0-s*0.06,x0,y,y+1.3,z-2,z-14,0x5a6878); }
+  /* Plaza del Preámbulo */
+  B(-26,26,0,0.08,Z_START+22,Z_START-22,0xe3d9c2); B(-4,4,0,1.2,Z_START+4,Z_START-4,STONE,true); B(-3,3,1.2,1.6,Z_START+3,Z_START-3,0xcbbf9f);
+  const bk={x:0,y:1.6,z:Z_START-1}; plBox(null,bk,[0,1],-2.2,2.2,0,4.4,-0.5,0.5,0x8a1c2b,true); plBox(null,bk,[0,1],-2.1,2.1,0.1,4.3,-0.55,0.45,0xf3eedc); plBox(null,bk,[0,1],-2.25,-1.95,0,4.4,-0.52,0.52,0x6a1420);
+  digits(null,'1978',{x:0,y:2.4,z:Z_START-0.48},[0,1],0.7,GOLD,0.03);
+  permLabel('Constitución Española',null,0,5.0,Z_START-0.45,0,4.4,0.8,'blue'); permLabel('Plaza del Preámbulo','La Nación española, deseando establecer la justicia, la libertad y la seguridad…',0,7.4,Z_START-6,0,11,2.2,'tile');
+  plBox(null,{x:0,y:0,z:Z_START-6.2},[0,1],-5.6,5.6,6.2,8.6,-0.15,0,DARK); for (const x of [-5.4,5.4]) B(x-0.15,x+0.15,0,6.3,Z_START-6.4,Z_START-6.1,DARK,true);
+  for (const [x,z] of [[-18,Z_START+14],[18,Z_START+14],[-18,Z_START-14],[18,Z_START-14],[-22,Z_START],[22,Z_START]]) tree(x,z);
+  /* Plaza final: disposiciones */
+  const zf=Z_END+10; B(-26,26,0,0.08,zf+22,zf-22,0xe3d9c2); B(-5,5,0,1.2,zf+3,zf-3,STONE,true);
+  permLabel('Disposiciones','adicionales · transitorias · derogatoria · final',0,3.2,zf+3.05,0,8,1.6,'tile'); permLabel('Fin de la calle','Has recorrido los 169 artículos',0,7,zf-8,0,10,2,'blue');
+  plBox(null,{x:0,y:0,z:zf-8.2},[0,1],-5.2,5.2,5.9,8.1,-0.15,0,DARK); for (const x of [-5,5]) B(x-0.15,x+0.15,0,6,zf-8.4,zf-8.1,DARK,true);
+  /* Arcos de cada Título */
+  TITULOS.forEach((T,i)=>{ let z; if (i===0) z=Z0+8; else { const prevMax=Math.max(slotOf(T.from-1),slotOf(T.from-2)), newMin=Math.min(slotOf(T.from),slotOf(T.from+1)); z=zOfSlot((prevMax+newMin)/2); }
+    const c=T.col; for (const s of [-1,1]){ B(s*8.2,s*9.4,0,8.6,z-0.6,z+0.6,c,true); B(s*8.0,s*9.6,0,0.6,z-0.8,z+0.8,shade(c,0.7)); }
+    B(-9.6,9.6,7.4,9.2,z-0.5,z+0.5,c); B(-9.8,9.8,9.2,9.5,z-0.7,z+0.7,shade(c,0.7));
+    permLabel(T.name.split(' · ')[0],T.name.split(' · ')[1]||'Arts. '+T.from+' a '+T.to,0,8.3,z+0.52,0,15,1.6,'tile');
+    permLabel(T.name.split(' · ')[0],'Arts. '+T.from+' a '+T.to,0,8.3,z-0.52,Math.PI,15,1.6,'tile');
+    arches.push({z,T}); });
+  /* Parques en los huecos */
+  const used=new Set(); for (let n=1;n<=169;n++) used.add(slotOf(n)+':'+sideOf(n));
+  for (let s=0;s<=LAST_SLOT;s++) for (const side of [-1,1]) if (!used.has(s+':'+side)){ const zc=zOfSlot(s), X=u=>side*(10+u); B(X(0),X(16),0,0.06,zc+7,zc-7,0x86b86a); tree(X(8),zc-3); tree(X(12),zc+3); B(X(4)-0.3,X(4)+0.3,0.4,0.48,zc-1,zc+1,WOOD,true); parks.push({side,zc}); }
+}
+function tree(x,z){ B(x-0.2,x+0.2,0,2,z-0.2,z+0.2,0x6b4f35,true); B(x-1.4,x+1.4,1.8,4.2,z-1.4,z+1.4,0x5d8a45); B(x-0.9,x+0.9,4.2,5.4,z-0.9,z+0.9,0x6a9a4e); }
+function permLabel(t,s,x,y,z,rot,w,h,style){ makeLabel({t,s,x,y,z,rot,w,h,style}); }
+
+/* ---------- Colisiones ---------- */
+const CG=8, grid=new Map(); let stamp=1;
+function buildGrid(){ for (const c of colliders){ const i0=Math.floor((c.x0+500)/CG), i1=Math.floor((c.x1+500)/CG), j0=Math.floor((c.z0+3000)/CG), j1=Math.floor((c.z1+3000)/CG);
+  for (let i=i0;i<=i1;i++) for (let j=j0;j<=j1;j++){ const k=i*100000+j; let a=grid.get(k); if(!a){a=[];grid.set(k,a);} a.push(c); } } }
+const qbuf=[];
+function query(x,z){ qbuf.length=0; stamp++; const i=Math.floor((x+500)/CG), j=Math.floor((z+3000)/CG);
+  for (let a=i-1;a<=i+1;a++) for (let b=j-1;b<=j+1;b++){ const l=grid.get(a*100000+b); if(!l) continue; for (const c of l){ if(c.s!==stamp){c.s=stamp;qbuf.push(c);} } } return qbuf; }
+function resolve(p,r){ let hit=false; for (let it=0;it<3;it++){ let moved=false;
+  for (const c of query(p.x,p.z)){ const qx=clamp(p.x,c.x0,c.x1), qz=clamp(p.z,c.z0,c.z1), dx=p.x-qx, dz=p.z-qz, d2=dx*dx+dz*dz;
+    if (d2<r*r){ if (d2>1e-9){ const d=Math.sqrt(d2); p.x+=dx/d*(r-d); p.z+=dz/d*(r-d); } else { const l=p.x-c.x0, rr=c.x1-p.x, t=p.z-c.z0, bb=c.z1-p.z, m=Math.min(l,rr,t,bb); if(m===l)p.x=c.x0-r; else if(m===rr)p.x=c.x1+r; else if(m===t)p.z=c.z0-r; else p.z=c.z1+r; } moved=true; hit=true; } }
+  if (!moved) break; } return hit; }
+
+/* ---------- Estado ---------- */
+const player={x:0,z:Z_START-12,hd:Math.PI}, car={x:4,z:Z_START-14,h:Math.PI,v:0};
+let PL=null, CAR=null, inCar=false, camYaw=0, zoom=1, state='intro', T=0, camRate=8;
+const camPos=new THREE.Vector3(0,40,Z_START+40), camLook=new THREE.Vector3(0,0,0);
+const keys={}, stick={active:false,x:0,y:0,id:null}; let runHeld=false, dragging=null;
+let curLot=null, shownLot=null, lastPassed=0, visited=new Set();
+const ui={locEyebrow:$('#locEyebrow'),locTitle:$('#locTitle'),locSub:$('#locSub'),prog:$('#prog'),progBar:$('#progBar'),speed:$('#speed'),card:$('#card'),cNum:$('#cNum'),cTit:$('#cTit'),cZone:$('#cZone'),cText:$('#cText'),toast:$('#toast'),prompt:$('#prompt'),promptText:$('#promptText'),carBtn:$('#carBtn')};
+try { const a=JSON.parse(localStorage.getItem('calle-ce-v1')||'[]'); a.forEach(n=>visited.add(n)); } catch(e){}
+function save(){ try { localStorage.setItem('calle-ce-v1',JSON.stringify([...visited])); } catch(e){} }
+
+function buildCar(){ const b=canon(), col=0xc60b1e;
+  b.Q(-0.95,0.95,0.35,1.05,-2.2,2.2,col); b.Q(-0.85,0.85,1.05,1.62,-1.2,0.9,col); b.Q(-0.83,0.83,1.1,1.56,-1.22,0.92,0x2d3a4a); b.Q(-0.86,0.86,1.1,1.56,-0.2,0.2,col);
+  for (const d of [-1.4,1.4]){ b.Q(-1.02,-0.8,0,0.66,d-0.34,d+0.34,0x1a1a1a); b.Q(0.8,1.02,0,0.66,d-0.34,d+0.34,0x1a1a1a); }
+  b.Q(-0.8,-0.4,0.7,0.9,2.2,2.22,0xfff3c8); b.Q(0.4,0.8,0.7,0.9,2.2,2.22,0xfff3c8); b.Q(-0.8,-0.5,0.7,0.85,-2.22,-2.2,0xff3030); b.Q(0.5,0.8,0.7,0.85,-2.22,-2.2,0xff3030);
+  b.Q(-0.95,0.95,0.62,0.72,-2.21,2.21,YEL); digits(b,'1978',{x:0.96,y:0.85,z:0},[1,0],0.3,WHITE,0.02); digits(b,'1978',{x:-0.96,y:0.85,z:0},[-1,0],0.3,WHITE,0.02);
+  const g=grp(b); const pl=new THREE.Mesh(planeGeo,new THREE.MeshBasicMaterial({map:signTexture('CE 1978',null,'white',1,0.25)})); pl.scale.set(0.9,0.22,1); pl.position.set(0,0.55,-2.23); pl.rotation.y=Math.PI; g.add(pl);
+  const pf=pl.clone(); pf.position.set(0,0.55,2.23); pf.rotation.y=0; g.add(pf); scene.add(g); return g; }
+
+/* ---------- Peatones ---------- */
+const peds=[];
+function spawnPeds(){ const R=rng(77); for (let i=0;i<12;i++){ const h=human({c:CLOTH[(R()*12)|0],p:CLOTH[(R()*12)|0],skin:SKIN[(R()*5)|0],hair:HAIR[(R()*7)|0]}); scene.add(h.g); peds.push({h,x:(R()<0.5?-1:1)*(8+R()*1.6),z:player.z-R()*120+40,dir:R()<0.5?1:-1,sp:1+R()*0.6}); } }
+function updPeds(dt){ for (const p of peds){ p.z+=p.dir*p.sp*dt*-1; if (Math.abs(p.z-player.z)>90){ p.z=player.z+(p.z<player.z?80:-80)*(0.6+Math.random()*0.4); } p.h.g.position.set(p.x,0.1,p.z); p.h.g.rotation.y=p.dir>0?Math.PI:0; walkAnim(p.h,1,dt); } }
+
+/* ---------- Entrada ---------- */
+addEventListener('keydown',e=>{ if (state!=='play') return; keys[e.code]=true; const onBtn=document.activeElement&&document.activeElement.tagName==='BUTTON';
+  if (e.code==='KeyF'){ toggleCar(); } if (e.code==='KeyE'||(e.code==='Space'&&!onBtn&&!inCar)){ e.preventDefault(); act(); } if (e.code==='KeyM'||e.code==='KeyI') toggleIndex(); if (e.code==='KeyL') speak();
+  if (e.code==='Escape'){ if (!$('#index').hidden) toggleIndex(false); else hideCard(); } if (e.code.startsWith('Arrow')||e.code==='Space') e.preventDefault(); });
+addEventListener('keyup',e=>{ keys[e.code]=false; }); addEventListener('blur',()=>{ for (const k in keys) keys[k]=false; });
+canvas.addEventListener('pointerdown',e=>{ if (state!=='play') return; dragging={id:e.pointerId,x:e.clientX}; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove',e=>{ if (!dragging||dragging.id!==e.pointerId) return; camYaw-=(e.clientX-dragging.x)*0.0065; dragging.x=e.clientX; dragging.t=performance.now(); });
+const endDrag=e=>{ if (dragging&&dragging.id===e.pointerId) dragging=null; }; canvas.addEventListener('pointerup',endDrag); canvas.addEventListener('pointercancel',endDrag);
+canvas.addEventListener('wheel',e=>{ e.preventDefault(); zoom=clamp(zoom*(e.deltaY>0?1.1:0.9),0.55,2.2); },{passive:false});
+const stickEl=$('#stick'), knob=$('#knob');
+stickEl.addEventListener('pointerdown',e=>{ stick.active=true; stick.id=e.pointerId; stickEl.setPointerCapture(e.pointerId); moveStick(e); e.preventDefault(); });
+stickEl.addEventListener('pointermove',e=>{ if (stick.active&&e.pointerId===stick.id) moveStick(e); });
+const endStick=e=>{ if (e.pointerId!==stick.id) return; stick.active=false; stick.x=stick.y=0; knob.style.transform=''; }; stickEl.addEventListener('pointerup',endStick); stickEl.addEventListener('pointercancel',endStick);
+function moveStick(e){ const r=stickEl.getBoundingClientRect(), R=r.width/2; let dx=e.clientX-r.left-R, dy=e.clientY-r.top-R; const L=Math.hypot(dx,dy); if (L>R){dx*=R/L;dy*=R/L;} stick.x=dx/R; stick.y=dy/R; knob.style.transform=`translate(${dx}px,${dy}px)`; }
+$('#runBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); runHeld=!runHeld; $('#runBtn').classList.toggle('on',runHeld); });
+$('#actBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); act(); });
+ui.carBtn.addEventListener('click',toggleCar); $('#idxBtn').addEventListener('click',()=>toggleIndex()); $('#idxClose').addEventListener('click',()=>toggleIndex(false));
+$('#cClose').addEventListener('click',hideCard); $('#cSpeak').addEventListener('click',speak); $('#cPrev').addEventListener('click',()=>shownLot&&goto(Math.max(1,shownLot.n-1))); $('#cNext').addEventListener('click',()=>shownLot&&goto(Math.min(169,shownLot.n+1)));
+ui.prompt.addEventListener('click',act);
+
+function toggleCar(){ if (state!=='play') return;
+  if (inCar){ inCar=false; const s=[Math.cos(car.h),-Math.sin(car.h)]; player.x=car.x+s[0]*2; player.z=car.z+s[1]*2; resolve(player,0.34); player.hd=car.h; PL.g.visible=true; car.v=0; toast('Has bajado del coche'); }
+  else { const d=Math.hypot(car.x-player.x,car.z-player.z); if (d>5){ car.x=clamp(player.x,-5,5); car.z=player.z; car.h=player.x>0?Math.PI:Math.PI; car.v=0; toast('Coche aparcado a tu lado'); }
+    inCar=true; PL.g.visible=false; camYaw=car.h+Math.PI; }
+  ui.carBtn.textContent=inCar?'Bajar (F)':'Coche (F)'; ui.speed.hidden=!inCar; }
+function goto(n){ const L=lots[n]; if (inCar){ car.x=L.s*3.5; car.z=L.zc+6; car.h=Math.PI; car.v=0; camYaw=0; } else { player.x=L.X(2.2); player.z=L.Z(-3.2); player.hd=L.s>0?Math.PI/2:-Math.PI/2; camYaw=player.hd+Math.PI; updLocation.last=null; } toggleIndex(false); }
+function act(){ if (curLot){ if (shownLot===curLot&&!ui.card.hidden) speak(); else showCard(curLot); } else if (!inCar && Math.hypot(car.x-player.x,car.z-player.z)<5) toggleCar(); }
+function speak(){ const L=shownLot||curLot; if (!L) return; try { const s=window.speechSynthesis; s.cancel(); const u=new SpeechSynthesisUtterance(`Artículo ${L.n}. ${ART[L.n][0]}. ${ART[L.n][1]}`); u.lang='es-ES'; u.rate=1; s.speak(u); } catch(e){ toast('Tu navegador no puede leer en voz alta'); } }
+
+/* ---------- Ficha e índice ---------- */
+function showCard(L){ shownLot=L; const n=L.n, T=tituloOf(n); ui.cNum.textContent=n; ui.cTit.textContent=ART[n][0]; ui.cZone.textContent=[T.name.split(' · ')[0],capOf(n)].filter(Boolean).join(' · '); ui.cText.textContent=ART[n][1];
+  ui.card.style.setProperty('--tc','#'+T.col.toString(16).padStart(6,'0')); ui.card.hidden=false; ui.card.scrollTop=0;
+  if (!visited.has(n)){ visited.add(n); save(); updProgress(); } }
+function hideCard(){ ui.card.hidden=true; shownLot=null; try { speechSynthesis.cancel(); } catch(e){} }
+function updProgress(){ ui.prog.textContent=`${visited.size}/169`; ui.progBar.style.width=(visited.size/169*100)+'%'; for (const b of document.querySelectorAll('#idxGrid button')) b.classList.toggle('seen',visited.has(+b.dataset.n)); }
+function buildIndex(){ const g=$('#idxGrid'); for (const T of TITULOS){ const h=document.createElement('h3'); h.textContent=T.name; h.style.setProperty('--tc','#'+T.col.toString(16).padStart(6,'0')); g.appendChild(h);
+  const row=document.createElement('div'); row.className='nums'; for (let n=T.from;n<=T.to;n++){ const b=document.createElement('button'); b.type='button'; b.textContent=n; b.dataset.n=n; b.title=ART[n][0]; b.style.setProperty('--tc','#'+T.col.toString(16).padStart(6,'0')); b.addEventListener('click',()=>goto(n)); row.appendChild(b); } g.appendChild(row); } }
+function toggleIndex(force){ const el=$('#index'), open=force!==undefined?force:el.hidden; el.hidden=!open; if (!open) canvas.focus({preventScroll:true}); }
+let toastT=0; function toast(t){ ui.toast.textContent=t; ui.toast.hidden=false; toastT=2.6; }
+
+/* ---------- Minimapa ---------- */
+const mini=$('#mini'), mc=mini.getContext('2d');
+function drawMini(){ const W=mini.width, S=W/164*1.5, px=inCar?car.x:player.x, pz=inCar?car.z:player.z;
+  mc.save(); mc.fillStyle='#86a35e'; mc.fillRect(0,0,W,W); mc.translate(W/2,W/2); mc.scale(S,S); mc.translate(-px,-pz);
+  mc.fillStyle='#4d5156'; mc.fillRect(-7,pz-120,14,240); mc.fillStyle='#cfc7b6'; mc.fillRect(-10,pz-120,3,240); mc.fillRect(7,pz-120,3,240);
+  mc.textAlign='center'; mc.textBaseline='middle'; mc.font='700 7px "Archivo Narrow",sans-serif';
+  for (let n=1;n<=169;n++){ const L=lots[n]; if (Math.abs(L.zc-pz)>100) continue; const x0=L.s>0?10:-26; mc.fillStyle='#'+tint(L.col,visited.has(n)?0.15:0.55).toString(16).padStart(6,'0'); mc.fillRect(x0,L.zc-7,16,14);
+    mc.fillStyle='#14213d'; mc.fillText(String(n),x0+8,L.zc); }
+  for (const a of arches){ if (Math.abs(a.z-pz)>100) continue; mc.fillStyle='#'+a.T.col.toString(16).padStart(6,'0'); mc.fillRect(-10,a.z-0.8,20,1.6); }
+  mc.restore(); const h=inCar?car.h:player.hd; mc.save(); mc.translate(W/2,W/2); mc.rotate(Math.PI-h); mc.beginPath(); mc.moveTo(0,-13); mc.lineTo(9,10); mc.lineTo(0,5); mc.lineTo(-9,10); mc.closePath();
+  mc.fillStyle=inCar?'#c60b1e':'#ffffff'; mc.fill(); mc.lineWidth=3; mc.strokeStyle='#14213d'; mc.stroke(); mc.restore();
+  mc.fillStyle='#14213d'; mc.beginPath(); mc.arc(W/2,16,13,0,Math.PI*2); mc.fill(); mc.fillStyle='#ffc400'; mc.font='700 16px "Archivo Narrow",sans-serif'; mc.textAlign='center'; mc.fillText('N',W/2,17); }
+
+/* ---------- Bucle ---------- */
+function resize(){ const w=innerWidth, h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<h?70:58; camera.updateProjectionMatrix(); }
+addEventListener('resize',resize);
+const lerpAngle=(a,b,t)=>{ const d=((b-a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI; return a+d*t; };
+function input(){ let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0), iy=((keys.KeyW||keys.ArrowUp)?1:0)-((keys.KeyS||keys.ArrowDown)?1:0); if (stick.active){ ix=stick.x; iy=-stick.y; } return [ix,iy]; }
+function updPlayer(dt){ let [ix,iy]=input(); if (keys.ArrowLeft||keys.KeyQ) camYaw+=1.9*dt; if (keys.ArrowRight) camYaw-=1.9*dt;
+  const mag=Math.min(1,Math.hypot(ix,iy)), run=keys.ShiftLeft||keys.ShiftRight||runHeld||(stick.active&&mag>0.96); let moving=false;
+  if (mag>0.08 && $('#index').hidden){ const fx=-Math.sin(camYaw), fz=-Math.cos(camYaw), rx=Math.cos(camYaw), rz=-Math.sin(camYaw); let mx=fx*iy+rx*ix, mz=fz*iy+rz*ix; const l=Math.hypot(mx,mz); mx/=l; mz/=l;
+    const sp=(run?8.5:4.3)*mag*dt, st=Math.ceil(sp/0.14); for (let i=0;i<st;i++){ player.x+=mx*sp/st; player.z+=mz*sp/st; resolve(player,0.34); }
+    player.hd=lerpAngle(player.hd,Math.atan2(mx,mz),1-Math.exp(-14*dt)); moving=true; }
+  player.x=clamp(player.x,-45,45); player.z=clamp(player.z,Z_END-30,Z_START+30);
+  walkAnim(PL,moving?(run?2:1)*mag:0,dt,run); PL.g.position.set(player.x,0.1,player.z); PL.g.rotation.y=player.hd; }
+function updCar(dt){ let [ix,iy]=input(); if (stick.active){ iy=-stick.y; ix=stick.x; }
+  const acc=iy>0?16*iy:(iy<0?(car.v>0.5?-26:-9)*-iy:0); car.v+=acc*dt; car.v-=car.v*(iy===0?0.8:0.25)*dt; car.v=clamp(car.v,-9,36);
+  const steer=-ix*0.55*(1/(1+Math.abs(car.v)*0.03)); car.h+=car.v*Math.tan(steer)/2.6*dt;
+  const st=Math.ceil(Math.abs(car.v*dt)/0.2)||1; for (let i=0;i<st;i++){ car.x+=Math.sin(car.h)*car.v*dt/st; car.z+=Math.cos(car.h)*car.v*dt/st; if (resolve(car,1.25)) car.v*=0.6; }
+  car.x=clamp(car.x,-45,45); car.z=clamp(car.z,Z_END-30,Z_START+30);
+  if (!dragging||performance.now()-(dragging.t||0)>800) camYaw=lerpAngle(camYaw,car.h+Math.PI,1-Math.exp(-(1.2+Math.abs(car.v)*0.08)*dt));
+  if (keys.ArrowLeft||keys.KeyQ) camYaw+=1.9*dt; if (keys.ArrowRight) camYaw-=1.9*dt;
+  ui.speed.textContent=Math.round(Math.abs(car.v)*3.6)+' km/h'; }
+function updCamera(dt){ const tx=inCar?car.x:player.x, tz=inCar?car.z:player.z, dist=(inCar?11:7.6)*zoom, h=inCar?4.8+zoom*1.5:3.4+(zoom-1)*4;
+  const cx=tx+Math.sin(camYaw)*dist, cz=tz+Math.cos(camYaw)*dist, cy=h+0.6; camRate=Math.min(8,camRate+dt*4); const k=1-Math.exp(-camRate*dt);
+  camPos.x+=(cx-camPos.x)*k; camPos.y+=(cy-camPos.y)*k; camPos.z+=(cz-camPos.z)*k; camLook.x+=(tx-camLook.x)*k; camLook.y+=(1.6-camLook.y)*k; camLook.z+=(tz-camLook.z)*k;
+  camera.position.copy(camPos); camera.lookAt(camLook); }
+function locate(){ const x=inCar?car.x:player.x, z=inCar?car.z:player.z;
+  for (let n=1;n<=169;n++){ const L=lots[n]; if (Math.abs(z-L.zc)<=7 && L.s*x>=9.7 && L.s*x<=26.5) return L; } return null; }
+let locKey='';
+function updLocation(){ const L=locate(), x=inCar?car.x:player.x, z=inCar?car.z:player.z; curLot=inCar?null:L;
+  let eb='C/ de la Constitución', t, s;
+  if (L){ t=`Nº ${L.n}`; s=ART[L.n][0]; }
+  else if (z>Z0+8){ t='Plaza del Preámbulo'; s='Empieza aquí: impares a la derecha, pares a la izquierda'; }
+  else if (z<Z_END+30){ t='Plaza final'; s='Disposiciones de la Constitución'; }
+  else { let best=null, bd=1e9; for (let n=1;n<=169;n++){ const d=Math.abs(lots[n].zc-z); if (d<bd){bd=d;best=n;} } const T=tituloOf(best); t=`Altura del nº ${best}`; s=T.name; }
+  const key=eb+t+s; if (key!==locKey){ locKey=key; ui.locEyebrow.textContent=eb; ui.locTitle.textContent=t; ui.locSub.textContent=s; }
+  if (L && !inCar){ if (shownLot!==L && L!==updLocation.last) showCard(L); } else if (!L && shownLot && !inCar && updLocation.last) hideCard();
+  updLocation.last=L;
+  if (inCar){ for (let n=1;n<=169;n++){ const Lt=lots[n]; if (Math.abs(Lt.zc-z)<3 && n!==lastPassed){ lastPassed=n; toast(`${n} · ${ART[n][0]}`); if (!visited.has(n)){ visited.add(n); save(); updProgress(); } break; } } }
+  const nearCar=!inCar && Math.hypot(car.x-player.x,car.z-player.z)<5;
+  const pt=curLot?(shownLot===curLot&&!ui.card.hidden?'Escuchar el artículo '+curLot.n:'Ver el artículo '+curLot.n):(nearCar?'Subir al coche':null);
+  ui.prompt.hidden=!pt||(isTouch&&!ui.card.hidden); if (pt&&ui.promptText.textContent!==pt) ui.promptText.textContent=pt; $('#promptKey').textContent=isTouch?'A':(nearCar&&!curLot?'F':'E'); }
+function updLots(){ const z=inCar?car.z:player.z;
+  for (let n=1;n<=169;n++){ const L=lots[n], d=Math.abs(L.zc-z);
+    if (d<85 && !L.meshes.length && L.labels.length) L.meshes=L.labels.map(makeLabel); else if (d>120 && L.meshes.length){ L.meshes.forEach(dropLabel); L.meshes=[]; }
+    const act=d<110||state==='intro'&&d<260; for (const a of L.anims){ if (a.g) a.g.visible=act; if (a.extra) a.extra.forEach(e=>e.visible=act); a.on=act; } } }
+let last=performance.now();
+function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; T+=dt;
+  if (state==='intro'){ const zc=Z0-40-((T*6)%500); camera.position.set(Math.sin(T*0.1)*24,26,zc+30); camera.lookAt(0,2,zc-30); player.z=zc; }
+  else { if (inCar) updCar(dt); else updPlayer(dt); CAR.position.set(car.x,0.05,car.z); CAR.rotation.y=car.h; updCamera(dt); updLocation(); drawMini(); if (toastT>0){ toastT-=dt; if (toastT<=0) ui.toast.hidden=true; } }
+  updLots(); for (const a of anims) if (a.on) a.up(T,dt); updPeds(dt);
+  renderer.render(scene,camera); requestAnimationFrame(frame); }
+
+/* ---------- Arranque ---------- */
+async function boot(){ resize();
+  try { await Promise.race([Promise.all([document.fonts.load('700 40px "Fraunces"'),document.fonts.load('700 30px "Archivo Narrow"'),document.fonts.load('500 20px "Source Sans 3"')]),new Promise(r=>setTimeout(r,2500))]); } catch(e){}
+  buildStreet();
+  for (let n=1;n<=169;n++){ const L=Lot(n,sideOf(n),zOfSlot(slotOf(n)),tituloOf(n).col); lotBase(L); try { SC[n]&&SC[n](L); } catch(e){ console.error('Escena',n,e); } lots[n]=L; }
+  for (const [,b] of chunks){ const m=b.mesh(); if (m) scene.add(m); }
+  buildGrid();
+  PL=human({c:0x1d4f91,p:0x2a3550,skin:0xe0ac86,hair:0x3b2a20,vest:YEL}); scene.add(PL.g); CAR=buildCar(); spawnPeds();
+  buildIndex(); updProgress();
+  const btn=$('#startBtn'); btn.disabled=false; btn.textContent=visited.size?'Seguir paseando':'Entrar en la calle'; btn.addEventListener('click',start);
+  requestAnimationFrame(frame); }
+function start(){ $('#intro').hidden=true; $('#hud').hidden=false; state='play'; player.z=Z_START-12; camRate=1.5; last=performance.now(); scene.fog.near=60; scene.fog.far=240; camYaw=0; canvas.focus({preventScroll:true});
+  toast('Impares a la derecha · pares a la izquierda'); }
+boot();
+
+})();
+</script>
+
+</html>
