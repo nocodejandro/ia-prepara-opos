@@ -112,8 +112,8 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
     <strong class="loc" id="locTitle">Exterior</strong>
     <span class="sub" id="locSub">Aparcamiento</span>
     <div class="route" id="route">
-      <span class="eyebrow"><span class="long">Ruta de reconocimiento · </span><span class="short">Ruta · </span><b id="objCount">0/15</b></span>
-      <span class="next" id="objName">Control de accesos</span>
+      <span class="eyebrow"><span class="long">Ruta de reconocimiento · </span><span class="short">Ruta · </span><b id="objCount">0/19</b></span>
+      <span class="next" id="objName">Rastrillo puerta principal</span>
       <span class="dist" id="objDist"></span>
       <div class="bar"><i id="objBar"></i></div>
     </div>
@@ -157,7 +157,7 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
   <div class="intro-in">
     <div class="kicker">Recorrido 3D · Instituciones Penitenciarias</div>
     <h1>Centro Penitenciario Tipo</h1>
-    <p class="lead">Recorre a pie un centro tipo: control de accesos, oficinas de Dirección, comunicaciones, ingresos, rastrillo y los seis primeros módulos residenciales, con su office, comedor, galería de celdas y patio.</p>
+    <p class="lead">Recorre a pie un centro tipo con planta real: rastrillo de entrada, comunicaciones, oficinas de Régimen y Comisión Disciplinaria, ingresos, un segundo rastrillo, la plaza interior, cuatro módulos residenciales (incluido el de aislamiento), sociocultural, piscina, tratamiento, jardín, enfermería, cocina, talleres y campo de fútbol.</p>
     <ul class="zones">
       <li><i style="background:#e8dcb8"></i>Zona residencial: módulos</li>
       <li><i style="background:#d9e2dc"></i>Zona extramodular: uso común</li>
@@ -367,7 +367,10 @@ const SIGN = {
   inst:{bg:'#173a44',fg:'#f4f1e8',sub:'#bcd2cb',rule:'#f5c400'},
   door:{bg:'#f2f0e8',fg:'#173a44',sub:'#56707a',rule:'#173a44'},
   gc:{bg:'#27432a',fg:'#f4f1e8',sub:'#cfe0c4',rule:'#c9a227'},
-  warn:{bg:'#f5c400',fg:'#1b1b1b',sub:'#3b3b3b',rule:'#1b1b1b'}
+  warn:{bg:'#f5c400',fg:'#1b1b1b',sub:'#3b3b3b',rule:'#1b1b1b'},
+  green:{bg:'#2c4a2f',fg:'#f4f1e8',sub:'#cfe0c4',rule:'#8fbf7a'},
+  yellow:{bg:'#e8b83a',fg:'#1b1b1b',sub:'#3b3b3b',rule:'#1b1b1b'},
+  white:{bg:'#f2f0e8',fg:'#173a44',sub:'#56707a',rule:'#f5c400'}
 };
 function sign(title,sub,x,y,z,rot,w,h,style='inst'){
   const S=SIGN[style], pw=style==='door'?320:640, ph=Math.max(48,Math.round(pw*h/w));
@@ -558,37 +561,6 @@ function hallFurnish(t,r,east,zc,cw){
 }
 
 /* ============ Suelos, viales y exterior ============ */
-function buildGround(){
-  B(-300,300,-0.3,0,-300,300,C.grass,false);
-  mapRect(-300,300,-300,300,'out');
-  B(-300,300,0,0.02,206,216,C.asphalt); mapRect(-300,300,206,216,'road');
-  for (let x=-298;x<298;x+=9) B(x,x+4.5,0.02,0.03,210.9,211.1,C.line);
-  B(-14,14,0,0.02,166,206,C.asphalt); mapRect(-14,14,166,206,'road');
-  B(-92,-14,0,0.02,172,200,C.asphalt); mapRect(-92,-14,172,200,'road');
-  for (let x=-90;x<-24;x+=3){ B(x,x+0.12,0.02,0.03,172.5,178.5,C.line); B(x,x+0.12,0.02,0.03,193.5,199.5,C.line); }
-  B(24,64,0,0.025,168,200,C.paving); mapRect(24,64,168,200,'paving');
-  B(-172,172,0,0.025,-212,162,C.asphalt); mapRect(-172,172,-212,162,'ronda');
-  B(-160,160,0,0.035,-200,150,C.gravel); mapRect(-160,160,-200,150,'in');
-  B(-160,160,0,0.045,95,150,C.paving); mapRect(-160,160,95,150,'paving');
-  B(16,40,0,0.05,118,144,C.grass2); B(-54,-20,0,0.05,130,146,C.grass2); B(-150,-60,0,0.05,142,148,C.grass2); B(60,150,0,0.05,142,148,C.grass2);
-  B(-12,12,0,0.055,-196,86,C.vial); mapRect(-12,12,-196,86,'vial');
-  B(-12,-8,0,0.06,-196,86,C.paving); B(8,12,0,0.06,-196,86,C.paving);
-  for (let z=-194; z<84; z+=6) B(-0.12,0.12,0.06,0.065,z,z+3,C.line);
-  B(-160,-12,0,0.055,-3,3,C.vial); B(-160,-12,0,0.055,-93,-87,C.vial); mapRect(-160,-12,-3,3,'vial'); mapRect(-160,-12,-93,-87,'vial');
-  B(12,84,0,0.055,40,48,C.vial); B(70,80,0,0.055,2,48,C.vial); mapRect(12,84,40,48,'vial'); mapRect(70,80,2,48,'vial');
-  B(-160,-93,0,0.05,-200,95,0xbdb298);
-  // Plaza de acceso y banderas
-  for (const [x,cols] of [[22,[C.red,C.yellow,C.red]],[27,[0x2c4f9e,0x2c4f9e,0x2c4f9e]]]){
-    B(x-0.08,x+0.08,0,11,131.9,132.1,0xd7dadb,true);
-    const fl=new Batch(); fl.box(0,2.2,0,0.35,-0.02,0.02,cols[0]); fl.box(0,2.2,0.35,1.05,-0.02,0.02,cols[1]); fl.box(0,2.2,1.05,1.4,-0.02,0.02,cols[2]);
-    const m=fl.mesh(worldMat); m.position.set(x+0.1,9.4,132); scene.add(m); flags.push(m);
-  }
-  zone({id:'parking',title:'Exterior',sub:'Aparcamiento',x0:-100,x1:24,z0:166,z1:204});
-  zone({id:'gcarea',title:'Exterior',sub:'Puesto de la Guardia Civil',x0:24,x1:66,z0:166,z1:204});
-}
-const flags=[];
-
-/* ============ Perímetro: doble valla, garitas y muro interior ============ */
 function fence(ax,c,a0,a1,h){
   const posts=[];
   if (ax==='x'){ FENCE.wall(a0,c,a1,c,0.1,h); addCol(a0,a1,c-0.15,c+0.15); for (let x=a0;x<=a1+0.01;x+=4) B(x-0.07,x+0.07,0,h+0.4,c-0.07,c+0.07,0x8e979a,false); mapLines.push([a0,c,a1,c]); }
@@ -608,61 +580,253 @@ function tower(x,z,guard){
   mapRects.push({x0:x-1.9,x1:x+1.9,z0:z-1.9,z1:z+1.9,t:'tower'});
   if (guard) npc({kind:'gc',x,z:z,y:8.3,h:z>0?0:Math.PI,role:'Guardia Civil · Garita',lines:['Desde la garita vigilamos el perímetro y el camino de ronda. La seguridad exterior del centro es competencia de las Fuerzas y Cuerpos de Seguridad del Estado.']});
 }
+/* ============ Suelos y accesos ============ */
+const flags=[];
+const PZ0=90, PZ1=-620, PX0=-108, PX1=140; // perímetro exterior
+function buildGround(){
+  B(-260,260,-0.3,0,-680,180,C.grass,false);
+  // Vial de entrada (fuera del recinto)
+  B(-3,3,0,0.02,PZ0,155,C.asphalt); mapRect(-3,3,PZ0,155,'road');
+  for (let z=95;z<152;z+=8) B(-0.12,0.12,0.02,0.03,z,z+4,C.line);
+  B(-64,-8,0,0.03,95,148,C.paving); mapRect(-64,-8,95,148,'paving'); // parking familiares
+  for (let x=-60;x<-10;x+=6){ B(x,x+0.12,0.03,0.04,98,144,C.line); }
+  // Rotonda de acceso
+  B(-9,9,0,0.04,111,129,C.asphalt); mapRect(-9,9,111,129,'road');
+  B(-4.4,4.4,0,0.4,116.6,123.4,C.grass2,true); tree(0,120,1.1);
+  // Vial interior central (dentro del recinto, columna x=0)
+  B(-6,6,0,0.05,PZ0,-30,C.vial); mapRect(-6,6,PZ0,-30,'vial');
+  B(-6,-4,0,0.055,PZ0,-30,C.paving); B(4,6,0,0.055,PZ0,-30,C.paving);
+  for (let z=PZ0-4;z>-26;z-=6) B(-0.12,0.12,0.055,0.06,z,z-3,C.line);
+  // Plaza de vial de módulos (columna oeste, desde aislamiento hasta módulo 1)
+  B(-100,-8,0,0.05,-8,-430,C.vial); mapRect(-100,-8,-8,-430,'vial');
+  for (let z=-20;z>-420;z-=6) B(-58.1,-57.9,0,0.055,z,z-3,C.line);
+  // Vial este (sociocultural / piscina / tratamiento / jardín)
+  B(6,140,0,0.05,45,-70,C.vial); mapRect(6,140,45,-70,'vial');
+  // Vial de servicios (cocina / talleres)
+  B(-25,145,0,0.05,-440,PZ1+10,C.vial); mapRect(-25,145,-440,PZ1+10,'vial');
+  B(6,140,0,0.052,-70,-440,C.paving); mapRect(6,140,-70,-440,'paving');
+  // Césped decorativo del resto del recinto
+  B(-100,140,0,0.045,-440,PZ1+8,0xbdb298);
+  zone({id:'entrada',title:'Exterior',sub:'Vial de acceso',x0:-64,x1:64,z0:95,z1:155});
+  // Banderas de entrada
+  for (const [x,cols] of [[10,[C.red,C.yellow,C.red]],[16,[0x2c4f9e,0x2c4f9e,0x2c4f9e]]]){
+    B(x-0.08,x+0.08,0,9,96.9,97.1,0xd7dadb,true);
+    const fl=new Batch(); fl.box(0,1.9,0,0.32,-0.02,0.02,cols[0]); fl.box(0,1.9,0.32,0.95,-0.02,0.02,cols[1]); fl.box(0,1.9,0.95,1.25,-0.02,0.02,cols[2]);
+    const m=fl.mesh(worldMat); m.position.set(x+0.1,7.6,97); scene.add(m); flags.push(m);
+  }
+}
+
+/* ============ Perímetro exterior (doble valla + torres) ============ */
 function buildPerimeter(){
-  fence('x',160,-170,-14,6); fence('x',160,14,170,6); fence('x',-210,-170,170,6); fence('z',-170,-210,160,6); fence('z',170,-210,160,6);
-  fence('x',150,-160,-14,5); fence('x',150,14,160,5); fence('x',-200,-160,160,5); fence('z',-160,-200,150,5); fence('z',160,-200,150,5);
-  for (const [x,z,g] of [[-165,155,0],[165,155,1],[-165,-205,0],[165,-205,0],[-165,-25,1],[165,-25,0],[0,-205,1],[-85,-205,0],[85,-205,0],[-85,155,0],[85,155,0]]) tower(x,z,g);
-  // Esclusa de vehículos (cerrada)
-  for (const z of [150.35,159.65]){ for (let x=18.2;x<34;x+=0.2) B(x,x+0.05,0,4.5,z-0.03,z+0.03,C.bar); B(18,34,4.4,4.6,z-0.08,z+0.08,C.steel); B(18,34,0,0.2,z-0.08,z+0.08,C.steel); }
-  sign('Esclusa de vehículos',null,26,5.1,160.1,0,5,0.7,'warn');
-  // Muro de seguridad interior (separa zona de acceso del recinto)
-  for (const [a,b] of [[-160,-12],[12,160]]){ B(a,b,0,4.5,94.8,95.2,C.concrete,true); hm(a,b,94.8,95.2,4.5); FENCE.wall(a,95,b,95,4.5,6); mapLines.push([a,95,b,95]); }
-  zone({id:'ronda',title:'Camino de ronda',sub:'Entre la doble valla',x0:-172,x1:172,z0:-212,z1:162,late:true});
+  fence('x',PX0,PZ1,PZ0,6); fence('x',PX1,PZ1,PZ0,6); fence('z',PZ0,PX0,PX1,6); fence('z',PZ1,PX0,PX1,6);
+  fence('x',PX0+9,PZ1+9,PZ0-9,5); fence('x',PX1-9,PZ1+9,PZ0-9,5); fence('z',PZ0-9,PX0+9,PX1-9,5); fence('z',PZ1+9,PX0+9,PX1-9,5);
+  const towers=[[PX0,PZ0],[PX1,PZ0],[PX0,PZ1],[PX1,PZ1],[PX0,-160],[PX1,-160],[PX0,-350],[PX1,-350],[0,PZ1],[-50,PZ0],[50,PZ0]];
+  towers.forEach(([x,z],i)=>tower(x,z,i%2===0));
+  // Esclusa de entrada de vehículos en la valla (visible desde fuera)
+  sign('Perímetro exterior','Doble valla y camino de ronda',-PX0*0.0-40,5.6,PZ0+0.3,0,7,1,'warn');
+  zone({id:'ronda',title:'Camino de ronda',sub:'Entre la doble valla',x0:PX0-2,x1:PX1+2,z0:PZ1-2,z1:PZ0+2,late:true});
 }
 
-/* ============ Control de accesos ============ */
-function buildAccess(){
-  const b=bBegin({short:'Control de accesos',name:'Edificio de acceso',x0:-14,x1:14,z0:146,z1:166,h:5,map:'Acceso',def:'Control de accesos'});
-  B(-14,14,0,0.075,146,166,C.floorOff);
-  wallX(166,-14,14,5,C.facade,[[-2,2,2.8]],{lin:-1}); wallX(146,-14,14,5,C.facade,[[-2,2,2.8]],{lin:1});
-  wallZ(-14,146,166,5,C.facade,[],{lin:1}); wallZ(14,146,166,5,C.facade,[],{lin:-1});
-  B(-8.6,-8,0,1.1,149,163,C.wood,true); GL(-8.55,-8.05,1.1,2.5,149,163,false); B(-8.7,-7.9,2.5,2.6,149,163,C.steel);
-  B(-13.6,-11,0.72,0.77,151,155,C.wood,true); B(-12.8,-12.3,0.95,1.3,152,152.05,C.screen); B(-12.8,-12.3,0.95,1.3,153.5,153.55,C.screen);
-  B(-1.3,-1.0,0,2.3,155.7,156.3,0x9aa4ab,true); B(1.0,1.3,0,2.3,155.7,156.3,0x9aa4ab,true); B(-1.3,1.3,2.3,2.55,155.7,156.3,0x9aa4ab); B(-0.25,0.25,2.55,2.62,155.9,156.1,0x62b38a);
-  B(-5,-2.2,0,1.3,154.5,157.5,0xcfd4d6,true); B(-5.6,-1.6,0.85,0.9,155.3,156.7,C.black);
-  for (let z=149; z<163; z+=0.5) B(13.2,13.84,0,1.9,z,z+0.47,(z*2)%2?0x7c8f9e:0x6f8291,false); addCol(13.2,13.84,149,163);
-  for (const z of [158,160,162]) B(4,9,0,0.45,z,z+0.5,C.chair,true);
-  winsX(166,1,-14,14,[[1.2,2.4]],3.2,1.4,[[-2,2]]); winsX(146,-1,-14,14,[[1.2,2.4]],3.2,1.4,[[-2,2]]);
-  B(-3,3,2.9,3.1,166,168.5,C.steelDk);
-  sign('Centro Penitenciario','Control de accesos',0,3.9,166.2,0,9,1.5,'inst');
-  roofBox(-14,14,146,166,5);
-  b.rooms.push({name:'Control de accesos',x0:-14,x1:14,z0:146,z1:166});
+/* ============ Esclusa genérica (rastrillo de doble reja) ============ */
+function buildRastrillo(name,sub,zc,gap,mapName){
+  const x0=-12,x1=12,z0=zc-gap/2-9,z1=zc+gap/2+9,h=4.5;
+  const b=bBegin({short:name,name,x0,x1,z0,z1,h,map:mapName,def:'Esclusa'});
+  B(x0,x1,0,0.075,z0,z1,C.floorOff);
+  wallX(z1,x0,x1,h,C.facade,[[-4,4,3.4]],{lin:-1}); wallX(z0,x0,x1,h,C.facade,[[-4,4,3.4]],{lin:1});
+  wallZ(x0,z0,z1,h,C.facade,[],{lin:1}); wallZ(x1,z0,z1,h,C.facade,[],{lin:-1});
+  for (const x of [-5,5]){ B(x-0.15,x+0.15,0,1.0,z0,z1,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,z0,z0+2,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,z1-2,z1,C.wallIn,true); GL(x-0.08,x+0.08,1.0,2.3,z0+2,z1-2,true); B(x-0.15,x+0.15,2.3,h,z0,z1,C.wallIn); }
+  B(-11.8,-9.8,0.72,0.77,zc-gap/2-4,zc-gap/2+3,C.wood,true); for (let i=0;i<3;i++){ const z=zc-gap/2-2.6+i*2.4; B(-11.5,-11.45,0.95,1.35,z,z+0.6,C.screen); }
+  sign(name,sub,0,h-0.55,z1+0.2,0,7,1,'inst'); sign(name,'Zona de acceso',0,h-0.55,z0-0.2,Math.PI,7,1,'inst');
+  roofBox(x0,x1,z0,z1,h);
+  b.rooms.push({name:'Esclusa',x0:-5,x1:5,z0,z1},{name:'Cabina del rastrillo',x0,x1:-5,z0,z1},{name:'Sala de cacheos',x0:5,x1,z0,z1});
   bEnd();
-  npc({kind:'func',x:-11,z:157,h:Math.PI/2,role:'Funcionaria · Control de accesos',lines:['Buenos días. Aquí se identifica a todo el que entra: personal, familias, abogados y profesionales. Pase por el arco detector, por favor.','Los objetos no autorizados se quedan en las taquillas. Los paquetes pasan por el escáner.']});
+  const g1=gate(0,zc+gap/2,8,'x'), g2=gate(0,zc-gap/2,8,'x'); g1.partner=g2; g2.partner=g1;
+  npc({kind:'func',x:-10.6,z:zc,h:Math.PI/2,role:`Funcionario · ${name}`,lines:['Esto es una esclusa: las dos rejas nunca se abren a la vez. Acérquese a una y se abrirá cuando la otra esté cerrada.','Todo movimiento de personas y objetos queda registrado aquí.']});
   return b;
 }
 
-/* ============ Rastrillo ============ */
-function buildRastrillo(){
-  const b=bBegin({short:'Rastrillo',name:'Rastrillo',x0:-12,x1:12,z0:86,z1:104,h:4.5,map:'Rastrillo',def:'Esclusa'});
-  B(-12,12,0,0.075,86,104,C.floorOff);
-  wallX(104,-12,12,4.5,C.facade,[[-4,4,3.4]],{lin:-1}); wallX(86,-12,12,4.5,C.facade,[[-4,4,3.4]],{lin:1});
-  wallZ(-12,86,104,4.5,C.facade,[],{lin:1}); wallZ(12,86,104,4.5,C.facade,[],{lin:-1});
-  for (const x of [-5,5]){ B(x-0.15,x+0.15,0,1.0,86,104,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,86,88,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,102,104,C.wallIn,true); GL(x-0.08,x+0.08,1.0,2.3,88,102,true); B(x-0.15,x+0.15,2.3,4.5,86,104,C.wallIn); }
-  B(-11.8,-9.8,0.72,0.77,89,99,C.wood,true); for (const z of [90,92.5,95,97.5]) B(-11.5,-11.45,0.95,1.35,z,z+0.6,C.screen);
-  B(7,10.5,0,1.2,93,97,0xcfd4d6,true); B(6.5,11,0.8,0.86,93.6,96.4,C.black);
-  for (let x=-4;x<4;x+=0.5) B(x,x+0.25,0.075,0.08,94.6,95.4,C.yellow);
-  sign('Rastrillo','Acceso al recinto interior',0,3.95,104.2,0,6,1.1,'inst');
-  sign('Rastrillo','Zona de acceso',0,3.95,85.8,Math.PI,6,1.1,'inst');
-  roofBox(-12,12,86,104,4.5);
-  b.rooms.push({name:'Esclusa',x0:-5,x1:5,z0:86,z1:104},{name:'Cabina del rastrillo',x0:-12,x1:-5,z0:86,z1:104},{name:'Sala de cacheos',x0:5,x1:12,z0:86,z1:104});
+/* ============ Comunicaciones Exteriores ============ */
+function buildComunicaciones(){
+  return corridorBuilding({short:'Comunicaciones',sub:'Oficina y sala de espera familiares',x0:-48,x1:-16,z0:60,z1:88,h:5.5,door:'east',hall:10,map:'Comunicaciones',hallName:'Sala de espera familiares',
+    a:[{name:'Locutorios',w:16,f:'locutorios'},{name:'Locutorio de abogados',label:'Abogados',w:8,f:'lawyer'}],
+    b:[{name:'Vis a vis familiar',label:'V. a V. familiar',w:9,f:'vavfam'},{name:'Vis a vis íntimo',label:'V. a V. íntimo',w:7,f:'vavint'},{name:'Oficina de comunicaciones',label:'Oficina',f:'office'}]});
+}
+
+/* ============ Oficinas: Régimen, Comisión Disciplinaria... ============ */
+function buildOficinas(){
+  return corridorBuilding({short:'Oficinas',sub:'Régimen · Disciplinaria · Dirección',x0:12,x1:46,z0:60,z1:88,h:6.5,door:'west',hall:10,map:'Oficinas',
+    a:[{name:'Dirección',w:11,f:'director'},{name:'Subdirección de Régimen',label:'Subdir. Régimen',w:11,f:'office'},{name:'Comisión Disciplinaria',label:'C. Disciplinaria',f:'meeting'}],
+    b:[{name:'Oficina de Régimen',w:11,f:'openoffice'},{name:'Junta de Tratamiento',label:'J. de Tratamiento',w:11,f:'meeting'},{name:'Oficina de Gestión',f:'office2'}]});
+}
+function buildPasarela(){
+  B(-16,12,3.1,3.3,71,77,C.steelDk,true); GL(-15.9,11.9,3.3,4.6,71.1,76.9,false); B(-16,12,4.6,4.8,71,77,C.parapet);
+  B(-16.3,-15.9,0,4.8,71,77,C.steelDk,true); B(11.9,12.3,0,4.8,71,77,C.steelDk,true);
+  sign('Pasarela acristalada',null,-2,5.1,73.9,0,4.5,0.75,'inst');
+}
+
+/* ============ Módulo de Ingresos ============ */
+function buildIngresos(){
+  return corridorBuilding({short:'Módulo de Ingresos',sub:'Ingresos y salidas',x0:-46,x1:-14,z0:32,z1:54,h:4.5,door:'east',hall:7,cw:2.6,map:'Ingresos',
+    a:[{name:'Identificación y reseña',label:'Identificación',w:9,f:'ident'},{name:'Cacheo y registro',label:'Cacheo',f:'search'}],
+    b:[{name:'Consulta médica de ingresos',label:'Consulta médica',w:8,f:'medical'},{name:'Celdas de ingreso',w:8,f:'holding'},{name:'Depósito de pertenencias',label:'Depósito',f:'storage'}]});
+}
+
+/* ============ Cafetería ============ */
+function buildCafeteria(){
+  const b=bBegin({short:'Cafetería',x0:-8,x1:8,z0:38,z1:52,h:3.6,map:'Cafetería'});
+  B(-8,8,0,0.075,38,52,C.floorOff);
+  wallX(52,-8,8,3.6,C.facade2,[[-2.5,2.5,2.6]],{lin:-1}); wallX(38,-8,8,3.6,C.facade2,[],{lin:1});
+  wallZ(-8,38,52,3.6,C.facade2,[],{lin:1}); wallZ(8,38,52,3.6,C.facade2,[],{lin:-1});
+  winsZ(8,1,39,51,[[1.1,2.4]],3,1.6); winsZ(-8,-1,39,51,[[1.1,2.4]],3,1.6);
+  const k=kit(B); k.table(-5,42,2,1.4,0xd9d4c6); k.chair(-4,41.4,-1); k.chair(-2.6,41.4,-1); k.chair(-4,43.5,1); k.chair(-2.6,43.5,1);
+  k.table(1,42,2,1.4,0xd9d4c6); k.chair(2,41.4,-1); k.chair(3.4,41.4,-1); k.chair(2,43.5,1); k.chair(3.4,43.5,1);
+  B(-7.6,-4,0.72,1.0,47,50.6,0xcfcac0,true); B(-7.4,-4.2,0,0.72,47.2,50.4,C.steel);
+  sign('Cafetería',null,0,3.05,52.2,0,4,0.7,'inst');
+  roofBox(-8,8,38,52,3.6);
+  b.rooms.push({name:'Cafetería',x0:-8,x1:8,z0:38,z1:52});
   bEnd();
-  const g1=gate(0,103.55,8,'x'), g2=gate(0,86.45,8,'x'); g1.partner=g2; g2.partner=g1;
-  npc({kind:'func',x:-10.6,z:94,h:Math.PI/2,role:'Funcionario · Rastrillo',lines:['Esto es una esclusa: las dos rejas nunca se abren a la vez. Acérquese a una y se abrirá cuando la otra esté cerrada.','Todo movimiento de personas y objetos hacia el recinto interior queda registrado aquí.']});
+  npc({kind:'func',x:-6,z:44,h:Math.PI/2,role:'Cafetería',lines:['Aquí puede tomar algo el personal y las familias que esperan comunicación. No es una dependencia regulada específicamente, es un servicio de apoyo del centro.']});
   return b;
 }
 
-/* ============ Rejas automáticas ============ */
+/* ============ Plaza interior y Torre ============ */
+function buildPlazaInterior(){
+  B(-11,11,0,0.06,-6,22,C.paving,false); mapRect(-11,11,-6,22,'paving');
+  B(-9.5,9.5,0.06,0.09,-4,20,C.paving);
+  for (let a=0;a<Math.PI*2;a+=Math.PI/8) B(Math.cos(a)*8-0.15,Math.cos(a)*8+0.15,0.09,0.14,8+Math.sin(a)*8-0.15,8+Math.sin(a)*8+0.15,C.courtLine);
+  zone({id:'plaza',title:'Plaza interior',sub:'Distribuidor del recinto de seguridad',x0:-11,x1:11,z0:-6,z1:22});
+  tower(9,-3,false);
+  sign('Torre de control',null,9-1.85,10.6,-3,0,3.6,0.7,'inst');
+}
+
+/* ============ Sociocultural: gimnasio, salón de actos, polideportivo ============ */
+function buildSociocultural(){
+  const x0=20,x1=66,z0=-15,z1=35,h=8;
+  const b=bBegin({short:'Sociocultural',x0,x1,z0,z1,h,map:'Sociocultural',def:'Pabellón sociocultural'});
+  B(x0,x1,0,0.075,z0,z1,0xb98b5a);
+  wallX(z0,x0,x1,h,C.facade,[],{lin:1}); wallX(z1,x0,x1,h,C.facade,[[38,42,2.8]],{lin:-1});
+  wallZ(x0,z0,z1,h,C.facade,[],{lin:1}); wallZ(x1,z0,z1,h,C.facade,[],{lin:-1});
+  wallX(z0+14,x0,x1,3.2,C.wallIn,[[26,27.4],[48,49.4]],{t:0.2}); wallZ(x0+18,z0,z0+14,3.2,C.wallIn,[],{t:0.2}); wallZ(x0+38,z0,z0+14,3.2,C.wallIn,[],{t:0.2});
+  for (const [a,bb,c1,d1] of [[x0+2,x1-2,z1-24,z1-23.88],[x0+2,x1-2,z1-1.9,z1-1.78],[x0+2,x0+2.12,z1-24,z1-1.9],[x1-2.12,x1-2,z1-24,z1-1.9],[(x0+x1)/2-0.06,(x0+x1)/2+0.06,z1-24,z1-1.9]]) B(a,bb,0.075,0.085,c1,d1,C.courtLine);
+  for (let i=0;i<4;i++){ B(x0+2,x1-2,0,0.45*(i+1),z1-3.4-0.8*i,z1-2.3,i===0?0x7d8b95:null,i===0); if (i) B(x0+2,x1-2,0.45*(i+1),0.45*(i+1)+0.05,z1-3.4-0.8*i,z1-3.35-0.8*i,i%2?0x2f5d9a:0xd05a2a); }
+  const k=kit(B); for (let x=x0+3;x<x0+16;x+=1.2) B(x,x+1.0,0,1.9,z0+2.2,z0+2.7,0x5c7da0,false);
+  addCol(x0+3,x0+16,z0+2.2,z0+2.7); B(x0+5,x0+14,0,0.45,z0+5,z0+5.5,C.wood,true);
+  sign('Sociocultural','GYM · Salón de actos · Polideportivo',x0-0.18,4.4,10,-Math.PI/2,6.5,1.1,'inst');
+  B(x0,x0-2.2,2.9,3.1,6,14,C.steelDk);
+  roofBox(x0,x1,z0,z1,h,0x5f7482);
+  b.rooms.push({name:'Gimnasio',x0,x1:x0+18,z0,z1:z0+14},{name:'Salón de actos',x0:x0+18,x1:x0+38,z0,z1:z0+14},{name:'Vestuarios',x0:x0+38,x1,z0,z1:z0+14},{name:'Pista polideportiva',x0,x1,z0:z0+14,z1});
+  furnish('auditorium',{x0:x0+18,W:20,D:14,near:z0+14,far:z0,dir:-1});
+  bEnd();
+  npc({kind:'staff',x:x0+2,z:z0+7,h:Math.PI/2,role:'Monitor deportivo',lines:['El deporte, el gimnasio y el salón de actos son instalaciones de uso común: los módulos las usan por turnos, sin coincidir.',"LOGP art. 13: los centros deben contar con las instalaciones necesarias para el deporte, la cultura y el ocio."]});
+  for (let i=0;i<5;i++) npc({kind:'civ',x:x0+8+i*8,z:z0+22,wander:{x0:x0+3,x1:x1-3,z0:z0+16,z1:z1-3},role:'Interno',lines:INMATE,run:i%2===0});
+  return b;
+}
+
+/* ============ Piscina ============ */
+function buildPiscina(){
+  const x0=20,x1=58,z0=-55,z1=-25,h=4;
+  const b=bBegin({short:'Piscina',sub:'Vestuarios',x0,x1,z0,z1,h,map:'Piscina',kind:'mod'});
+  B(x0,x1,0,0.075,z0,z1,0xd8d2c4);
+  wallX(z0,x0,x1,h,C.facade2,[],{lin:1}); wallX(z1,x0,x1,h,C.facade2,[[16,20,2.6]],{lin:-1});
+  wallZ(x0,z0,z1,h,C.facade2,[],{lin:1}); wallZ(x1,z0,z1,h,C.facade2,[],{lin:-1});
+  winsZ(x0,-1,z0+2,z1-2,[[1.2,2.4]],3.2,1.4); winsZ(x1,1,z0+2,z1-2,[[1.2,2.4]],3.2,1.4);
+  sign('Piscina',null,x0+9,h-0.9,z1+0.2,0,4,0.75,'inst');
+  roofBox(x0,x1,z0,z1,h);
+  b.rooms.push({name:'Vestuarios',x0,x1,z0,z1});
+  bEnd();
+  B(64,98,0.02,0.18,z0,z1,0x3f86c6); B(63.6,98.4,0,0.3,z0-0.4,z0,C.paving,true); B(63.6,98.4,0,0.3,z1,z1+0.4,C.paving,true); B(63.6,64,0,0.3,z0,z1,C.paving,true); B(98,98.4,0,0.3,z0,z1,C.paving,true);
+  for (let x=66;x<96;x+=4) B(x,x+0.06,0.18,0.2,z0+1,z1-1,0xffffff);
+  fence('x',64,z1-1,z0+1,1.1); fence('x',98,z1-1,z0+1,1.1);
+  mapRect(64,98,z0,z1,'patio');
+  zone({id:'piscina',title:'Piscina',sub:'Recreo y actividades acuáticas',x0:64,x1:98,z0:z1,z1:z0});
+  npc({kind:'civ',x:80,z:-40,wander:{x0:66,x1:96,z0:z0+3,z1:z1-3},role:'Interno',lines:INMATE});
+  return b;
+}
+
+/* ============ Oficinas de Tratamiento: psicólogos, trabajo social, educadores ============ */
+function buildTratamiento(){
+  const b=corridorBuilding({short:'Oficinas de Tratamiento',sub:'Psicólogos · Trabajo Social · Educadores',x0:74,x1:112,z0:-5,z1:35,h:4.5,door:'west',hall:8,cw:2.8,map:'Tratamiento',
+    a:[{name:'Psicología',w:10,f:'office2'},{name:'Trabajo Social',w:10,f:'office2'},{name:'Educadores',f:'office2'}],
+    b:[{name:'Pedagogía',w:10,f:'office'},{name:'Sala de entrevistas',label:'Entrevistas',w:10,f:'lawyer'},{name:'Archivo de expedientes',label:'Archivo',f:'storage'}]});
+  npc({kind:'staff',x:80,z:5,h:Math.PI/2,role:'Psicóloga · Equipo Técnico',lines:['El Equipo Técnico (juristas, psicólogos, educadores, trabajadores sociales y médico) hace el estudio científico de cada interno y propone su clasificación y su programa de tratamiento.','El tratamiento es voluntario: nadie puede ser obligado a participar. LOGP arts. 59 a 72.']});
+  npc({kind:'staff',x:96,z:8,h:-Math.PI/2,role:'Trabajador social',lines:['Preparamos la salida: permisos, contacto con la familia, informes para la Junta de Tratamiento y coordinación con los recursos sociales del exterior.']});
+  return b;
+}
+
+/* ============ Jardín, agrícola, cursos de jardinería ============ */
+function buildJardin(){
+  const x0=74,x1=112,z0=-50,z1=-10;
+  B(x0,x1,0,0.05,z0,z1,0x7a9a5a); mapRect(x0,x1,z0,z1,'field');
+  for (let x=x0+2;x<x1-2;x+=4) for (let z=z0+2;z<z1-2;z+=3) B(x,x+2.6,0.05,0.18,z,z+1.6,(x*7+z*3|0)%3?0x4f7a3e:0x6a9a4e,false);
+  B(x0+2,x0+10,0,2.2,z0+2,z0+9,0xdfeef2,true); GL(x0+2.1,x0+9.9,0.2,2.1,z0+2.1,z0+8.9,false);
+  sign('Jardín · cursos de jardinería',null,x0+0.2,2.4,z0+5.5,Math.PI/2,3.6,0.75,'green');
+  npc({kind:'staff',x:x0+14,z:z1-6,h:0,role:'Monitor de jardinería',lines:['El destino de jardinería es un trabajo remunerado más: cultivamos y mantenemos las zonas verdes del centro, y también se imparten cursos de formación agrícola.']});
+  npc({kind:'civ',x:x0+20,z:z0+20,wander:{x0:x0+4,x1:x1-4,z0:z0+4,z1:z1-4},role:'Interno · Jardinería',lines:INMATE});
+  zone({id:'jardin',title:'Jardín agrícola',sub:'Zona verde y cursos de jardinería',x0,x1,z0,z1});
+}
+
+/* ============ Enfermería ============ */
+function buildEnfermeria(){
+  return corridorBuilding({short:'Módulo Enfermería',sub:'Sanidad penitenciaria',x0:-18,x1:42,z0:-515,z1:-460,h:7,door:'east',hall:10,map:'Enfermería',
+    a:[{name:'Consulta médica 1',label:'Consulta 1',w:8,f:'medical'},{name:'Consulta médica 2',label:'Consulta 2',w:8,f:'medical'},{name:'Sala de curas',w:8,f:'medical2'},{name:'Odontología',w:8,f:'dentist'},{name:'Radiología',f:'xray'}],
+    b:[{name:'Farmacia',w:10,f:'pharmacy'},{name:'Control de enfermería',label:'Control enfermería',w:8,f:'office'},{name:'Hospitalización',f:'beds'}]});
+}
+
+/* ============ Cocina, Lavandería y Economato Central ============ */
+function buildCocina(){
+  const b=corridorBuilding({short:'Cocina · Lavandería · Economato',sub:'Servicios generales',x0:48,x1:118,z0:-530,z1:-460,h:7,door:'west',hall:10,cw:4,map:'Cocina · Economato',kind:'svc',
+    a:[{name:'Cocina central',w:28,f:'kitchen'},{name:'Cámaras frigoríficas',label:'Cámaras',w:14,f:'cold'},{name:'Panadería',w:16,f:'bakery'},{name:'Almacén general',f:'storage'}],
+    b:[{name:'Lavandería',w:24,f:'laundry'},{name:'Economato central',w:16,f:'storage'},{name:'Ropería',f:'storage'}]});
+  // Muelle de carga y descarga de camiones de cocina y alimentos, en el muro este
+  B(118,120.2,0,0.9,-500,-478,C.steel,true); B(117.9,118.1,0.9,3.4,-500,-478,C.wallIn); GL(117.8,118,0.9,3.0,-497,-481,false);
+  B(118,124,0,0.06,-502,-476,C.paving,false); sign('Carga y descarga','Cocina y alimentos',119,3.6,-489,Math.PI/2,4,0.85,'yellow');
+  B(122,124.2,0,2.4,-497,-481,0x2f6fb0,true); npc({kind:'staff',x:122,z:-489,h:-Math.PI/2,role:'Zona de carga · Cocina',lines:['Por aquí entran los camiones con los alimentos. Descargan en el muelle y todo pasa a las cámaras frigoríficas y al almacén antes de ir a cocina.']});
+  npc({kind:'civ',x:60,z:-476,wander:{x0:52,x1:114,z0:-527,z1:-478},role:'Interno · Cocina',lines:['Salen de aquí unos mil menús al día, en carros térmicos para cada módulo.','El trabajo en cocina, panadería o lavandería es un destino remunerado, LOGP art. 21.']});
+  return b;
+}
+
+/* ============ Talleres ============ */
+function buildTalleres(){
+  const b=corridorBuilding({short:'Talleres',sub:'Empresas · Mantenimiento',x0:48,x1:130,z0:-600,z1:-535,h:8,door:'west',hall:10,cw:4,map:'Talleres',kind:'svc',
+    a:[{name:'Taller de carpintería',label:'Carpintería',w:28,f:'wood'},{name:'Taller de manipulados',label:'Empresa: manipulados',w:26,f:'pack'}],
+    b:[{name:'Taller de confección',label:'Confección',w:28,f:'sew'},{name:'Mantenimiento',w:26,f:'workshop'},{name:'Almacén de talleres',label:'Almacén',f:'storage'}]});
+  B(130,132.2,0,1.0,-582,-560,C.steel,true); B(129.9,130.1,1.0,3.8,-582,-560,C.wallIn); GL(129.8,130,1.0,3.4,-579,-563,false);
+  B(130,137,0,0.06,-584,-558,C.paving,false); sign('Carga y descarga','Camiones de talleres',131,4.0,-571,Math.PI/2,4,0.85,'yellow');
+  npc({kind:'staff',x:52,z:-540,h:0,role:'Maestro de taller',lines:['Los internos que trabajan en talleres productivos tienen una relación laboral de carácter especial, gestionada por Trabajo Penitenciario y Formación para el Empleo.','LOGP arts. 26 a 35 y RD 782/2001.']});
+  for (let i=0;i<5;i++) npc({kind:'civ',x:54+i*14,z:-585,wander:{x0:50,x1:126,z0:-596,z1:-560},role:'Interno · Taller',lines:INMATE});
+  return b;
+}
+
+/* ============ Campo de fútbol ============ */
+function buildCampoFutbol(){
+  const x0=-100,x1=-25,z0=-462,z1=-560;
+  B(x0,x1,0,0.06,z0,z1,0x6f9a4e); mapRect(x0,x1,z0,z1,'field');
+  for (const [a,bb,c1,d1] of [[x0+2,x1-2,z0-2,z0-1.85],[x0+2,x1-2,z1+1.85,z1+2],[x0+2,x0+2.15,z0-2,z1+2],[x1-2.15,x1-2,z0-2,z1+2],[(x0+x1)/2-0.06,(x0+x1)/2+0.06,z0-2,z1+2]]) B(a,bb,0.06,0.07,c1,d1,C.courtLine);
+  for (const [gx,dz] of [[x0,-2],[x1,-2]]){ FENCE.wall(gx+ (gx===x0?2:-2)*0,z0-14,gx+(gx===x0?2:-2)*0,z0-6,0,2.4); }
+  B(x0+30,x0+34,0,2.44,z0-2,z0-1.85,C.white,true); B(x1-34,x1-30,0,2.44,z0-2,z0-1.85,C.white,true);
+  sign('Campo de fútbol',null,(x0+x1)/2,3.6,z0+1.4,0,6,0.9,'inst');
+  zone({id:'futbol',title:'Campo de fútbol',sub:'Zona extramodular',x0,x1,z0:z1,z1:z0});
+  for (let i=0;i<8;i++) npc({kind:'civ',x:x0+8+((i*97)%(x1-x0-16)),z:z0-20-((i*53)%(z0-z1-40)),wander:{x0:x0+4,x1:x1-4,z0:z1+4,z1:z0-4},role:'Interno',lines:INMATE,run:true});
+}
+
+/* ============ Exterior: garita, parkings, rotonda ============ */
+function buildExterior(){
+  const R=rng(11);
+  B(6,10,0,2.6,126,130,0xefe9dc,true); B(5.9,10.1,2.6,2.9,125.9,130.1,0x7b6f63); sign('Garita de seguridad',null,8,3.1,130.2,0,3.2,0.7,'gc');
+  npc({kind:'gc',x:8,z:127.5,h:Math.PI,role:'Guardia Civil · Garita de seguridad',lines:['La vigilancia del perímetro exterior corresponde a la Guardia Civil. Dentro del recinto, la seguridad es de los funcionarios de Instituciones Penitenciarias.']});
+  const cols=[0x9c2f2f,0x2f4f7a,0xd9d6cf,0x3a3f44,0x6b7d5c,0xb8b3a8,0x1f2a3a,0x8a6f4a];
+  for (let i=0;i<16;i++){ const x=-62+i*3.6+R()*0.4; if (R()<0.7) car(x,101,cols[(i*3)%cols.length]); if (R()<0.55) car(x,142,cols[(i*5+1)%cols.length]); }
+  sign('Parking familiares',null,-64,3.4,121,Math.PI/2,4.2,0.8,'white');
+  // Parking de funcionarios, fuera de la valla este, junto a Tratamiento
+  B(145,182,0,0.03,-10,42,C.paving,false); mapRect(145,182,-10,42,'paving'); for (let z=-6;z<38;z+=6) B(145,181,0.03,0.04,z,z+0.12,C.line);
+  for (let i=0;i<10;i++){ const z=-6+i*4.6+R()*0.3; if (R()<0.75) car(163,z,cols[(i*7)%cols.length]); }
+  sign('Parking funcionarios',null,145,3.4,16,-Math.PI/2,4.2,0.8,'white');
+  npc({kind:'func',x:150,z:16,h:Math.PI/2,role:'Acceso de personal',lines:['Los funcionarios entramos por este lateral, cerca de las oficinas de tratamiento, sin cruzar la puerta principal de familias y visitas.']});
+  for (let x=-100;x<135;x+=18+R()*10){ if (Math.abs(x)<10) continue; tree(x,PZ0+30+R()*10,0.8+R()*0.5); }
+  for (let z=PZ0-30;z>PZ1+30;z-=30+R()*15){ tree(PX0-10-R()*10,z,0.9+R()*0.4); tree(PX1+10+R()*15,z,0.9+R()*0.4); }
+  for (let z=95;z<148;z+=22) lamp(-9.6,z,1);
+  for (let z=PZ0-20;z>-420;z-=24) if (Math.abs(z-8)>10) lamp(-9.5,z,1);
+}
 const gateMat=new THREE.MeshLambertMaterial({vertexColors:true});
 function gate(cx,cz,w,axis){
   const bt=new Batch(), h=3.1;
@@ -808,46 +972,6 @@ function sharedBooth(c,a,b){
 }
 
 /* ============ Polideportivo ============ */
-function buildPolideportivo(){
-  const x0=80,x1=150,z0=2,z1=40,h=9;
-  const b=bBegin({short:'Polideportivo',x0,x1,z0,z1,h,map:'Polideportivo',def:'Pista polideportiva'});
-  B(x0,x1,0,0.075,z0,z1,0xb98b5a);
-  wallX(z0,x0,x1,h,C.facade,[],{lin:1}); wallX(z1,x0,x1,h,C.facade,[],{lin:-1});
-  wallZ(x0,z0,z1,h,C.facade,[[19,22,2.8]],{lin:1}); wallZ(x1,z0,z1,h,C.facade,[],{lin:-1});
-  wallX(9,x0,x1,3.2,C.wallIn,[[86,87.4],[108,109.4],[130,131.4]],{t:0.2}); wallZ(100,z0,9,3.2,C.wallIn,[],{t:0.2}); wallZ(120,z0,9,3.2,C.wallIn,[],{t:0.2});
-  for (const [a,bb,c1,d1] of [[90,140,13,13.12],[90,140,34.88,35],[90,90.12,13,35],[139.88,140,13,35],[114.94,115.06,13,35]]) B(a,bb,0.075,0.085,c1,d1,C.courtLine);
-  for (const [px,d] of [[88.8,1],[141.2,-1]]){ B(px-0.15,px+0.15,0,3.05,23.85,24.15,C.steel,true); B(px+d*0.15,px+d*0.2,2.9,3.95,23.1,24.9,C.white); B(px+d*0.2,px+d*0.6,3.05,3.09,23.8,24.2,0xd05a2a); }
-  for (let i=0;i<4;i++){ B(88,142,0,0.45*(i+1),36.6+0.8*i,39.85,0x7d8b95,i===0); B(88,142,0.45*(i+1),0.45*(i+1)+0.05,36.6+0.8*i,36.95+0.8*i,i%2?0x2f5d9a:0xd05a2a); }
-  for (let x=82;x<98;x+=1.2) B(x,x+1.0,0,1.9,2.2,2.7,0x5c7da0,false); addCol(82,98,2.2,2.7); B(84,96,0,0.45,5,5.5,C.wood,true);
-  for (let x=102;x<118;x+=1.2) B(x,x+1.0,0,1.9,2.2,2.7,0x5c7da0,false); addCol(102,118,2.2,2.7); B(104,116,0,0.45,5,5.5,C.wood,true);
-  for (let x=123;x<148;x+=4){ B(x,x+1.6,0,1.2,3,4.2,C.black,true); B(x+0.2,x+1.4,1.2,1.6,3.3,3.9,C.steel); }
-  winsX(z1,1,x0,x1,[[6.2,8.2]],4,2.6); winsX(z0,-1,x0,x1,[[6.2,8.2]],4,2.6);
-  sign('Polideportivo','Zona extramodular',x0-0.18,4.4,20.5,-Math.PI/2,6,1.1,'inst');
-  B(x0,x0-2.2,2.9,3.1,18.5,22.5,C.steelDk);
-  roofBox(x0,x1,z0,z1,h,0x5f7482);
-  b.rooms.push({name:'Vestuario 1',x0:80,x1:100,z0:2,z1:9},{name:'Vestuario 2',x0:100,x1:120,z0:2,z1:9},{name:'Gimnasio',x0:120,x1:150,z0:2,z1:9});
-  bEnd();
-  B(84,150,0,0.06,50,90,0x6f9a4e); mapRect(84,150,50,90,'field');
-  for (const [a,bb,c1,d1] of [[86,148,52,52.15],[86,148,87.85,88],[86,86.15,52,88],[147.85,148,52,88],[116.93,117.07,52,88]]) B(a,bb,0.06,0.07,c1,d1,C.courtLine);
-  for (const [gx,d] of [[86,-1],[148,1]]){ B(gx-0.06,gx+0.06,0,2.44,66.3,66.42,C.white,true); B(gx-0.06,gx+0.06,0,2.44,73.58,73.7,C.white,true); B(gx-0.06,gx+0.06,2.32,2.44,66.3,73.7,C.white); FENCE.wall(gx+d*1.5,66.4,gx+d*1.5,73.6,0,2.4); }
-  zone({id:'campo',title:'Campo de deportes',sub:'Zona extramodular',x0:84,x1:150,z0:50,z1:90});
-  for (let i=0;i<6;i++) npc({kind:'civ',x:95+i*9,z:62+(i%3)*8,wander:{x0:88,x1:146,z0:54,z1:86},role:'Interno',lines:INMATE,run:true});
-  for (let i=0;i<3;i++) npc({kind:'civ',x:100+i*12,z:22,wander:{x0:92,x1:138,z0:14,z1:34},role:'Interno',lines:INMATE});
-  npc({kind:'func',x:84,z:26,h:Math.PI/2,role:'Monitor deportivo',lines:['El deporte forma parte de las actividades de tratamiento. Los módulos usan la pista por turnos, sin mezclarse.']});
-  return b;
-}
-
-/* ============ Departamento especial: patios ============ */
-function especialPatios(){
-  const zA=-74, zB=-56;
-  B(20,62,0,0.065,zA,zB,C.patio); mapRect(20,62,zA,zB,'patio');
-  wallX(zA,20,62,5,C.patioWall); for (const x of [20,34,48,62]) wallZ(x,zA,zB,5,C.patioWall);
-  hm(20,62,zA-0.3,zA+0.3,5); for (const x of [20,34,48,62]) hm(x-0.3,x+0.3,zA,zB,5);
-  for (let x=20;x<=62;x+=2) B(x,x+0.05,5,5.05,zA,zB,C.steelDk); for (let z=zA;z<=zB;z+=2) B(20,62,5,5.05,z,z+0.05,C.steelDk);
-  zone({id:'espPatio',title:'Departamento especial',sub:'Patios individuales',x0:20,x1:62,z0:zA,z1:zB});
-}
-
-/* ============ Exterior: Guardia Civil, coches, árboles, farolas ============ */
 function rng(seed){ return () => { seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function car(x,z,col,gc){
   B(x-0.9,x+0.9,0.35,1.0,z-2.15,z+2.15,col,true); B(x-0.8,x+0.8,1.0,1.55,z-1.1,z+1.0,gc?0xf2f2ee:0x2d3a44); B(x-0.78,x+0.78,1.05,1.5,z-1.12,z+0.98,0x2d3a44);
@@ -856,33 +980,6 @@ function car(x,z,col,gc){
 }
 function tree(x,z,s=1){ B(x-0.2,x+0.2,0,2*s,z-0.2,z+0.2,0x6b4f35,true); B(x-1.4*s,x+1.4*s,1.8*s,4.2*s,z-1.4*s,z+1.4*s,0x5d7f45); B(x-0.9*s,x+0.9*s,4.2*s,5.4*s,z-0.9*s,z+0.9*s,0x678a4c); }
 function lamp(x,z,dir){ B(x-0.08,x+0.08,0,6,z-0.08,z+0.08,0x59626a,true); B(x,x+dir*1.2,5.9,6.0,z-0.06,z+0.06,0x59626a); B(x+dir*0.8,x+dir*1.4,5.72,5.9,z-0.18,z+0.18,0xf3eed0); }
-function buildExterior(){
-  const R=rng(7);
-  const b=bBegin({short:'Guardia Civil',name:'Puesto de la Guardia Civil',x0:30,x1:58,z0:176,z1:192,h:4.2,map:'G. Civil',def:'Puesto'});
-  B(30,58,0,0.075,176,192,C.floorOff);
-  wallX(176,30,58,4.2,0xefe9dc,[[42,44.4,2.6]],{lin:1}); wallX(192,30,58,4.2,0xefe9dc,[],{lin:-1}); wallZ(30,176,192,4.2,0xefe9dc,[],{lin:1}); wallZ(58,176,192,4.2,0xefe9dc,[],{lin:-1});
-  winsX(176,-1,30,58,[[1.2,2.4]],3.2,1.4,[[42,44.4]]);
-  B(34,40,0.72,0.77,180,181,C.wood,true); B(48,54,0.72,0.77,180,181,C.wood,true);
-  sign('Guardia Civil','Vigilancia exterior',43.2,3.5,175.8,Math.PI,6.5,1.1,'gc');
-  roofBox(30,58,176,192,4.2,0x7b6f63);
-  b.rooms.push({name:'Puesto',x0:30,x1:58,z0:176,z1:192});
-  bEnd();
-  car(36,171,0xf2f2ee,true); car(40,171,0xf2f2ee,true);
-  B(34,40,0.3,2.6,195,197.4,0xf2f2ee,true); B(34,40,1.2,1.5,194.98,197.42,0x2f6b3a);
-  const cols=[0x9c2f2f,0x2f4f7a,0xd9d6cf,0x3a3f44,0x6b7d5c,0xb8b3a8,0x1f2a3a,0x8a6f4a];
-  for (let i=0;i<14;i++){ const x=-88+i*4.6+R()*0.4; if (R()<0.72) car(x,175.4,cols[(i*3)%cols.length]); if (R()<0.6) car(x,196.6,cols[(i*5+1)%cols.length]); }
-  for (let x=-260;x<260;x+=16+R()*10){ if (Math.abs(x)<22) continue; tree(x,222+R()*6,0.8+R()*0.5); if (x<-100||x>70) tree(x,200+R()*4,0.8+R()*0.4); }
-  for (let z=-260;z<150;z+=22+R()*12){ tree(-195-R()*30,z,0.9+R()*0.5); tree(195+R()*30,z,0.9+R()*0.5); }
-  for (let x=-240;x<240;x+=24+R()*12) tree(x,-235-R()*25,0.9+R()*0.5);
-  for (let z=-190;z<84;z+=24) { lamp(-9.6,z,1); if (!((z>-8&&z<0)||(z>-92&&z<-82)||(z>-146&&z<-136))) lamp(9.6,z,-1); }
-  for (let x=-150;x<150;x+=30) if (Math.abs(x)>16) lamp(x,100,1);
-  B(-40,-35.8,0.35,2.7,126,132.5,0xf2f2ee,true); B(-40.02,-35.78,1.3,1.6,126,132.5,0x2f6b3a); B(-39.8,-36,1.6,2.4,125.95,126,C.glassDk);
-  npc({kind:'gc',x:4,z:170,h:0,role:'Guardia Civil · Entrada',lines:['Buenos días. La vigilancia exterior del perímetro, las garitas y las conducciones de internos las hacemos nosotros, la Guardia Civil.','Dentro del recinto la seguridad es cosa de los funcionarios de Instituciones Penitenciarias.']});
-  npc({kind:'gc',x:44,z:173,h:0,role:'Guardia Civil',lines:['Desde este puesto se coordina la vigilancia del perímetro exterior y de la doble valla.']});
-}
-
-/* ============ Personas ============ */
-const INMATE=['Buenos días, funcionario.','¿Sabe si esta semana tengo comunicación?','Me he apuntado al taller de carpintería.','Voy al economato antes del recuento.','Estoy sacándome la ESO en la escuela del centro.','Hoy toca patio largo, menos mal.'];
 const SKIN=[0xf0c8a8,0xe0ac86,0xc68d64,0x9a6644,0x6e4630], HAIR=[0x2a1f1a,0x3b2a20,0x5a3e2b,0x1a1a1a,0x8a8a88,0xb08a58];
 const CLOTH=[0x3d5a80,0x7a2e2e,0x2f5d4a,0x444a52,0x8a8f96,0xd9d4c8,0x1f2a38,0x5c3f6e,0xa5663c,0x28303a,0xc9c1a6];
 const OUT={
@@ -929,160 +1026,112 @@ function npc(o){
   npcs.push(n); return n;
 }
 
+/* ============ Personas ============ */
+const INMATE=['Buenos días, funcionario.','¿Sabe si esta semana tengo comunicación?','Me he apuntado al taller de carpintería.','Voy al economato antes del recuento.','Estoy sacándome la ESO en la escuela del centro.','Hoy toca patio largo, menos mal.'];
+
 /* ============ Construcción del mundo ============ */
-let ACC,OFI,COM,ING,RAS,CTL,ENF,SOC,POL,ESP,SER,TAL;
+let RP1,COM,OFI,ING,CAF,RA,SOC,PIS,TRA,ENF,COC,TAL,mP=[];
 function buildWorld(){
   buildGround();
   buildPerimeter();
   buildExterior();
-  ACC=buildAccess();
-  RAS=buildRastrillo();
-  OFI=corridorBuilding({short:'Oficinas',sub:'Dirección y Administración',x0:-135,x1:-55,z0:104,z1:140,h:7.2,door:'east',hall:12,map:'Oficinas',
-    a:[{name:'Dirección',w:16,f:'director'},{name:'Sala de Juntas',w:14,f:'meeting'},{name:'Subdirección de Régimen',label:'Subdir. Régimen',w:12,f:'office'},{name:'Subdirección de Seguridad',label:'Subdir. Seguridad',w:12,f:'office'},{name:'Gerencia',f:'office2'}],
-    b:[{name:'Subdirección de Tratamiento',label:'Subdir. Tratamiento',w:14,f:'office'},{name:'Oficina de Régimen',w:14,f:'openoffice'},{name:'Oficina de Gestión',w:14,f:'openoffice'},{name:'Equipos Técnicos',w:12,f:'office2'},{name:'Oficina de Personal',f:'office2'}]});
-  COM=corridorBuilding({short:'Comunicaciones',sub:'Locutorios y vis a vis',x0:55,x1:135,z0:104,z1:140,h:5,door:'west',hall:14,map:'Comunicaciones',hallName:'Sala de espera',
-    a:[{name:'Locutorios',w:30,f:'locutorios'},{name:'Locutorio de abogados',label:'Abogados',w:10,f:'lawyer'},{name:'Sala de reconocimiento',label:'Reconocimiento',w:12,f:'lineup'},{name:'Locutorio de autoridades',label:'Autoridades',f:'lawyer'}],
-    b:[{name:'Vis a vis familiar 1',label:'V. a V. familiar 1',w:9,f:'vavfam'},{name:'Vis a vis familiar 2',label:'V. a V. familiar 2',w:9,f:'vavfam'},{name:'Vis a vis íntimo 1',label:'V. a V. íntimo 1',w:7,f:'vavint'},{name:'Vis a vis íntimo 2',label:'V. a V. íntimo 2',w:7,f:'vavint'},{name:'Vis a vis íntimo 3',label:'V. a V. íntimo 3',w:7,f:'vavint'},{name:'Vis a vis de convivencia',label:'V. a V. convivencia',f:'vavconv'}]});
-  ING=corridorBuilding({short:'Ingresos',sub:'Ingresos y salidas',x0:-48,x1:-18,z0:104,z1:124,h:4.5,door:'east',hall:7,cw:2.6,map:'Ingresos',
-    a:[{name:'Identificación y reseña',label:'Identificación',w:9,f:'ident'},{name:'Cacheo y registro',label:'Cacheo',f:'search'}],
-    b:[{name:'Consulta médica de ingresos',label:'Consulta médica',w:8,f:'medical'},{name:'Celdas de ingreso',w:8,f:'holding'},{name:'Depósito de pertenencias',label:'Depósito',f:'storage'}]});
-  CTL=corridorBuilding({short:'Centro de Control',x0:16,x1:38,z0:99,z1:114,h:4.2,door:'west',hall:6,cw:2.4,map:'Control',hallF:'none',
-    a:[{name:'Sala de control',f:'control'}],b:[{name:'Sala técnica',f:'servers'}]});
-  // Módulos por parejas, simétricos, con cabina compartida
-  const centers=[45,-45,-135];
-  centers.forEach((c,i)=>{ const a=2*i+1, bb=2*i+2; buildModule(a,c,true); buildModule(bb,c,false); sharedBooth(c,a,bb); });
-  ENF=corridorBuilding({short:'Enfermería',sub:'Zona extramodular',x0:12,x1:70,z0:48,z1:82,h:7,door:'west',hall:10,map:'Enfermería',zone:'extra',
-    a:[{name:'Consulta médica 1',label:'Consulta 1',w:8,f:'medical'},{name:'Consulta médica 2',label:'Consulta 2',w:8,f:'medical'},{name:'Sala de curas',w:8,f:'medical2'},{name:'Odontología',w:8,f:'dentist'},{name:'Radiología',f:'xray'}],
-    b:[{name:'Farmacia',w:10,f:'pharmacy'},{name:'Control de enfermería',label:'Control enfermería',w:8,f:'office'},{name:'Hospitalización',f:'beds'}]});
-  SOC=corridorBuilding({short:'Sociocultural',sub:'Escuela y biblioteca',x0:12,x1:70,z0:2,z1:40,h:7,door:'west',hall:10,map:'Sociocultural',zone:'extra',
-    a:[{name:'Aula 1',w:12,f:'classroom'},{name:'Aula 2',w:12,f:'classroom'},{name:'Aula de informática',label:'Informática',f:'computers'}],
-    b:[{name:'Biblioteca',w:18,f:'library'},{name:'Taller ocupacional',w:12,f:'artroom'},{name:'Salón de actos',f:'auditorium'}]});
-  POL=buildPolideportivo();
-  const cells=p=>Array.from({length:14},(_,i)=>({name:`Celda ${p}-${i+1}`,label:`${p}-${i+1}`,w:3.5,door:0.9,doorAt:1.3,f:'cellS'}));
-  ESP=corridorBuilding({short:'Departamento especial',sub:'Régimen cerrado',x0:12,x1:70,z0:-56,z1:-40,h:4.2,door:'west',hall:8,cw:3,map:'Dpto. especial',hallName:'Control del departamento',
-    a:cells('A'),b:cells('B')});
-  especialPatios();
-  gate(ESP.x0+8,-48,3,'z');
-  SER=corridorBuilding({short:'Servicios',sub:'Cocina y lavandería',x0:12,x1:110,z0:-135,z1:-92,h:7,door:'west',hall:10,cw:4,map:'Servicios',kind:'svc',
-    a:[{name:'Cocina central',w:30,f:'kitchen'},{name:'Cámaras frigoríficas',label:'Cámaras',w:14,f:'cold'},{name:'Panadería',w:16,f:'bakery'},{name:'Almacén general',f:'storage'}],
-    b:[{name:'Lavandería',w:26,f:'laundry'},{name:'Economato central',w:16,f:'storage'},{name:'Ropería',w:14,f:'storage'},{name:'Mantenimiento',f:'workshop'}]});
-  TAL=corridorBuilding({short:'Talleres productivos',sub:'Trabajo penitenciario',x0:12,x1:110,z0:-192,z1:-148,h:8,door:'west',hall:10,cw:4,map:'Talleres',kind:'svc',
-    a:[{name:'Taller de carpintería',label:'Carpintería',w:30,f:'wood'},{name:'Taller de manipulados',label:'Manipulados',f:'pack'}],
-    b:[{name:'Taller de confección',label:'Confección',w:30,f:'sew'},{name:'Formación profesional',w:26,f:'fp'},{name:'Almacén de talleres',label:'Almacén',f:'storage'}]});
-  // Controles del vial
-  for (const z of [-4,-86,-141]){ B(9,12,0,0.9,z-2,z+2,C.steel,true); GL(9.1,11.9,0.9,2.5,z-1.9,z+1.9,false); B(8.8,12.2,2.5,2.8,z-2.2,z+2.2,C.steelDk); hm(9,12,z-2,z+2,2.8); }
-  npc({kind:'func',x:10.5,z:-4,h:-Math.PI/2,role:'Funcionario · Control de vial',lines:['Los internos no circulan solos por el vial: los movimientos entre módulos y edificios se hacen controlados, en grupo y a horas fijas.']});
-  sign('Módulos 7 a 14',"Ampliación · no representados",-10,3,-197.5,0,5,1,'inst'); B(-10.1,-9.9,0,2.5,-197.6,-197.4,C.steelDk,true);
-  sign('Zona residencial','Módulos 1 a 6',-9.7,4.6,83,0,4.6,1,'inst'); B(-9.8,-9.6,0,4.1,82.9,83.1,C.steelDk,true);
-  sign('Zona extramodular','Enfermería · Sociocultural · Deportes',9.7,4.6,83,0,5.4,1,'inst'); B(9.6,9.8,0,4.1,82.9,83.1,C.steelDk,true);
-  // Zonas exteriores con nombre
-  zone({id:'vial',title:'Vial central',sub:'Eje de comunicación interior',x0:-12,x1:12,z0:-198,z1:86});
-  zone({id:'acceso',title:'Zona de acceso',sub:'Plaza exterior',x0:-160,x1:160,z0:95,z1:150});
-  zone({id:'resid',title:'Zona residencial',sub:'Viales entre módulos',x0:-160,x1:-12,z0:-200,z1:95});
-  zone({id:'extra',title:'Zona extramodular',sub:'Viales y servicios comunes',x0:12,x1:160,z0:-200,z1:95});
-  zones.sort((a,b)=>(a.late?1:0)-(b.late?1:0));
-  // Personal en edificios
-  const hc=b=>({x:(b.hall.x0+b.hall.x1)/2,z:(b.hall.z0+b.hall.z1)/2});
-  const rc=(b,name)=>{ const r=b.rooms.find(q=>q.name===name); return {x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,r}; };
-  let p=hc(OFI); npc({kind:'func',x:p.x-1.2,z:p.z+4.5,h:Math.PI/2,role:'Recepción · Oficinas',lines:['La Dirección está al fondo, en el lado norte del pasillo, junto a la Sala de Juntas.','Aquí trabajan el Director, los subdirectores, el Gerente y las oficinas de Régimen, Gestión y Personal.']});
-  p=rc(OFI,'Dirección'); npc({kind:'staff',x:p.x,z:p.r.far+1.2,h:0,role:'Director del centro',lines:['El Director dirige y coordina el centro y preside sus órganos colegiados: Consejo de Dirección, Junta de Tratamiento y Comisión Disciplinaria.']});
-  p=rc(OFI,'Oficina de Gestión'); npc({kind:'staff',x:p.x-1,z:p.z+1,h:Math.PI,role:'Oficina de Gestión',lines:['En Gestión llevamos los expedientes de los internos: situación procesal y penal, liquidaciones de condena y libertades.']});
-  p=hc(COM); npc({kind:'func',x:p.x+1.4,z:p.z+4.5,h:-Math.PI/2,role:'Funcionaria · Comunicaciones',lines:['Los locutorios tienen cristal e interfono. Los vis a vis se hacen en las salas del otro lado del pasillo.','Las familias esperan aquí hasta que se las llama por turno.']});
-  p=hc(ING); npc({kind:'func',x:p.x-2.3,z:p.z+3.5,h:Math.PI/2,role:'Funcionario · Ingresos',lines:['Al ingresar se comprueba la orden, se identifica al interno, se le hace la reseña, se le cachea y pasa el reconocimiento médico. Después se le asigna módulo.']});
-  p=rc(CTL,'Sala de control'); npc({kind:'func',x:p.x,z:p.r.far+2.6,h:Math.PI,role:'Centro de Control',lines:['Desde aquí vemos las cámaras de todo el centro, gestionamos las alarmas, la apertura de puertas y las comunicaciones por radio.']});
-  p=rc(ENF,'Farmacia'); npc({kind:'sanit',x:p.x,z:p.z-3,h:Math.PI,role:'Enfermero',lines:['Pasamos consulta por la mañana y la farmacia prepara la medicación de cada módulo. La atención especializada se hace en hospitales de la red pública.']});
-  p=rc(ENF,'Consulta médica 1'); npc({kind:'sanit',x:p.x+1,z:p.r.far+0.75,h:0,role:'Médica',lines:['Todo interno pasa reconocimiento médico al ingresar en el centro.']});
-  p=rc(SOC,'Aula 1'); npc({kind:'staff',x:p.x,z:p.r.far+1.0,h:0,role:'Maestra',lines:['La LOGP obliga a que haya una escuela en cada establecimiento. Damos alfabetización, secundaria y apoyo para estudios a distancia.']});
-  for (let i=0;i<3;i++){ const r=rc(SOC,'Aula 1'); npc({kind:'civ',x:r.r.x0+1.8+i*2,z:r.r.near-1.9,sit:true,h:Math.PI,role:'Interno · Alumno',lines:INMATE}); }
-  p=rc(SOC,'Biblioteca'); npc({kind:'civ',x:p.x+3,z:p.z,wander:{x0:p.r.x0+10,x1:p.r.x1-1,z0:p.r.z0+2,z1:p.r.z1-2},role:'Interno',lines:INMATE});
-  p=hc(ESP); npc({kind:'func',x:p.x,z:p.z-4,h:Math.PI/2,role:'Funcionario · Departamento especial',lines:['Aquí se cumple el régimen cerrado en su modalidad más restrictiva. Salidas al patio limitadas, individuales o en grupos muy reducidos, y siempre con medidas de seguridad.']});
-  p=rc(SER,'Cocina central'); for (let i=0;i<3;i++) npc({kind:'civ',x:p.r.x0+6+i*6,z:p.z,wander:{x0:p.r.x0+2,x1:p.r.x1-2,z0:p.r.z1-3.5,z1:p.r.z1-1.2},role:'Interno · Cocina',lines:['Salen de aquí unos mil menús al día, en carros térmicos para cada módulo.','Trabajo en cocina: es un destino que ayuda en mi evolución.']});
-  p=rc(SER,'Lavandería'); npc({kind:'civ',x:p.x,z:p.z,wander:{x0:p.r.x0+1,x1:p.r.x1-1,z0:p.r.z0+2,z1:p.r.z0+5},role:'Interno · Lavandería',lines:INMATE});
-  p=rc(TAL,'Taller de carpintería'); npc({kind:'staff',x:p.r.x0+3,z:p.r.far+2,h:0,role:'Maestro de taller',lines:['Los internos que trabajan en los talleres productivos tienen una relación laboral de carácter especial, gestionada por la entidad Trabajo Penitenciario y Formación para el Empleo.']});
-  for (let i=0;i<4;i++) npc({kind:'civ',x:p.r.x0+4+i*6,z:p.z,wander:{x0:p.r.x0+1,x1:p.r.x1-1,z0:p.r.z0+1.5,z1:p.r.z1-2},role:'Interno · Taller',lines:INMATE});
-  p=rc(TAL,'Taller de confección'); for (let i=0;i<3;i++) npc({kind:'civ',x:p.r.x0+1.9+i*4.4,z:p.r.near+1.6,sit:true,h:0,role:'Interna · Confección',lines:INMATE});
-  npc({kind:'func',x:-4,z:40,wander:{x0:-6,x1:6,z0:-190,z1:84},role:'Funcionario de vial',lines:['Hago ronda por el vial central. A la izquierda la zona residencial; a la derecha, la extramodular y los servicios.']});
-  npc({kind:'func',x:4,z:-100,wander:{x0:-6,x1:6,z0:-190,z1:84},role:'Funcionaria de vial',lines:['Si buscas los talleres, están al final del vial, a la derecha.']});
+  RP1=buildRastrillo('Rastrillo puerta principal','Acceso al recinto',90,8,'Rastrillo ppal.');
+  COM=buildComunicaciones();
+  OFI=buildOficinas();
+  buildPasarela();
+  ING=buildIngresos();
+  CAF=buildCafeteria();
+  RA=buildRastrillo('Rastrillo de accesos','Al recinto de seguridad',28,8,'Rastrillo accesos');
+  buildPlazaInterior();
+  // Módulos residenciales, en columna al oeste, por parejas con cabina compartida
+  const pairs=[{c:-55,a:1,b:2,label:'Módulo de Aislamiento',aisl:true},{c:-165,a:3,b:4,label:null},{c:-275,a:5,b:6,label:'Módulo 2'},{c:-385,a:7,b:8,label:'Módulo 1'}];
+  for (const p of pairs){ buildModule(p.a,p.c,true); buildModule(p.b,p.c,false); sharedBooth(p.c,p.a,p.b); mP[p.a]=mP[p.b]=p; }
+  SOC=buildSociocultural();
+  PIS=buildPiscina();
+  TRA=buildTratamiento();
+  buildJardin();
+  ENF=buildEnfermeria();
+  COC=buildCocina();
+  TAL=buildTalleres();
+  buildCampoFutbol();
+  // Rótulos de zona a lo largo del vial de módulos
+  sign('Módulo de Aislamiento','Régimen cerrado · RP arts. 91-93',-58.2,4.2,-40,Math.PI/2,4.4,1,'warn');
+  sign('Módulo 2','Zona residencial',-58.2,3.6,-260,Math.PI/2,3.6,0.85,'inst');
+  sign('Módulo 1','Zona residencial',-58.2,3.6,-370,Math.PI/2,3.6,0.85,'inst');
+  zone({id:'central',title:'Recinto de seguridad',sub:'Módulos y servicios interiores',x0:PX0,x1:PX1,z0:PZ1,z1:28,late:true});
+  npc({kind:'func',x:-30,z:-8,wander:{x0:-56,x1:-4,z0:-420,z1:0},role:'Funcionario de vial',lines:['Hago ronda por el vial de módulos. Los internos no circulan solos: los movimientos se hacen en grupo, controlados y a horas fijas.']});
+  npc({kind:'func',x:30,z:0,wander:{x0:10,x1:130,z0:-450,z1:20},role:'Funcionaria de vial',lines:['Por este lado están los servicios comunes: sociocultural, piscina, tratamiento, enfermería, cocina y talleres.']});
 }
 
 /* ============ Fichas didácticas ============ */
-const ROUTE=['acceso','oficinas','comunicaciones','ingresos','rastrillo','control','modulo','galeria','patio','enfermeria','sociocultural','polideportivo','especial','servicios','talleres'];
+const ROUTE=['principal','comunicaciones','oficinas','ingresos','cafeteria','accesos','plaza','aislamiento','modulo3','modulo2','modulo1','sociocultural','piscina','tratamiento','jardin','enfermeria','cocina','talleres','futbol'];
 function definePOIs(){
   const P=o=>pois.push(o);
-  const m1=mods[1], d=b=>b.door, ent=(b,off=3)=>({x:d(b).x+d(b).out*off,z:d(b).z,h:d(b).out>0?-Math.PI/2:Math.PI/2});
-  P({id:'celda',match:l=>l.room&&l.room.startsWith('Celda')&&l.b&&l.b.module,zone:'Módulo residencial',title:'La celda',
-     text:'Unos 10 m² con cama (a menudo litera), inodoro y lavabo de acero, mesa, estantería y ventana con barrotes. En el centro tipo las celdas se reparten en dos plantas a ambos lados de la galería. La regla general es la celda individual, con excepciones por falta de espacio u otras causas legales.',
-     refs:['LOGP art. 19','RP art. 13: principio celular']});
-  P({id:'office',match:l=>l.room==='Office de funcionarios',zone:'Módulo residencial',title:'Office de funcionarios',
-     text:'Puesto de los funcionarios de vigilancia del módulo, acristalado para ver el vestíbulo. Desde aquí se hacen los recuentos, se abren y cierran las celdas, se controlan los movimientos de internos y se recogen sus instancias.',refs:['Vigilancia interior','Recuentos']});
-  P({id:'comedor',match:l=>l.room==='Comedor'&&l.b&&l.b.module,zone:'Módulo residencial',title:'Comedor del módulo',
-     text:'Cada módulo come en su propio comedor, sin mezclarse con otros. La comida llega en carros térmicos desde la cocina central y se sirve en el mostrador del office de comidas.',refs:['LOGP art. 21: alimentación']});
-  P({id:'sala',match:l=>l.room==='Sala de día'&&l.b&&l.b.module,zone:'Módulo residencial',title:'Sala de día',
-     text:'Espacio de convivencia del módulo: televisión, mesas de juego, cabinas de teléfono y la ventanilla del economato, donde los internos compran con su peculio.',refs:['RP art. 47: comunicaciones telefónicas']});
-  P({id:'galeria',route:1,match:l=>l.b&&l.b.module&&l.room&&l.room.startsWith('Galería'),zone:'Módulo residencial',title:'Galería de celdas',
-     text:'Pasillo de doble altura: 18 celdas a cada lado en planta baja (36) y otras 36 en la planta primera, a la que se sube por la escalera y se recorre por las pasarelas. En total, 72 celdas por módulo. Una reja separa la galería de las zonas comunes.',
-     refs:['72 celdas por módulo','LOGP art. 19'],target:{x:m1.X(27),z:m1.Z(7)},spawn:{x:m1.X(24),z:m1.Z(7),h:-Math.PI/2}});
-  P({id:'patio',route:1,match:l=>l.zone&&l.zone.patio,zone:'Módulo residencial',title:'Patio del módulo',
-     text:'Cada módulo tiene su propio patio cerrado por muros, con pista deportiva, zona cubierta y bancos. Así los internos de distintos módulos no coinciden y se mantiene la separación interior.',
-     refs:['LOGP art. 16: separación'],target:{x:m1.X(21.25),z:m1.Z(16)},spawn:{x:m1.X(21.25),z:m1.Z(18),h:Math.PI}});
-  P({id:'modulo',route:1,match:l=>l.b&&l.b.module,zone:'Zona residencial',title:'Módulo residencial',
-     text:'Edificio autosuficiente: office de funcionarios, comedor, sala de día, economato, duchas, patio y 72 celdas en dos plantas. En el centro tipo los módulos se levantan por parejas, simétricos y con una cabina de control compartida. Permiten clasificar y separar a los internos por perfiles.',
-     refs:['LOGP art. 16','LOGP art. 12: máx. 350 internos por unidad'],target:{x:-12,z:m1.Z(9.75)},spawn:{x:-9,z:m1.Z(9.75),h:-Math.PI/2}});
-  P({id:'direccion',match:l=>l.b===OFI&&l.room==='Dirección',zone:'Oficinas',title:'Despacho del Director',
-     text:'El Director dirige, coordina y supervisa el centro, ostenta su representación y preside los órganos colegiados. Junto a él trabajan los subdirectores (Régimen, Seguridad, Tratamiento) y el Gerente.',refs:['Órganos unipersonales','Consejo de Dirección']});
-  P({id:'juntas',match:l=>l.b===OFI&&l.room==='Sala de Juntas',zone:'Oficinas',title:'Sala de Juntas',
-     text:'Aquí se reúnen los órganos colegiados del centro: Consejo de Dirección, Junta de Tratamiento, Comisión Disciplinaria y Junta Económico-Administrativa.',refs:['Órganos colegiados']});
-  P({id:'oficinas',route:1,match:l=>l.b===OFI,zone:'Zona de acceso',title:'Oficinas: Dirección y Administración',
-     text:'Edificio de gestión, fuera del recinto de internos. Alberga la Dirección, las subdirecciones, la Gerencia y las oficinas de Régimen, Gestión (expedientes y condenas) y Personal, además de los Equipos Técnicos de tratamiento.',
-     refs:['RP 1996 · organización de los centros'],target:{x:-55,z:122},spawn:ent(OFI)});
-  P({id:'locutorios',match:l=>l.b===COM&&l.room==='Locutorios',zone:'Comunicaciones',title:'Locutorios',
-     text:'Comunicaciones orales con familiares y amigos, separados por un cristal y con interfono. Como mínimo, dos a la semana de al menos 20 minutos.',refs:['LOGP art. 51','RP art. 42']});
-  P({id:'vis',match:l=>l.b===COM&&l.room&&l.room.startsWith('Vis a vis'),zone:'Comunicaciones',title:'Vis a vis',
-     text:'Salas para comunicaciones sin separación. Íntimas y familiares: al menos una al mes, de una a tres horas. De convivencia, con cónyuge o pareja e hijos menores de diez años: hasta seis horas.',refs:['LOGP art. 53','RP art. 45']});
-  P({id:'comunicaciones',route:1,match:l=>l.b===COM,zone:'Zona de acceso',title:'Edificio de Comunicaciones',
-     text:'Donde los internos se relacionan con el exterior: sala de espera para familias, locutorios, locutorios de abogados y autoridades, sala de reconocimiento y salas de vis a vis familiares, íntimos y de convivencia.',
-     refs:['LOGP arts. 51-53','RP arts. 41-49'],target:{x:55,z:122},spawn:ent(COM)});
-  P({id:'ingresos',route:1,match:l=>l.b===ING,zone:'Zona de acceso',title:'Ingresos y salidas',
-     text:'Por aquí entra y sale cada interno. Se comprueba el mandamiento u orden de ingreso, se le identifica y reseña (fotografía y huellas), se cachean él y sus pertenencias, que quedan en depósito, y pasa el reconocimiento médico. Después se le asigna módulo.',
-     refs:['LOGP art. 15: expediente','RP art. 15','RP art. 214: reconocimiento médico'],target:{x:-18,z:114},spawn:ent(ING)});
-  P({id:'acceso',route:1,match:l=>l.b===ACC,zone:'Zona de acceso',title:'Control de accesos',
-     text:'Primer filtro del centro. Se identifica a todas las personas que entran (personal, familias, abogados, voluntariado), se registran sus datos y pasan por el arco detector y el escáner. Los objetos no autorizados se quedan en las taquillas.',
-     refs:['Seguridad interior'],target:{x:0,z:166},spawn:{x:0,z:170,h:Math.PI}});
-  P({id:'rastrillo',route:1,match:l=>l.b===RAS,zone:'Zona de acceso',title:'Rastrillo',
-     text:'Esclusa de seguridad con dos rejas que nunca se abren a la vez. Separa la zona de acceso del recinto interior y controla cada movimiento de personas y objetos. Pruébalo: acércate a una reja y espera a que la otra se cierre.',
-     refs:['Doble puerta'],target:{x:0,z:104},spawn:{x:0,z:108,h:Math.PI}});
-  P({id:'control',route:1,match:l=>l.b===CTL,zone:'Zona de acceso',title:'Centro de Control',
-     text:'El cerebro de la seguridad electrónica: videovigilancia de todo el centro, alarmas, apertura remota de puertas, intercomunicadores y comunicaciones por radio con los servicios.',
-     refs:['Seguridad interior'],target:{x:16,z:106.5},spawn:ent(CTL)});
-  P({id:'enfermeria',route:1,match:l=>l.b===ENF,zone:'Zona extramodular',title:'Enfermería',
-     text:'Centro sanitario del establecimiento: consultas de medicina general, sala de curas, odontología, radiología, farmacia y habitaciones de hospitalización. La atención especializada se presta en hospitales de la red pública.',
-     refs:['LOGP art. 36','RP arts. 207-220'],target:{x:12,z:65},spawn:ent(ENF)});
-  P({id:'sociocultural',route:1,match:l=>l.b===SOC,zone:'Zona extramodular',title:'Centro sociocultural',
-     text:'Escuela, biblioteca, aula de informática, taller ocupacional y salón de actos. Es zona extramodular: de uso común para internos de distintos módulos, que acuden por turnos sin mezclarse.',
-     refs:['LOGP art. 55: escuela','LOGP art. 57: biblioteca'],target:{x:12,z:21},spawn:ent(SOC)});
-  P({id:'polideportivo',route:1,match:l=>l.b===POL,zone:'Zona extramodular',title:'Polideportivo',
-     text:'Pista cubierta, gradas, gimnasio y vestuarios, junto al campo de deportes exterior. La actividad física forma parte del tratamiento y de la vida diaria del centro.',
-     refs:['LOGP art. 13: instalaciones'],target:{x:80,z:20.5},spawn:{x:76,z:20.5,h:Math.PI/2}});
-  P({id:'especial',route:1,match:l=>l.b===ESP||(l.zone&&l.zone.id==='espPatio'),zone:'Zona extramodular',title:'Departamento especial',
-     text:'Régimen cerrado en su modalidad más restrictiva, para internos de primer grado extremadamente peligrosos o manifiestamente inadaptados. Celdas individuales, patios pequeños cubiertos con malla y actividades muy limitadas y programadas.',
-     refs:['LOGP art. 10','RP art. 91','RP art. 93'],target:{x:12,z:-48},spawn:ent(ESP)});
-  P({id:'servicios',route:1,match:l=>l.b===SER,zone:'Zona de servicios',title:'Cocina, lavandería y almacenes',
-     text:'Zona de servicios del centro: cocina central, panadería, cámaras frigoríficas, lavandería, ropería, economato central, almacén y mantenimiento. Muchos internos trabajan aquí.',
-     refs:['LOGP art. 21'],target:{x:12,z:-113.5},spawn:ent(SER)});
-  P({id:'talleres',route:1,match:l=>l.b===TAL,zone:'Zona de servicios',title:'Talleres productivos',
-     text:'Trabajo remunerado para internos: carpintería, manipulados, confección y formación profesional. Lo gestiona la entidad estatal Trabajo Penitenciario y Formación para el Empleo, con una relación laboral de carácter especial.',
-     refs:['LOGP arts. 26-35','RD 782/2001'],target:{x:12,z:-170},spawn:ent(TAL)});
-  P({id:'vial',match:l=>l.zone&&l.zone.id==='vial',zone:'Recinto interior',title:'Vial central',
-     text:'Eje que une todos los edificios del recinto. A la izquierda (oeste), la zona residencial con los módulos; a la derecha, la zona extramodular (enfermería, sociocultural, deportes) y, al fondo, la de servicios. Los movimientos de internos por el vial son controlados.',refs:['Tres zonas del centro tipo']});
-  P({id:'gc',match:l=>(l.zone&&l.zone.id==='gcarea')||(l.b&&l.b.short==='Guardia Civil'),zone:'Exterior',title:'Vigilancia exterior',
-     text:'La seguridad exterior (perímetro, garitas, camino de ronda y conducciones de internos) corresponde a las Fuerzas y Cuerpos de Seguridad del Estado, normalmente la Guardia Civil. La seguridad interior es de los funcionarios de Instituciones Penitenciarias.',refs:['Seguridad exterior e interior']});
-  P({id:'exterior',match:l=>l.zone&&l.zone.id==='parking',zone:'Exterior',title:'Centro Penitenciario Tipo',
-     text:'Modelo de prisión que se construye en España desde los años noventa (Plan de Amortización y Creación de Centros Penitenciarios de 1991). No es un edificio único: son edificios independientes unidos por viales, dentro de una doble valla con garitas. Tiene tres zonas: residencial, extramodular y de servicios.',
-     refs:['LOGP art. 7: tipos de establecimientos','LOGP art. 12']});
+  P({id:'exterior',match:l=>l.zone&&l.zone.id==='entrada',zone:'Exterior',title:'Centro Penitenciario Tipo',
+     text:'Recinto amurallado con doble valla perimetral y garitas. Se entra por un vial con rotonda; a un lado, el aparcamiento de familiares. Todo el conjunto —oficinas, módulos y servicios— queda dentro del perímetro, unido por viales internos.',
+     refs:['LOGP art. 7: tipos de establecimientos','Perímetro de seguridad']});
+  P({id:'principal',route:1,match:l=>l.b===RP1,zone:'Acceso',title:'Rastrillo · Puerta principal',
+     text:'Primera esclusa del centro: dos rejas que nunca se abren a la vez. Aquí se identifica a todo el que entra desde el exterior —familias, abogados, proveedores— antes de pasar a la zona de oficinas.',
+     refs:['Seguridad exterior'],target:{x:0,z:90},spawn:{x:0,z:100,h:Math.PI}});
+  P({id:'comunicaciones',route:1,match:l=>l.b===COM,zone:'Zona de acceso',title:'Comunicaciones Exteriores',
+     text:'Oficina y sala de espera para las familias, locutorios con cristal e interfono, y salas de vis a vis familiar e íntimo. Es el punto de contacto entre el interno y el exterior.',
+     refs:['RP arts. 41-49: comunicaciones y visitas','LOGP arts. 51-53'],target:{x:-16,z:74},spawn:{x:-10,z:74,h:-Math.PI/2}});
+  P({id:'oficinas',route:1,match:l=>l.b===OFI,zone:'Zona de acceso',title:'Oficinas: Régimen y Comisión Disciplinaria',
+     text:'Aquí trabajan la Dirección, la Subdirección de Régimen, la Comisión Disciplinaria y la Junta de Tratamiento. La Comisión Disciplinaria instruye y resuelve los expedientes sancionadores; la Junta de Tratamiento decide la clasificación y los permisos de cada interno.',
+     refs:['RP arts. 231-247: régimen disciplinario','RP: Junta de Tratamiento y Consejo de Dirección'],target:{x:12,z:74},spawn:{x:6,z:74,h:Math.PI/2}});
+  P({id:'ingresos',route:1,match:l=>l.b===ING,zone:'Zona de acceso',title:'Módulo de Ingresos',
+     text:'Por aquí entra y sale cada interno del centro. Se comprueba el mandamiento de ingreso, se identifica y reseña, se cachean él y sus pertenencias —que quedan en depósito— y pasa reconocimiento médico. Después se le asigna módulo.',
+     refs:['RP art. 15: ingreso','RP art. 214: reconocimiento médico'],target:{x:-46,z:43},spawn:{x:-40,z:43,h:Math.PI/2}});
+  P({id:'cafeteria',route:1,match:l=>l.b===CAF,zone:'Zona de acceso',title:'Cafetería',
+     text:'Servicio de apoyo para el personal y las familias que esperan su turno de comunicación, entre las oficinas y el rastrillo de accesos.',
+     refs:['Servicio complementario'],target:{x:0,z:45},spawn:{x:0,z:36,h:Math.PI}});
+  P({id:'accesos',route:1,match:l=>l.b===RA,zone:'Zona de acceso',title:'Rastrillo de Accesos',
+     text:'Segunda esclusa: separa la zona administrativa, donde llegan visitas y proveedores, del recinto de seguridad donde están los módulos y los servicios. A partir de aquí solo circula personal autorizado e internos.',
+     refs:['Doble línea de seguridad'],target:{x:0,z:28},spawn:{x:0,z:20,h:Math.PI}});
+  P({id:'plaza',route:1,match:l=>l.zone&&l.zone.id==='plaza',zone:'Recinto de seguridad',title:'Plaza interior y Torre',
+     text:'Distribuidor central del recinto de seguridad: desde aquí parten el vial de los módulos residenciales, hacia el oeste, y el de los servicios comunes, hacia el este. La torre permite vigilar el conjunto.',
+     refs:['Vigilancia interior'],target:{x:0,z:8},spawn:{x:0,z:0,h:Math.PI}});
+  const modText=(nom,extra)=>`Edificio autosuficiente con office de funcionarios, comedor, sala de día, economato, duchas, patio y 72 celdas en dos plantas. ${extra}`;
+  P({id:'aislamiento',route:1,match:l=>l.b&&(l.b.module===1||l.b.module===2),zone:'Zona residencial',title:'Módulo de Aislamiento',
+     text:modText('','En un centro real, este módulo suele tener celdas y patios individuales para cumplir el régimen cerrado o las sanciones de aislamiento, con actividades muy limitadas y programadas.'),
+     refs:['RP art. 91: régimen cerrado','RP art. 93: patios individuales'],target:{x:-12,z:-55},spawn:{x:-8,z:-55,h:-Math.PI/2}});
+  P({id:'modulo3',route:1,match:l=>l.b&&(l.b.module===3||l.b.module===4),zone:'Zona residencial',title:'Módulos 3 y 4',
+     text:modText('','Los módulos se construyen por parejas simétricas, con la cabina de control compartida en el centro, para separar y clasificar a los internos por perfiles.'),
+     refs:['LOGP art. 16: separación interior'],target:{x:-12,z:-165},spawn:{x:-8,z:-165,h:-Math.PI/2}});
+  P({id:'modulo2',route:1,match:l=>l.b&&(l.b.module===5||l.b.module===6),zone:'Zona residencial',title:'Módulo 2',
+     text:modText('Módulos 5 y 6.',''),refs:['LOGP art. 12: máx. 350 internos por unidad'],target:{x:-12,z:-275},spawn:{x:-8,z:-275,h:-Math.PI/2}});
+  P({id:'modulo1',route:1,match:l=>l.b&&(l.b.module===7||l.b.module===8),zone:'Zona residencial',title:'Módulo 1',
+     text:modText('Módulos 7 y 8.',''),refs:['LOGP art. 19: celda individual'],target:{x:-12,z:-385},spawn:{x:-8,z:-385,h:-Math.PI/2}});
+  P({id:'patio',match:l=>l.zone&&l.zone.patio,zone:'Zona residencial',title:'Patio del módulo',
+     text:'Cada módulo tiene su propio patio cerrado, para que los internos de distintos módulos no coincidan.',refs:['LOGP art. 16']});
+  P({id:'sociocultural',route:1,match:l=>l.b===SOC,zone:'Zona extramodular',title:'Sociocultural: GYM, Teatro y Polideportivo',
+     text:'Gimnasio, salón de actos y pista polideportiva bajo un mismo techo. El deporte, la cultura y el ocio son parte de las actividades de tratamiento; los módulos las usan por turnos.',
+     refs:['LOGP art. 13: instalaciones','LOGP art. 55: escuela'],target:{x:20,z:10},spawn:{x:14,z:10,h:Math.PI/2}});
+  P({id:'piscina',route:1,match:l=>l.b===PIS||(l.zone&&l.zone.id==='piscina'),zone:'Zona extramodular',title:'Piscina',
+     text:'Zona de recreo y actividades acuáticas, con su edificio de vestuarios, dentro del bloque de instalaciones deportivas del centro.',
+     refs:['LOGP art. 13'],target:{x:20,z:-40},spawn:{x:14,z:-40,h:Math.PI/2}});
+  P({id:'tratamiento',route:1,match:l=>l.b===TRA,zone:'Zona extramodular',title:'Oficinas de Tratamiento',
+     text:'Aquí trabaja el Equipo Técnico: psicólogos, trabajadores sociales, educadores y pedagogos. Estudian a cada interno y proponen a la Junta de Tratamiento su clasificación, su programa individualizado y sus permisos.',
+     refs:['LOGP arts. 59-72: tratamiento','RP: Equipos Técnicos'],target:{x:74,z:15},spawn:{x:68,z:15,h:Math.PI/2}});
+  P({id:'jardin',route:1,match:l=>l.zone&&l.zone.id==='jardin',zone:'Zona extramodular',title:'Jardín agrícola',
+     text:'Zona verde del centro, mantenida por internos como destino de trabajo, con cursos de formación en jardinería.',
+     refs:['LOGP arts. 26-35: trabajo'],target:{x:90,z:-30},spawn:{x:90,z:-8,h:Math.PI}});
+  P({id:'enfermeria',route:1,match:l=>l.b===ENF,zone:'Zona de servicios',title:'Módulo Enfermería',
+     text:'Centro sanitario del establecimiento: consultas de medicina general, curas, odontología, radiología, farmacia y hospitalización. La atención especializada se deriva a hospitales de la red pública.',
+     refs:['LOGP art. 36','RP arts. 207-220'],target:{x:-18,z:-488},spawn:{x:-12,z:-488,h:Math.PI/2}});
+  P({id:'cocina',route:1,match:l=>l.b===COC,zone:'Zona de servicios',title:'Cocina, Lavandería y Economato Central',
+     text:'Servicios generales del centro: cocina, panadería, cámaras frigoríficas, lavandería y el economato central. Muchos internos trabajan aquí como destino remunerado. Los camiones de alimentos descargan en el muelle del muro este.',
+     refs:['LOGP art. 21: alimentación y economato'],target:{x:48,z:-495},spawn:{x:44,z:-495,h:Math.PI/2}});
+  P({id:'talleres',route:1,match:l=>l.b===TAL,zone:'Zona de servicios',title:'Talleres: Empresas y Mantenimiento',
+     text:'Talleres productivos —carpintería, confección, manipulados— con relación laboral especial gestionada por Trabajo Penitenciario y Formación para el Empleo, y el taller de mantenimiento del propio centro. Muelle de carga propio para los camiones de las empresas.',
+     refs:['LOGP arts. 26-35','RD 782/2001'],target:{x:48,z:-567},spawn:{x:42,z:-567,h:Math.PI/2}});
+  P({id:'futbol',route:1,match:l=>l.zone&&l.zone.id==='futbol',zone:'Zona extramodular',title:'Campo de fútbol',
+     text:'Campo de tierra para el deporte al aire libre, en el extremo norte del recinto junto a la enfermería.',
+     refs:['LOGP art. 13'],target:{x:-62,z:-500},spawn:{x:-62,z:-470,h:Math.PI}});
+  P({id:'gc',match:l=>l.b&&l.b.short&&l.b.short.startsWith('Garita'),zone:'Exterior',title:'Vigilancia exterior',
+     text:'La seguridad exterior —perímetro, garitas y camino de ronda— corresponde a la Guardia Civil. La seguridad interior es de los funcionarios de Instituciones Penitenciarias.',refs:['Seguridad exterior e interior']});
   for (const p of pois){ p.seen=false; p.visited=false; }
 }
-
-/* ============ Rejilla de colisiones ============ */
 const CG=8, grid=new Map(); let stamp=1;
 function buildGrid(){
   for (const c of colliders){
