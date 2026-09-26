@@ -1,0 +1,1455 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Centro Penitenciario Tipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#0f2229; --panel:rgba(14,32,39,.88); --paper:#eef1ea; --muted:#a3b7b1;
+  --signal:#f5c400; --ok:#62b38a; --line:rgba(238,241,234,.15);
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.hud{position:fixed;inset:0;pointer-events:none;z-index:2}
+.panel{background:var(--panel);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 12px 32px rgba(4,12,16,.32)}
+.eyebrow{display:block;font:600 11px/1.1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.plate{position:absolute;left:16px;top:calc(14px + env(safe-area-inset-top,0px));width:min(360px,calc(100vw - 212px));box-sizing:border-box;border-left:4px solid var(--signal);padding:9px 14px 11px}
+.plate .loc{display:block;margin-top:4px;font:700 28px/1 var(--display);letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+.plate .sub{display:block;margin-top:4px;font:500 15px/1.25 var(--body);opacity:.88}
+.route{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);display:grid;gap:3px}
+.route .next{font:600 17px/1.15 var(--display);letter-spacing:.03em;text-transform:uppercase;color:var(--signal);text-wrap:balance}
+.route .dist{font:400 12px/1.3 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:3px;background:var(--line);margin-top:5px}.bar i{display:block;height:100%;width:0;background:var(--signal);transition:width .5s}
+.radar{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top,0px));display:grid;justify-items:center;gap:10px;pointer-events:auto}
+#mini{width:164px;height:164px;border-radius:50%;display:block;box-shadow:0 0 0 3px rgba(14,32,39,.92),0 0 0 4px rgba(245,196,0,.6),0 12px 30px rgba(0,0,0,.35)}
+.btn{pointer-events:auto;font:600 13px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--paper);background:var(--panel);border:1px solid var(--line);padding:9px 14px;border-radius:2px;cursor:pointer}
+.btn kbd{font:500 11px var(--mono);color:var(--signal);margin-left:6px}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.card{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(440px,calc(100vw - 32px));box-sizing:border-box;max-height:min(54vh,480px);overflow:auto;pointer-events:auto;border-top:4px solid var(--signal);padding:14px 18px 18px;-webkit-user-select:text;user-select:text}
+.card header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card h2{margin:6px 0 8px;font:700 30px/1 var(--display);text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.card p{margin:0;font:400 15.5px/1.5 var(--body);color:#dfe6e1;max-width:62ch}
+.refs{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.refs li{font:500 11.5px/1.25 var(--mono);color:var(--ink);background:var(--signal);padding:4px 7px;border-radius:2px}
+.x{appearance:none;background:none;border:1px solid var(--line);color:var(--paper);width:34px;height:34px;display:grid;place-items:center;font:500 20px/1 var(--body);cursor:pointer;flex:none;border-radius:2px}
+.prompt{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;font:600 15px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;pointer-events:auto;cursor:pointer;border:0;color:var(--paper);white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis}
+.prompt kbd{display:grid;place-items:center;min-width:26px;height:26px;background:var(--signal);color:var(--ink);font:600 13px var(--mono);border-radius:2px}
+.talk{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));width:min(540px,calc(100vw - 32px));box-sizing:border-box;padding:12px 16px 14px;border-left:4px solid var(--ok);pointer-events:auto}
+.talk .who{font:600 12px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ok)}
+.talk p{margin:6px 0 0;font:400 16px/1.45 var(--body)}
+.toast{position:absolute;left:50%;top:calc(18px + env(safe-area-inset-top,0px));transform:translateX(-50%);padding:10px 16px;font:600 15px/1.15 var(--display);letter-spacing:.08em;text-transform:uppercase;border-bottom:3px solid var(--ok);text-align:center;max-width:calc(100vw - 32px);box-sizing:border-box}
+.keys{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));font:400 12px/1.7 var(--mono);color:var(--muted);text-align:right;padding:8px 12px}
+.keys b{color:var(--paper);font-weight:500}
+.touch{display:none}
+.is-touch .touch{display:block}
+.is-touch .keys{display:none}
+#stick{position:absolute;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:132px;height:132px;border-radius:50%;background:rgba(14,32,39,.45);border:2px solid rgba(238,241,234,.35);pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:rgba(238,241,234,.88);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.tbtn{position:absolute;pointer-events:auto;touch-action:none;border-radius:50%;display:grid;place-items:center;font:700 13px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;border:2px solid rgba(238,241,234,.4);padding:0}
+#actBtn{right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(44px + env(safe-area-inset-bottom,0px));width:80px;height:80px;background:var(--signal);color:var(--ink);border-color:transparent}
+#runBtn{right:calc(116px + env(safe-area-inset-right,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:66px;height:66px;background:rgba(14,32,39,.6);color:var(--paper);font-size:11px;letter-spacing:.04em}
+#runBtn.on{background:var(--paper);color:var(--ink)}
+.is-touch .card{bottom:calc(176px + env(safe-area-inset-bottom,0px));max-height:max(160px,calc(100% - 420px))}
+.is-touch .prompt{bottom:calc(186px + env(safe-area-inset-bottom,0px))}
+.is-touch .talk{bottom:calc(236px + env(safe-area-inset-bottom,0px))}
+.intro{position:fixed;inset:0;z-index:5;overflow:auto;background:linear-gradient(180deg,rgba(15,34,41,.25),rgba(15,34,41,.86) 62%);display:flex;align-items:center;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.intro-in{width:min(640px,100%);margin:auto}
+.kicker{font:600 13px/1.2 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--signal)}
+.intro h1{margin:10px 0 14px;font:700 clamp(46px,10vw,88px)/.9 var(--display);text-transform:uppercase;text-wrap:balance}
+.lead{font:400 18px/1.5 var(--body);max-width:56ch;color:#e3e9e4;margin:0}
+.zones{display:flex;flex-wrap:wrap;gap:8px 18px;margin:18px 0 0;padding:0;list-style:none;font:500 13px/1.3 var(--body);color:#dfe6e1}
+.zones i{display:inline-block;width:10px;height:10px;margin-right:7px;vertical-align:0}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:22px 0}
+.ctl section{border-top:1px solid var(--line);padding-top:10px}
+.ctl h3{font:600 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.ctl dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:14.5px;line-height:1.4}
+.ctl dt{font:500 12.5px/1.6 var(--mono);color:var(--signal)}
+.ctl dd{margin:0}
+.go{appearance:none;border:0;background:var(--signal);color:var(--ink);font:700 18px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;padding:16px 26px;cursor:pointer;border-radius:2px}
+.go:disabled{opacity:.6;cursor:progress}
+.note{margin:18px 0 0;font:400 12px/1.6 var(--mono);color:var(--muted);max-width:72ch}
+.mapview{position:fixed;inset:0;z-index:4;background:rgba(10,24,29,.95);display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.mapview header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.mapview h2{margin:0;font:700 30px/1 var(--display);text-transform:uppercase}
+.mapview header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.mapwrap{position:relative;min-height:0}
+#bigmap{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 12px/1.2 var(--mono);color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
+.short{display:none}
+@media (max-width:640px){
+  .long{display:none} .short{display:inline}
+  .card{padding:10px 14px 14px} .card h2{margin:4px 0 6px} .refs{margin-top:10px}
+  .is-touch .card{max-height:max(150px,calc(100% - 470px))}
+  .is-touch .toast{top:auto;bottom:calc(176px + env(safe-area-inset-bottom,0px));font-size:13px}
+  .plate{width:calc(100vw - 32px - 124px);padding:8px 11px 9px}
+  .plate .loc{font-size:21px}
+  .plate .sub{font-size:13px}
+  .route .next{font-size:14px}
+  #mini{width:112px;height:112px}
+  .card h2{font-size:24px}
+  .card p{font-size:14.5px}
+  .lead{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<canvas id="gl" tabindex="0" aria-label="Vista 3D del centro penitenciario"></canvas>
+
+<div class="hud" id="hud" hidden>
+  <div class="plate panel">
+    <span class="eyebrow">Estás en</span>
+    <strong class="loc" id="locTitle">Exterior</strong>
+    <span class="sub" id="locSub">Aparcamiento</span>
+    <div class="route" id="route">
+      <span class="eyebrow"><span class="long">Ruta de reconocimiento · </span><span class="short">Ruta · </span><b id="objCount">0/19</b></span>
+      <span class="next" id="objName">Rastrillo puerta principal</span>
+      <span class="dist" id="objDist"></span>
+      <div class="bar"><i id="objBar"></i></div>
+    </div>
+  </div>
+  <div class="radar">
+    <canvas id="mini" width="328" height="328" aria-label="Minimapa"></canvas>
+    <button class="btn" id="mapBtn" type="button">Plano<kbd>M</kbd></button>
+  </div>
+  <aside class="card panel" id="card" hidden aria-live="polite">
+    <header><span class="eyebrow" id="cardZone"></span><button class="x" id="cardClose" type="button" aria-label="Cerrar ficha">×</button></header>
+    <h2 id="cardTitle"></h2>
+    <p id="cardText"></p>
+    <ul class="refs" id="cardRefs"></ul>
+  </aside>
+  <div class="talk panel" id="talk" hidden><span class="who" id="talkWho"></span><p id="talkText"></p></div>
+  <button class="prompt panel" id="prompt" type="button" hidden><kbd id="promptKey">E</kbd><span id="promptText"></span></button>
+  <div class="toast panel" id="toast" hidden></div>
+  <div class="keys panel"><b>WASD</b> moverse · <b>Shift</b> correr<br><b>← →</b> o arrastrar: girar cámara · <b>rueda</b> zoom<br><b>E</b> hablar / ver ficha · <b>M</b> plano</div>
+  <div class="touch">
+    <div id="stick"><div id="knob"></div></div>
+    <button class="tbtn" id="runBtn" type="button">Correr</button>
+    <button class="tbtn" id="actBtn" type="button">Acción</button>
+  </div>
+</div>
+
+<div class="mapview" id="mapView" hidden>
+  <header>
+    <div><h2>Plano del centro</h2><p>Toca una parada numerada para ir directamente allí.</p></div>
+    <button class="btn" id="mapClose" type="button">Volver<kbd>M</kbd></button>
+  </header>
+  <div class="mapwrap"><canvas id="bigmap"></canvas></div>
+  <div class="legend">
+    <span><i style="background:#e8dcb8"></i>Zona residencial</span>
+    <span><i style="background:#d9e2dc"></i>Extramodular, servicios y acceso</span>
+    <span><i style="background:#f5c400;border-radius:50%"></i>Siguiente parada</span>
+    <span><i style="background:#62b38a;border-radius:50%"></i>Visitada</span>
+  </div>
+</div>
+
+<div class="intro" id="intro">
+  <div class="intro-in">
+    <div class="kicker">Recorrido 3D · Instituciones Penitenciarias</div>
+    <h1>Centro Penitenciario Tipo</h1>
+    <p class="lead">Recorre a pie un centro tipo con planta real: rastrillo de entrada, comunicaciones, oficinas de Régimen y Comisión Disciplinaria, ingresos, un segundo rastrillo, la plaza interior, cuatro módulos residenciales (incluido el de aislamiento), sociocultural, piscina, tratamiento, jardín, enfermería, cocina, talleres y campo de fútbol.</p>
+    <ul class="zones">
+      <li><i style="background:#e8dcb8"></i>Zona residencial: módulos</li>
+      <li><i style="background:#d9e2dc"></i>Zona extramodular: uso común</li>
+      <li><i style="background:#9fb0aa"></i>Zona de servicios</li>
+    </ul>
+    <div class="ctl">
+      <section><h3>Teclado</h3><dl><dt>WASD</dt><dd>Caminar</dd><dt>Shift</dt><dd>Correr</dd><dt>← →</dt><dd>Girar la cámara</dd><dt>E</dt><dd>Hablar o ver la ficha</dd><dt>M</dt><dd>Plano y teletransporte</dd></dl></section>
+      <section><h3>Móvil</h3><dl><dt>Joystick</dt><dd>Caminar (a tope, corre)</dd><dt>Arrastrar</dt><dd>Girar la cámara</dd><dt>Acción</dt><dd>Hablar o ver la ficha</dd><dt>Plano</dt><dd>Saltar a cualquier parada</dd></dl></section>
+    </div>
+    <button class="go" id="startBtn" type="button" disabled>Construyendo el centro…</button>
+    <p class="note">Distribución basada en el modelo de centro tipo español: edificios independientes unidos por viales, doble valla perimetral, módulos por parejas con cabina de control compartida y 72 celdas por módulo en dos plantas. Escalas y mobiliario simplificados. Las referencias a la LOGP y al Reglamento Penitenciario son orientativas: contrástalas con el texto vigente.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const isTouch = matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+if (isTouch) document.body.classList.add('is-touch');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!window.THREE) {
+  $('#startBtn').textContent = 'No se pudo cargar el motor 3D. Recarga la página.';
+  return;
+}
+
+/* ============ Paleta del mundo ============ */
+const C = {
+  grass:0x80995c, grass2:0x6f8f50, asphalt:0x55595d, line:0xe9e4d4, gravel:0xc3b89f, paving:0xbcb6aa, vial:0xa9a498,
+  facade:0xe2d7bd, facade2:0xd8c9a3, plinth:0x8f8a80, roof:0x6b635b, parapet:0x9a9185, band:0xc2b28c,
+  wallIn:0xece8de, floor:0xcfc8b9, floorOff:0xc2c7c1, floorCell:0xc4bdad, tile:0xb9d3da,
+  patio:0xb5afa3, patioWall:0xcdbf9c, steel:0x6b7e8b, steelDk:0x46535c, bar:0x9aa6ae, concrete:0xb9b3a6,
+  wood:0x9d7a52, woodDk:0x6e5236, chair:0x3c4c58, mattress:0x3f6b9b, blanket:0x8c5a4a, white:0xf2f2ee,
+  screen:0x1b2a33, glassDk:0x2e3d47, winIn:0x9fc0cc, court:0xb46a45, courtLine:0xf1ede2,
+  plant:0x4f7a3e, pot:0xa0633f, red:0xb23a2e, yellow:0xe5b52c, blue:0x2f5d9a, black:0x23272a, box:0xb48a5a
+};
+
+/* ============ Geometría agrupada (un draw call por lote) ============ */
+class Batch {
+  constructor(){ this.p=[]; this.n=[]; this.c=[]; this.i=[]; this.v=0; }
+  box(x0,x1,y0,y1,z0,z1,col){
+    if (x0>x1){const t=x0;x0=x1;x1=t;} if (y0>y1){const t=y0;y0=y1;y1=t;} if (z0>z1){const t=z0;z0=z1;z1=t;}
+    const r=((col>>16)&255)/255, g=((col>>8)&255)/255, b=(col&255)/255;
+    const P=this.p, N=this.n, K=this.c, I=this.i;
+    const f=(ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz,nx,ny,nz)=>{
+      const v=this.v; P.push(ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz);
+      for (let k=0;k<4;k++){ N.push(nx,ny,nz); K.push(r,g,b); }
+      I.push(v,v+1,v+2,v,v+2,v+3); this.v+=4;
+    };
+    f(x1,y0,z1, x1,y0,z0, x1,y1,z0, x1,y1,z1, 1,0,0);
+    f(x0,y0,z0, x0,y0,z1, x0,y1,z1, x0,y1,z0, -1,0,0);
+    f(x0,y1,z1, x1,y1,z1, x1,y1,z0, x0,y1,z0, 0,1,0);
+    f(x0,y0,z1, x1,y0,z1, x1,y1,z1, x0,y1,z1, 0,0,1);
+    f(x1,y0,z0, x0,y0,z0, x0,y1,z0, x1,y1,z0, 0,0,-1);
+  }
+  geo(){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p,3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n,3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(this.c,3));
+    g.setIndex(this.v>65000 ? new THREE.Uint32BufferAttribute(this.i,1) : new THREE.Uint16BufferAttribute(this.i,1));
+    g.computeBoundingSphere();
+    return g;
+  }
+  mesh(mat){ return this.v ? new THREE.Mesh(this.geo(), mat) : null; }
+}
+class QBatch {
+  constructor(){ this.p=[]; this.n=[]; this.uv=[]; this.i=[]; this.v=0; }
+  wall(x0,z0,x1,z1,y0,y1){
+    const len=Math.hypot(x1-x0,z1-z0), nx=(z1-z0)/len, nz=-(x1-x0)/len, v=this.v;
+    this.p.push(x0,y0,z0, x1,y0,z1, x1,y1,z1, x0,y1,z0);
+    for (let k=0;k<4;k++) this.n.push(nx,0,nz);
+    const U=len/0.7, V=(y1-y0)/0.7; this.uv.push(0,0, U,0, U,V, 0,V);
+    this.i.push(v,v+1,v+2,v,v+2,v+3); this.v+=4;
+  }
+  mesh(mat){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p,3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n,3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv,2));
+    g.setIndex(this.i); g.computeBoundingSphere();
+    return new THREE.Mesh(g, mat);
+  }
+}
+
+/* ============ Escena ============ */
+const canvas = $('#gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isTouch || devicePixelRatio < 2, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, isTouch ? 1.6 : 2));
+const scene = new THREE.Scene();
+(() => {
+  const c=document.createElement('canvas'); c.width=4; c.height=256; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,256); g.addColorStop(0,'#86aec2'); g.addColorStop(.62,'#cfdedf'); g.addColorStop(1,'#e2e7df');
+  x.fillStyle=g; x.fillRect(0,0,4,256); scene.background=new THREE.CanvasTexture(c);
+})();
+scene.fog = new THREE.Fog(0xdde4de, 120, 900);
+const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 1400);
+scene.add(new THREE.HemisphereLight(0xe4eef2, 0x857a62, 0.66));
+const sun = new THREE.DirectionalLight(0xfff1dc, 0.62); sun.position.set(-0.55,1,0.4); scene.add(sun);
+
+const worldMat = new THREE.MeshLambertMaterial({ vertexColors:true });
+const glassMat = new THREE.MeshLambertMaterial({ vertexColors:true, transparent:true, opacity:0.3, depthWrite:false });
+const charMat = new THREE.MeshLambertMaterial({ vertexColors:true });
+function chainTex(){
+  const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d');
+  x.strokeStyle='rgba(206,214,214,0.95)'; x.lineWidth=2.4; x.beginPath(); x.moveTo(0,0); x.lineTo(64,64); x.moveTo(64,0); x.lineTo(0,64); x.stroke();
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.anisotropy=4; return t;
+}
+const fenceTex = chainTex();
+const fenceMat = new THREE.MeshLambertMaterial({ map:fenceTex, alphaTest:0.45, side:THREE.DoubleSide });
+
+const STATIC=new Batch(), GLASS=new Batch(), FENCE=new QBatch();
+const buildings=[], colliders=[], zones=[], pois=[], npcs=[], gates=[], mapRects=[], mapLines=[], mapLabels=[];
+
+/* Rejilla de alturas para que la cámara no atraviese edificios */
+const GX0=-300, GZ0=-300, GW=600, GH=600;
+const hgt=new Float32Array(GW*GH), hid=new Int16Array(GW*GH).fill(-1);
+function hm(x0,x1,z0,z1,h,id=-1){
+  const a=Math.max(0,Math.floor(Math.min(x0,x1)-GX0)), b=Math.min(GW-1,Math.floor(Math.max(x0,x1)-GX0));
+  const c=Math.max(0,Math.floor(Math.min(z0,z1)-GZ0)), d=Math.min(GH-1,Math.floor(Math.max(z0,z1)-GZ0));
+  for (let j=c;j<=d;j++) for (let i=a;i<=b;i++){ const k=j*GW+i; if (h>hgt[k]){ hgt[k]=h; hid[k]=id; } }
+}
+
+/* ============ Primitivas de construcción ============ */
+let CUR=null; const SPLIT=3.3;
+function addCol(x0,x1,z0,z1,extra){ const c={x0:Math.min(x0,x1),x1:Math.max(x0,x1),z0:Math.min(z0,z1),z1:Math.max(z0,z1)}; if(extra)Object.assign(c,extra); colliders.push(c); return c; }
+function B(x0,x1,y0,y1,z0,z1,col,solid){
+  if (CUR){
+    if (y0>=SPLIT-0.001) CUR.up.box(x0,x1,y0,y1,z0,z1,col);
+    else if (y1>SPLIT+0.001){ STATIC.box(x0,x1,y0,SPLIT,z0,z1,col); CUR.up.box(x0,x1,SPLIT,y1,z0,z1,col); }
+    else STATIC.box(x0,x1,y0,y1,z0,z1,col);
+  } else STATIC.box(x0,x1,y0,y1,z0,z1,col);
+  if (solid && y0<1.6) addCol(x0,x1,z0,z1);
+}
+function ROOF(x0,x1,y0,y1,z0,z1,col){ (CUR?CUR.rf:STATIC).box(x0,x1,y0,y1,z0,z1,col); }
+function GL(x0,x1,y0,y1,z0,z1,solid){ GLASS.box(x0,x1,y0,y1,z0,z1,0xb4d4e0); if (solid) addCol(x0,x1,z0,z1); }
+function segs(a0,a1,gaps){
+  if (a0>a1){const t=a0;a0=a1;a1=t;}
+  const g=gaps.map(q=>[Math.min(q[0],q[1]),Math.max(q[0],q[1]),q[2]||2.3]).sort((p,q)=>p[0]-q[0]);
+  const S=[]; let cur=a0;
+  for (const q of g){ if (q[0]>cur+0.001) S.push([cur,q[0]]); cur=Math.max(cur,q[1]); }
+  if (cur<a1-0.001) S.push([cur,a1]);
+  return [S,g];
+}
+function wallX(z,x0,x1,h,col,gaps=[],o={}){
+  const t=o.t||0.3, y0=o.y0||0, [S,G]=segs(x0,x1,gaps), solid=o.solid!==false;
+  for (const [a,b] of S) B(a,b,y0,y0+h,z-t/2,z+t/2,col,solid);
+  for (const [a,b,gh] of G) if (gh<h) B(a,b,y0+gh,y0+h,z-t/2,z+t/2,col,false);
+  if (o.lin){ const lz=z+o.lin*(t/2+0.015), lh=Math.min(h,3.2), lc=o.linCol||C.wallIn;
+    for (const [a,b] of S) B(a,b,0.07,lh,lz-0.015,lz+0.015,lc,false);
+    for (const [a,b,gh] of G) if (gh<lh) B(a,b,gh,lh,lz-0.015,lz+0.015,lc,false); }
+}
+function wallZ(x,z0,z1,h,col,gaps=[],o={}){
+  const t=o.t||0.3, y0=o.y0||0, [S,G]=segs(z0,z1,gaps), solid=o.solid!==false;
+  for (const [a,b] of S) B(x-t/2,x+t/2,y0,y0+h,a,b,col,solid);
+  for (const [a,b,gh] of G) if (gh<h) B(x-t/2,x+t/2,y0+gh,y0+h,a,b,col,false);
+  if (o.lin){ const lx=x+o.lin*(t/2+0.015), lh=Math.min(h,3.2), lc=o.linCol||C.wallIn;
+    for (const [a,b] of S) B(lx-0.015,lx+0.015,0.07,lh,a,b,lc,false);
+    for (const [a,b,gh] of G) if (gh<lh) B(lx-0.015,lx+0.015,gh,lh,a,b,lc,false); }
+}
+/* Ventanas en un muro orientado en X (z fijo) o en Z (x fijo). side = hacia fuera */
+function winsX(z,side,x0,x1,rows,step=3.2,w=1.4,skip=[]){
+  for (let x=x0+step/2; x+w/2<=x1; x+=step){
+    const a=x-w/2, b=x+w/2; if (skip.some(s=>b>s[0]-0.4&&a<s[1]+0.4)) continue;
+    rows.forEach((r,ri)=>{
+      B(a,b,r[0],r[1],z+side*0.15,z+side*0.2,C.glassDk,false);
+      B(a-0.06,b+0.06,r[0]-0.1,r[0],z+side*0.15,z+side*0.26,C.parapet,false);
+      if (ri===0) B(a,b,r[0],r[1],z-side*0.18,z-side*0.2,C.winIn,false);
+    });
+  }
+}
+function winsZ(x,side,z0,z1,rows,step=3.2,w=1.4,skip=[]){
+  for (let z=z0+step/2; z+w/2<=z1; z+=step){
+    const a=z-w/2, b=z+w/2; if (skip.some(s=>b>s[0]-0.4&&a<s[1]+0.4)) continue;
+    rows.forEach((r,ri)=>{
+      B(x+side*0.15,x+side*0.2,r[0],r[1],a,b,C.glassDk,false);
+      B(x+side*0.15,x+side*0.26,r[0]-0.1,r[0],a-0.06,b+0.06,C.parapet,false);
+      if (ri===0) B(x-side*0.18,x-side*0.2,r[0],r[1],a,b,C.winIn,false);
+    });
+  }
+}
+function roofBox(x0,x1,z0,z1,h,col=C.roof){
+  ROOF(x0-0.15,x1+0.15,h,h+0.25,z0-0.15,z1+0.15,col);
+  const p=h+0.7;
+  ROOF(x0-0.15,x1+0.15,h+0.25,p,z0-0.15,z0+0.15,C.parapet); ROOF(x0-0.15,x1+0.15,h+0.25,p,z1-0.15,z1+0.15,C.parapet);
+  ROOF(x0-0.15,x0+0.15,h+0.25,p,z0-0.15,z1+0.15,C.parapet); ROOF(x1-0.15,x1+0.15,h+0.25,p,z0-0.15,z1+0.15,C.parapet);
+  const cx=(x0+x1)/2, cz=(z0+z1)/2;
+  ROOF(cx-1.4,cx+1.4,h+0.25,h+1.3,cz-1,cz+1,0x9ea3a3);
+}
+function bBegin(o){
+  const b={ id:buildings.length, short:o.short, name:o.name||o.short, x0:Math.min(o.x0,o.x1), x1:Math.max(o.x0,o.x1), z0:Math.min(o.z0,o.z1), z1:Math.max(o.z0,o.z1),
+            h:o.h, rooms:[], def:o.def||'Interior', up:new Batch(), rf:new Batch(), zone:o.zone||'' };
+  buildings.push(b); CUR=b; hm(b.x0,b.x1,b.z0,b.z1,o.h,b.id);
+  mapRects.push({x0:b.x0,x1:b.x1,z0:b.z0,z1:b.z1,t:o.kind||'bld'});
+  mapLabels.push({x:(b.x0+b.x1)/2,z:(b.z0+b.z1)/2,t:o.map||o.short,kind:o.kind||'bld'});
+  return b;
+}
+function bEnd(){ CUR=null; }
+function mapRect(x0,x1,z0,z1,t){ mapRects.push({x0:Math.min(x0,x1),x1:Math.max(x0,x1),z0:Math.min(z0,z1),z1:Math.max(z0,z1),t}); }
+function zone(o){ zones.push(o); return o; }
+
+/* ============ Rótulos ============ */
+const SIGN = {
+  inst:{bg:'#173a44',fg:'#f4f1e8',sub:'#bcd2cb',rule:'#f5c400'},
+  door:{bg:'#f2f0e8',fg:'#173a44',sub:'#56707a',rule:'#173a44'},
+  gc:{bg:'#27432a',fg:'#f4f1e8',sub:'#cfe0c4',rule:'#c9a227'},
+  warn:{bg:'#f5c400',fg:'#1b1b1b',sub:'#3b3b3b',rule:'#1b1b1b'},
+  green:{bg:'#2c4a2f',fg:'#f4f1e8',sub:'#cfe0c4',rule:'#8fbf7a'},
+  yellow:{bg:'#e8b83a',fg:'#1b1b1b',sub:'#3b3b3b',rule:'#1b1b1b'},
+  white:{bg:'#f2f0e8',fg:'#173a44',sub:'#56707a',rule:'#f5c400'}
+};
+function sign(title,sub,x,y,z,rot,w,h,style='inst'){
+  const S=SIGN[style], pw=style==='door'?320:640, ph=Math.max(48,Math.round(pw*h/w));
+  const cv=document.createElement('canvas'); cv.width=pw; cv.height=ph; const c=cv.getContext('2d');
+  c.fillStyle=S.bg; c.fillRect(0,0,pw,ph);
+  c.fillStyle=S.rule; if (style==='door') c.fillRect(0,0,Math.round(ph*0.14),ph); else c.fillRect(0,0,pw,Math.max(4,ph*0.07));
+  const pad=style==='door'?ph*0.34:ph*0.22;
+  const T=title.toUpperCase(); let fs=sub?ph*0.44:ph*0.56;
+  c.font=`700 ${fs}px "Barlow Condensed","Arial Narrow",sans-serif`;
+  while (c.measureText(T).width>pw-pad*2 && fs>8){ fs-=1; c.font=`700 ${fs}px "Barlow Condensed","Arial Narrow",sans-serif`; }
+  c.fillStyle=S.fg; c.textBaseline='middle'; c.fillText(T,pad,sub?ph*0.43:ph*0.55);
+  if (sub){ c.font=`500 ${Math.round(ph*0.2)}px Barlow,sans-serif`; c.fillStyle=S.sub; c.fillText(sub,pad,ph*0.77); }
+  const tex=new THREE.CanvasTexture(cv); tex.anisotropy=4;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({map:tex}));
+  m.position.set(x,y,z); m.rotation.y=rot; scene.add(m); return m;
+}
+
+/* ============ Mobiliario ============ */
+const BOOKS=[0xa33b2f,0x2f5d8a,0xc9a23a,0x3f7d5c,0x6b4c8a,0xd8d2c4,0x8a5a3a];
+function kit(F){
+  const k={};
+  k.desk=(u,v,w=1.5,d=0.75,col=C.wood)=>{F(u,u+w,v,v+d,0.72,0.77,col,true);F(u+0.04,u+0.1,v+0.05,v+d-0.05,0,0.72,C.woodDk);F(u+w-0.1,u+w-0.04,v+0.05,v+d-0.05,0,0.72,C.woodDk);};
+  k.mon=(u,v)=>{F(u,u+0.55,v,v+0.05,0.95,1.3,C.screen);F(u+0.24,u+0.31,v,v+0.12,0.77,0.95,C.black);};
+  k.chair=(u,v,back)=>{F(u,u+0.46,v,v+0.46,0.44,0.5,C.chair);F(u+0.2,u+0.26,v+0.2,v+0.26,0,0.44,C.black); if(back>0)F(u,u+0.46,v+0.41,v+0.46,0.5,0.95,C.chair); else F(u,u+0.46,v,v+0.05,0.5,0.95,C.chair);};
+  k.cab=(u,v,w=0.9,d=0.45,h=1.9,col=0x8d949a)=>F(u,u+w,v,v+d,0,h,col,true);
+  k.plant=(u,v)=>{F(u,u+0.4,v,v+0.4,0,0.4,C.pot,true);F(u-0.08,u+0.48,v-0.08,v+0.48,0.4,1.1,C.plant);};
+  k.shelf=(u,v,w,d,h,front)=>{F(u,u+w,v,v+d,0,h,C.woodDk,true); let i=0;
+    for (let y=0.3;y<h-0.25;y+=0.42){ let x=u+0.06; while (x<u+w-0.14){ const bw=0.07+((i*37)%5)*0.02; const fv=front>0?v+d:v; F(x,x+bw,fv-0.02*front,fv+0.02*front,y,y+0.26+((i*13)%3)*0.03,BOOKS[i%BOOKS.length]); x+=bw+0.015; i++; } } };
+  k.table=(u,v,w,d,col=0xd9d4c6)=>{F(u,u+w,v,v+d,0.72,0.78,col,true);F(u+w/2-0.07,u+w/2+0.07,v+d/2-0.07,v+d/2+0.07,0,0.72,C.steelDk);};
+  k.bed=(u,v,w,l,sheet=0xe9ecee)=>{F(u,u+w,v,v+l,0.3,0.5,C.steel,true);F(u+0.03,u+w-0.03,v+0.03,v+l-0.03,0.5,0.66,sheet);};
+  return k;
+}
+function furnish(t,r){
+  const W=r.W, D=r.D;
+  const F=(u0,u1,v0,v1,y0,y1,col,solid)=>B(r.x0+u0,r.x0+u1,y0,y1,r.near+r.dir*v0,r.near+r.dir*v1,col,solid);
+  const G=(u0,u1,v0,v1,y0,y1,solid)=>GL(r.x0+u0,r.x0+u1,y0,y1,r.near+r.dir*v0,r.near+r.dir*v1,solid);
+  const FC=(u0,u1,v0,v1)=>addCol(r.x0+u0,r.x0+u1,r.near+r.dir*v0,r.near+r.dir*v1);
+  const k=kit(F);
+  switch(t){
+    case 'office': { const c=W/2; k.desk(c-0.8,D-2.2,1.6,0.8); k.mon(c-0.3,D-1.9); k.chair(c-0.23,D-1.3,1); k.chair(c-0.8,D-3.3,-1); k.chair(c+0.3,D-3.3,-1);
+      k.cab(0.3,D-0.6); k.cab(1.3,D-0.6); k.shelf(W-2.6,D-0.5,2.2,0.4,1.9,-1); k.plant(W-0.8,1.6); break; }
+    case 'office2': { for (const c of [W*0.28,W*0.7]){ k.desk(c-0.75,D-2.3); k.mon(c-0.28,D-2.0); k.chair(c-0.23,D-1.45,1); }
+      k.cab(0.3,D-0.6); k.cab(1.3,D-0.6); k.cab(2.3,D-0.6); k.plant(W-0.8,1.6); break; }
+    case 'openoffice': { for (let u=1.2; u+1.6<W-0.6; u+=2.7) for (let v=2.4; v+1.5<D-0.9; v+=2.9){ k.desk(u,v); k.mon(u+0.5,v+0.55); k.chair(u+0.52,v+0.85,1); }
+      for (let u=0.4; u+0.9<W-0.4; u+=1.0) k.cab(u,D-0.55,0.9,0.45,1.3,0x9aa1a6); break; }
+    case 'director': { const c=W/2; k.desk(c-1.2,D-2.6,2.4,1.0,C.woodDk); k.mon(c-0.3,D-2.2); k.chair(c-0.23,D-1.45,1); k.chair(c-1.0,D-3.6,-1); k.chair(c+0.5,D-3.6,-1);
+      k.shelf(0.4,D-0.5,3.4,0.4,2.2,-1);
+      F(W-1.3,W-1.24,D-0.9,D-0.84,0,2.4,C.steel); F(W-1.24,W-0.62,D-0.9,D-0.86,1.72,1.84,C.red); F(W-1.24,W-0.62,D-0.9,D-0.86,1.84,2.08,C.yellow); F(W-1.24,W-0.62,D-0.9,D-0.86,2.08,2.2,C.red);
+      F(W-2.3,W-2.24,D-0.9,D-0.84,0,2.4,C.steel); F(W-2.24,W-1.62,D-0.9,D-0.86,1.72,2.2,0x2c4f9e);
+      F(0.8,3.2,2.0,2.8,0,0.45,0x5a4a3f,true); F(0.8,3.2,2.65,2.8,0.45,0.95,0x5a4a3f); F(1.3,2.7,3.3,4.1,0,0.42,C.woodDk,true); k.plant(W-0.8,1.6); break; }
+    case 'meeting': { const v0=D/2-0.9; F(1.6,W-1.6,v0,v0+1.8,0.74,0.8,C.woodDk,true); F(W/2-0.1,W/2+0.1,v0+0.8,v0+1.0,0,0.74,C.black);
+      for (let u=2.0; u+0.5<W-1.8; u+=1.1){ k.chair(u,v0-0.62,-1); k.chair(u,v0+1.95,1); }
+      F(W/2-1.4,W/2+1.4,D-0.12,D-0.06,1.2,2.5,C.screen); k.plant(0.6,D-0.9); k.plant(W-1.0,D-0.9); break; }
+    case 'locutorios': { const m=D/2; F(0.3,W-0.3,m-0.35,m+0.35,0,0.95,C.concrete,true); G(0.3,W-0.3,m-0.05,m+0.05,0.95,2.6,false);
+      for (let u=0.3; u<=W-0.3; u+=2.4){ F(u-0.05,u+0.05,m-1.3,m+1.3,0,2.3,C.wallIn,true); }
+      for (let u=1.5; u<W-0.3; u+=2.4){ F(u-0.2,u+0.2,m-1.0,m-0.6,0,0.45,C.steel); F(u-0.2,u+0.2,m+0.6,m+1.0,0,0.45,C.steel); F(u+0.5,u+0.62,m-0.4,m-0.36,1.2,1.5,C.black); } break; }
+    case 'lawyer': { k.table(W/2-0.9,D/2-0.5,1.8,1.0,C.wood); k.chair(W/2-0.23,D/2-1.1,-1); k.chair(W/2-0.23,D/2+0.65,1); k.cab(0.4,D-0.6); break; }
+    case 'lineup': { F(0.5,W-0.5,D-0.08,D-0.04,0,2.5,0xe8e6de); for (let y=1.4;y<=2.21;y+=0.2) F(0.5,W-0.5,D-0.1,D-0.08,y,y+0.025,C.black);
+      F(0.3,W-0.3,D-3.1,D-2.9,0,0.9,C.wallIn,true); G(0.3,W-0.3,D-3.05,D-2.95,0.9,2.6,false); for (let u=1;u<W-1;u+=1.0) k.chair(u,D-4.2,1); break; }
+    case 'vavfam': { F(0.8,3.4,D-1.1,D-0.3,0,0.45,0x6c7f5a,true); F(0.8,3.4,D-0.45,D-0.3,0.45,0.95,0x6c7f5a); F(1.2,3.0,D-2.6,D-1.7,0.38,0.44,C.wood,true);
+      k.chair(3.8,D-2.4,1); k.chair(0.3,D-2.4,1);
+      F(W-2.3,W-2.2,D-2.3,D,0,2.4,C.wallIn,true); F(W-2.3,W-1.3,D-2.35,D-2.25,0,2.4,C.wallIn,true); F(W-0.8,W-0.3,D-0.8,D-0.25,0,0.45,0xd8dde0,true); break; }
+    case 'vavint': { const c=W/2-0.5; F(c-0.8,c+0.8,D-2.2,D-0.2,0.25,0.5,C.woodDk,true); F(c-0.77,c+0.77,D-2.17,D-0.23,0.5,0.66,0xe9e4d8); F(c-0.7,c+0.7,D-0.7,D-0.3,0.66,0.78,C.white);
+      F(c-1.4,c-0.9,D-0.7,D-0.2,0,0.55,C.wood,true); F(W-2.0,W-1.9,D-2.2,D,0,2.4,C.wallIn,true); F(W-2.0,W-1.2,D-2.25,D-2.15,0,2.4,C.wallIn,true); F(W-0.8,W-0.3,D-0.8,D-0.25,0,0.45,0xd8dde0,true); break; }
+    case 'vavconv': { F(1,3.8,D-1.1,D-0.3,0,0.45,0x7a6a4f,true); F(1,3.8,D-0.45,D-0.3,0.45,0.95,0x7a6a4f); F(1.6,3.2,D-2.6,D-1.8,0.38,0.44,C.wood,true);
+      const cols=[0xd8574a,0x4f8fd0,0xf0c24a,0x5fae6a]; for (let i=0;i<4;i++) for (let j=0;j<3;j++) F(5+i*1.0,6+i*1.0,2+j*1.0,3+j*1.0,0.07,0.09,cols[(i+j)%4]);
+      F(W-3,W-1.8,D-1.4,D-0.6,0.5,0.55,0xf0c24a,true); F(5.5,5.9,2.5,2.9,0.09,0.45,C.red); F(7.2,7.5,3.5,3.8,0.09,0.35,C.blue);
+      F(W-2,W-0.4,D-0.12,D-0.06,1.3,2.2,C.screen); k.plant(W-0.8,1.8); break; }
+    case 'ident': { const c=W/2; F(c-1.5,c+1.5,D-0.08,D-0.04,0,2.4,0xe8e6de); for (let y=1.4;y<=2.01;y+=0.2) F(c-1.5,c+1.5,D-0.1,D-0.08,y,y+0.025,C.black);
+      F(c-0.05,c+0.05,2.4,2.5,0,1.4,C.black); F(c-0.15,c+0.15,2.35,2.65,1.4,1.62,C.black); k.desk(0.4,1.6,1.2,0.7); F(0.6,1.1,1.8,2.1,0.77,0.8,C.screen); k.cab(W-1.2,D-0.6); break; }
+    case 'search': { const c=W/2, m=D/2; F(c-1.2,c-0.9,m-0.3,m+0.3,0,2.3,0x9aa4ab,true); F(c+0.9,c+1.2,m-0.3,m+0.3,0,2.3,0x9aa4ab,true); F(c-1.2,c+1.2,m-0.3,m+0.3,2.3,2.55,0x9aa4ab);
+      k.table(0.5,D-1.6,2.2,0.9,0xc9cdd0); F(W-3,W-0.6,1.6,2.6,0,1.2,0xcfd4d6,true); F(W-3.4,W-0.2,1.9,2.3,0.8,0.86,C.black); break; }
+    case 'medical': { k.desk(0.5,D-1.8,1.4,0.7); k.mon(0.9,D-1.55); k.chair(0.95,D-1.0,1); k.chair(0.95,D-2.8,-1);
+      F(W-2.6,W-0.6,D-1.2,D-0.4,0.62,0.76,0xdfe7ea,true); F(W-2.5,W-0.7,D-1.1,D-0.5,0,0.62,C.steel); k.cab(W-1.5,1.6,0.9,0.45,1.9,0xe6e9ea); F(0.4,1.0,1.4,1.8,0.8,0.95,C.white); break; }
+    case 'medical2': { for (const u of [1,W/2+0.4]){ F(u,u+2,D-1.2,D-0.4,0.62,0.76,0xdfe7ea,true); F(u+0.1,u+1.9,D-1.1,D-0.5,0,0.62,C.steel); }
+      k.cab(0.4,1.6,0.9,0.45,1.9,0xe6e9ea); k.cab(W-1.3,1.6,0.9,0.45,1.9,0xe6e9ea); F(W/2-0.3,W/2+0.3,2,2.5,0,0.9,C.steel); break; }
+    case 'dentist': { const c=W/2; F(c-0.4,c+0.4,D/2-1.0,D/2+0.9,0.35,0.6,0x7fb2c2,true); F(c-0.4,c+0.4,D/2+0.7,D/2+0.9,0.6,1.3,0x7fb2c2);
+      F(c+0.6,c+0.7,D/2,D/2+0.1,0,2.0,C.white); F(c+0.1,c+0.7,D/2-0.2,D/2+0.1,1.95,2.1,C.white); k.cab(0.4,D-0.6,0.9,0.45,1.9,0xe6e9ea); k.desk(W-2,D-1.6,1.4,0.7); break; }
+    case 'xray': { const c=W/2, m=D/2+0.8; F(c-1,c+1,m-1.2,m+1.2,0.6,0.8,0xe3e6e8,true); F(c-0.2,c+0.2,m-1,m-0.6,0,0.6,0xd0d5d8);
+      F(c-0.2,c+0.2,m+1.3,m+1.6,0,2.4,0xd0d5d8,true); F(c-0.5,c+0.5,m-0.3,m+1.6,2.1,2.4,0xd0d5d8); F(0.4,2.4,1.6,1.8,0,2.2,0x9aa4ab,true); G(0.5,2.3,1.65,1.75,1.1,1.9,false); break; }
+    case 'holding': { const v0=2.3; for (let u=0.35; u<W-0.3; u+=0.16) F(u,u+0.04,v0-0.02,v0+0.02,0,2.4,C.bar); FC(0.3,W-0.3,v0-0.06,v0+0.06);
+      F(0.3,W-0.3,v0-0.05,v0+0.05,2.4,2.5,C.steel); for (let i=1;i<3;i++){ const u=i*W/3; F(u-0.08,u+0.08,v0,D,0,2.4,C.wallIn,true); }
+      for (let i=0;i<3;i++){ const u=i*W/3+0.3; F(u,u+W/3-0.6,D-0.6,D-0.1,0,0.45,C.concrete,true); } break; }
+    case 'storage': { for (let v=1.8; v+0.9<D-0.2; v+=2.3){ F(0.8,W-0.8,v,v+0.9,0,2.4,0x5f6b73,true);
+        for (let u=1.0; u<W-1.2; u+=0.7) for (let y=0.1;y<2.2;y+=0.7) F(u,u+0.55,v-0.05,v+0.3,y,y+0.45,((u*7+y*3)|0)%3?C.box:0xc9a878); } break; }
+    case 'control': { F(0.5,W-0.5,D-0.16,D-0.06,0.8,3.0,C.black); const sc=[0x3d7ea6,0x5c8f6a,0x4a6f8f,0x7e8e5a,0x356a88];
+      let i=0; for (let u=0.7;u+1.0<W-0.5;u+=1.1) for (let y=0.95;y<2.8;y+=0.66){ F(u,u+1.0,D-0.18,D-0.16,y,y+0.58,sc[i++%sc.length]); }
+      F(1.2,W-1.2,D-2.4,D-1.6,0,0.8,0x3b4b57,true); for (let u=1.6;u<W-1.8;u+=1.2) k.mon(u,D-2.1);
+      for (let u=1.7;u<W-1.8;u+=2.4) k.chair(u,D-3.1,-1); break; }
+    case 'servers': { for (let u=1;u+0.7<W-0.8;u+=1.8){ F(u,u+0.7,1.6,D-0.6,0,2.1,0x2a3238,true); for (let v=1.8;v<D-0.8;v+=0.6) F(u+0.7,u+0.72,v,v+0.08,1.6,1.66,0x62b38a); } break; }
+    case 'pharmacy': { k.shelf(0.3,D-0.5,W-0.6,0.4,2.2,-1); F(0.5,W-2.4,2.0,2.6,0,1.0,C.wood,true); F(0.5,W-2.4,2.0,2.6,1.0,1.05,C.woodDk);
+      k.shelf(0.2,3.2,0.4,D-4,2.0,1); k.cab(W-1.2,3.2,0.9,0.6,1.9,0xe6e9ea); break; }
+    case 'beds': { for (let u=0.8; u+1.1<W-0.6; u+=2.8){ k.bed(u,D-2.3,1.0,2.0); F(u,u+1.0,D-0.3,D-0.18,0.5,1.15,C.steel); F(u+0.15,u+0.85,D-0.75,D-0.35,0.66,0.78,C.white); F(u+1.25,u+1.7,D-0.7,D-0.25,0,0.7,0xd6d2c8,true); F(u-0.4,u-0.36,D-2.3,D-0.2,2.3,2.34,C.steel); }
+      F(1,2.2,1.6,2.2,0,1.0,C.steel,true); break; }
+    case 'classroom': { F(W/2-2.2,W/2+2.2,D-0.1,D-0.05,1.0,2.2,0xf4f4f0); F(W/2-2.3,W/2+2.3,D-0.12,D-0.1,0.95,2.25,C.steel); k.desk(W/2-0.75,D-2.3);
+      for (let u=1.2; u+1.2<W-0.8; u+=2.0) for (let v=2.2; v+0.6<D-3.4; v+=1.7){ F(u,u+1.2,v,v+0.6,0.72,0.76,0xcfc3a5,true); F(u+0.1,u+0.15,v+0.1,v+0.5,0,0.72,C.steel); F(u+1.05,u+1.1,v+0.1,v+0.5,0,0.72,C.steel); k.chair(u+0.37,v-0.55,-1); } break; }
+    case 'computers': { for (let u=1.2; u+1.4<W-0.6; u+=2.2) for (let v=2.2; v+0.7<D-0.8; v+=2.0){ F(u,u+1.4,v,v+0.7,0.72,0.76,0xd7d9da,true); F(u+0.1,u+0.15,v+0.1,v+0.6,0,0.72,C.steel); k.mon(u+0.42,v+0.5); k.chair(u+0.47,v-0.55,-1); } break; }
+    case 'library': { for (let u=1; u+0.6<W*0.55; u+=2.2) k.shelf(u,2.2,0.5,D-3.2,1.9,1);
+      for (let v=2.4; v+1.2<D-0.8; v+=3.0){ k.table(W*0.62,v,2.6,1.2,C.wood); k.chair(W*0.62+0.5,v-0.55,-1); k.chair(W*0.62+1.6,v+1.25,1); } k.shelf(0.3,D-0.45,W-0.6,0.35,2.1,-1); break; }
+    case 'artroom': { for (let u=1.2; u+3<W-0.8; u+=4.2){ k.table(u,D/2-0.8,3,1.6,0xc8b89a); for (let i=0;i<3;i++){ k.chair(u+0.3+i*1,D/2-1.45,-1); } }
+      F(W-1.4,W-1.35,D-1.6,D-1.2,0,1.8,C.woodDk); F(W-1.7,W-1.0,D-1.62,D-1.58,1.0,1.8,0xf2efe6); k.shelf(0.3,D-0.45,3,0.35,1.8,-1); break; }
+    case 'auditorium': { F(0.5,W-0.5,D-3,D,0,0.6,C.woodDk,true); F(W/2-0.3,W/2+0.3,D-2.4,D-1.9,0.6,1.7,C.wood); F(0.5,W-0.5,D-0.1,D-0.05,1.0,3.0,0x7a2e2e);
+      for (let v=2; v<D-4.2; v+=1.0) for (let u=1; u<W-1; u+=0.62){ if (Math.abs(u-W/2)<0.7) continue; F(u,u+0.48,v,v+0.45,0.42,0.48,0x8a3a3a); F(u,u+0.48,v,v+0.06,0.48,0.9,0x8a3a3a); } break; }
+    case 'kitchen': { F(3,W-3,D/2-0.8,D/2+0.8,0,0.9,0x9aa3a8,true); for (let u=3.5; u<W-3.5; u+=1.2) F(u,u+0.6,D/2-0.5,D/2+0.1,0.9,0.93,C.black);
+      F(3,W-3,D/2-1.1,D/2+1.1,2.7,3.0,0xa9b0b4); for (let u=1; u+1.3<W-0.8; u+=2.0){ F(u,u+1.3,D-1.6,D-0.3,0,1.0,0xb5bcc0,true); F(u+0.1,u+1.2,D-1.5,D-0.4,1.0,1.05,0x7c858a); }
+      F(0.3,0.9,1.8,D-2,0,0.9,0xc3c9cc,true); for (let u=2; u<W-2; u+=3.5) F(u,u+1.2,1.8,2.4,0,1.1,C.steel,true); break; }
+    case 'cold': { F(0.6,W/2-0.4,D-4.4,D-0.2,0,2.8,0xe8ecee,true); F(W/2+0.4,W-0.6,D-4.4,D-0.2,0,2.8,0xe8ecee,true);
+      F(W/4-0.6,W/4+0.6,D-4.45,D-4.4,0,2.2,C.steel); F(3*W/4-0.6,3*W/4+0.6,D-4.45,D-4.4,0,2.2,C.steel); for (let u=1;u<W-1;u+=2.2) F(u,u+1.2,1.8,2.6,0,1.2,C.box,true); break; }
+    case 'bakery': { for (let u=1; u+2.4<W-0.5; u+=3.2){ F(u,u+2.4,D-1.8,D-0.2,0,2.2,0x8b9398,true); F(u+0.4,u+2.0,D-1.82,D-1.8,0.8,1.6,C.black); }
+      for (let u=1.5; u+2.5<W-1; u+=4){ F(u,u+2.5,D/2-1.4,D/2-0.4,0,0.9,0xc9b99a,true); } for (let u=1.5; u<W-1.5; u+=3) F(u,u+0.7,2,2.6,0,1.8,C.steel,true); break; }
+    case 'laundry': { for (let u=0.8; u+1.4<W-0.6; u+=1.8){ F(u,u+1.4,D-1.5,D-0.2,0,1.6,0xd9dde0,true); F(u+0.35,u+1.05,D-1.52,D-1.5,0.5,1.2,C.screen); }
+      for (let u=1.5; u+3<W-1.2; u+=4.5) F(u,u+3,D/2-0.9,D/2+0.3,0,0.9,0xc8ccce,true); for (let u=2; u<W-2; u+=4.5) F(u,u+1,2,3,0,1.1,0x3f6b9b,true); break; }
+    case 'workshop': { for (let u=1.5; u+3<W-1; u+=5){ F(u,u+3,D/2-0.6,D/2+0.6,0,0.9,C.wood,true); F(u+0.3,u+0.9,D/2-0.3,D/2+0.2,0.9,1.2,C.steel); }
+      F(0.5,W-0.5,D-0.1,D-0.06,1.0,2.2,0x6f7a5a); for (let u=1;u<W-1;u+=0.5) F(u,u+0.08,D-0.14,D-0.1,1.3+((u*10)%3)*0.2,1.9,C.steelDk); break; }
+    case 'wood': { for (let u=1.5; u+2.6<W-1; u+=4.0) for (let v=2.4; v+1.1<D-2.4; v+=3.4){ F(u,u+2.6,v,v+1.1,0,0.9,C.wood,true); F(u+0.2,u+2.4,v+0.2,v+0.9,0.9,0.95,0xd9b98a); }
+      for (let u=1; u+3<W-1; u+=5) F(u,u+3,D-1.2,D-0.3,0,1.2,0xc9a36a,true); F(W-4,W-2,2,3.4,0,1.3,0x7d8a70,true); F(W-3.2,W-2.8,2.4,3.0,1.3,1.6,C.steel); break; }
+    case 'pack': { for (let v=2.4; v+1.2<D-1; v+=3.2){ F(1.5,W-1.5,v,v+1.2,0.74,0.8,0xcfc8b4,true); F(1.6,1.7,v+0.1,v+1.1,0,0.74,C.steel); F(W-1.7,W-1.6,v+0.1,v+1.1,0,0.74,C.steel);
+        for (let u=2; u<W-2; u+=1.3) F(u,u+0.5,v+0.3,v+0.8,0.8,1.05,C.box); }
+      for (let u=1; u<W-1; u+=1.4) F(u,u+1.1,D-1.3,D-0.2,0,1.2+((u*3)|0)%3*0.4,C.box,true); break; }
+    case 'sew': { for (let u=1.2; u+1.4<W-0.8; u+=2.2) for (let v=2.2; v+0.8<D-1; v+=2.2){ F(u,u+1.4,v,v+0.8,0.72,0.76,0xd7d2c4,true); F(u+0.1,u+0.15,v+0.1,v+0.7,0,0.72,C.steel); F(u+0.5,u+0.95,v+0.35,v+0.6,0.76,1.05,C.white); k.chair(u+0.47,v-0.55,-1); }
+      for (let u=1; u<W-1; u+=1.2) F(u,u+0.9,D-0.7,D-0.2,0,1.3,0x5c7da0,true); break; }
+    case 'fp': { F(0.5,W-0.5,D-0.14,D-0.08,0.9,2.3,0xd2d6d4); for (let u=1; u+1.2<W-0.8; u+=1.8){ F(u,u+1.2,D-0.18,D-0.14,1.1,2.0,0xf0f0ea); F(u+0.2,u+0.5,D-0.2,D-0.18,1.3,1.6,C.red); }
+      for (let u=1.5; u+2.4<W-1; u+=3.6) F(u,u+2.4,D/2-0.5,D/2+0.5,0,0.9,C.wood,true); break; }
+    case 'cellS': { F(0.2,1.1,D-2.3,D-0.25,0,0.5,C.concrete,true); F(0.25,1.05,D-2.25,D-0.3,0.5,0.62,C.mattress); F(W-0.7,W-0.2,D-0.8,D-0.25,0,0.45,C.steel,true);
+      F(W-0.9,W-0.2,2.0,2.8,0.7,0.76,C.concrete,true); break; }
+  }
+}
+
+/* ============ Edificio con pasillo central (plantilla) ============ */
+function corridorBuilding(o){
+  const b=bBegin(o);
+  const {x0,x1,z0,z1}=b, h=o.h, cw=o.cw||3.4, zc=(z0+z1)/2, east=o.door==='east', L=x1-x0, hall=o.hall||10, fac=o.fac||C.facade;
+  const AX=s=>east?x1-s:x0+s;
+  B(x0,x1,0,0.075,z0,z1,o.floor||C.floorOff,false);
+  const dg=[zc-1.3,zc+1.3,2.8];
+  wallX(z0,x0,x1,h,fac,[],{lin:1});
+  wallX(z1,x0,x1,h,fac,[],{lin:-1});
+  wallZ(x0,z0,z1,h,fac,east?[]:[dg],{lin:1});
+  wallZ(x1,z0,z1,h,fac,east?[dg]:[],{lin:-1});
+  const sides={a:{near:zc-cw/2,far:z0,dir:-1},b:{near:zc+cw/2,far:z1,dir:1}};
+  for (const key of ['a','b']){
+    const list=o[key]||[]; if (!list.length) continue;
+    const sd=sides[key], gaps=[]; let s=hall;
+    for (let i=0;i<list.length;i++){
+      const r=list[i], w=i===list.length-1?L-s:r.w, s1=s+w;
+      const rx0=Math.min(AX(s),AX(s1)), rx1=Math.max(AX(s),AX(s1));
+      if (i>0) wallZ(AX(s),sd.near,sd.far,3.0,C.wallIn,[],{t:0.2});
+      const dw=r.door||1.2, da=s+(r.doorAt!=null?r.doorAt:0.7);
+      gaps.push([AX(da),AX(da+dw),2.2]);
+      const dx=(AX(da)+AX(da+dw))/2;
+      if (!r.nosign) sign(r.label||r.name,null,dx,2.62,sd.near-sd.dir*0.13,sd.dir<0?0:Math.PI,Math.min(2.2,Math.max(1.5,w-0.4)),0.4,'door');
+      const room={name:r.name,x0:rx0,x1:rx1,z0:Math.min(sd.near,sd.far),z1:Math.max(sd.near,sd.far),near:sd.near,far:sd.far,dir:sd.dir,W:rx1-rx0,D:Math.abs(sd.far-sd.near)};
+      room.du0=Math.min(AX(da),AX(da+dw))-rx0; room.du1=Math.max(AX(da),AX(da+dw))-rx0;
+      b.rooms.push(room);
+      if (r.f) furnish(r.f,room);
+      s=s1;
+    }
+    wallX(sd.near,AX(hall),AX(L),3.0,C.wallIn,gaps,{t:0.2});
+  }
+  wallZ(AX(hall),z0,z1,3.0,C.wallIn,[[zc-cw/2,zc+cw/2,3.0]],{t:0.2});
+  b.rooms.push({name:'Pasillo',x0:Math.min(AX(hall),AX(L)),x1:Math.max(AX(hall),AX(L)),z0:zc-cw/2,z1:zc+cw/2});
+  const hr={name:o.hallName||'Vestíbulo',x0:Math.min(AX(0),AX(hall)),x1:Math.max(AX(0),AX(hall)),z0,z1};
+  b.rooms.push(hr); b.hall=hr; b.door={x:east?x1:x0,z:zc,out:east?1:-1};
+  hallFurnish(o.hallF||'reception',hr,east,zc,cw);
+  const rows=h>6?[[1.1,2.3],[4.4,5.6]]:[[1.1,2.3]];
+  winsX(z0,-1,x0,x1,rows); winsX(z1,1,x0,x1,rows);
+  winsZ(east?x1:x0,east?1:-1,z0,z1,rows,3.2,1.4,[[dg[0],dg[1]]]);
+  winsZ(east?x0:x1,east?-1:1,z0,z1,h>6?[[4.4,5.6]]:[[1.4,2.2]]);
+  const ox=east?1:-1, dxw=east?x1:x0;
+  B(dxw,dxw+ox*2.2,2.9,3.1,zc-2,zc+2,C.steelDk,false);
+  B(dxw+ox*2.05,dxw+ox*2.2,0,2.9,zc-1.95,zc-1.8,C.steel,true); B(dxw+ox*2.05,dxw+ox*2.2,0,2.9,zc+1.8,zc+1.95,C.steel,true);
+  sign(o.short,o.sub||null,dxw+ox*0.18,Math.min(h-0.8,4.1),zc,east?Math.PI/2:-Math.PI/2,Math.min(9,Math.max(5,o.short.length*0.42)),1.1,o.signStyle||'inst');
+  roofBox(x0,x1,z0,z1,h,o.roof||C.roof);
+  bEnd();
+  return b;
+}
+function hallFurnish(t,r,east,zc,cw){
+  const W=r.x1-r.x0;
+  const F=(s0,s1,a,b,y0,y1,col,solid)=>B(east?r.x1-s0:r.x0+s0,east?r.x1-s1:r.x0+s1,y0,y1,a,b,col,solid);
+  const z0=r.z0, z1=r.z1;
+  if (t==='none') return;
+  F(W*0.45,W*0.45+0.7,zc+cw/2+0.8,Math.min(z1-0.6,zc+cw/2+4.2),0,1.1,C.wood,true);
+  F(W*0.45-0.1,W*0.45+0.8,zc+cw/2+0.7,Math.min(z1-0.5,zc+cw/2+4.3),1.1,1.16,C.woodDk);
+  F(1.2,Math.min(W-1.2,6.5),z0+0.3,z0+0.8,0,0.45,C.chair,true);
+  F(1.2,Math.min(W-1.2,6.5),z0+0.3,z0+0.4,0.45,0.9,C.chair);
+  F(W-1,W-0.6,z0+0.4,z0+0.8,0,0.4,C.pot,true); F(W-1.1,W-0.5,z0+0.3,z0+0.9,0.4,1.1,C.plant);
+  F(1.5,3.5,z1-0.08,z1-0.04,1.2,2.2,0x5a7560);
+}
+
+/* ============ Suelos, viales y exterior ============ */
+function fence(ax,c,a0,a1,h){
+  const posts=[];
+  if (ax==='x'){ FENCE.wall(a0,c,a1,c,0.1,h); addCol(a0,a1,c-0.15,c+0.15); for (let x=a0;x<=a1+0.01;x+=4) B(x-0.07,x+0.07,0,h+0.4,c-0.07,c+0.07,0x8e979a,false); mapLines.push([a0,c,a1,c]); }
+  else { FENCE.wall(c,a0,c,a1,0.1,h); addCol(c-0.15,c+0.15,a0,a1); for (let z=a0;z<=a1+0.01;z+=4) B(c-0.07,c+0.07,0,h+0.4,z-0.07,z+0.07,0x8e979a,false); mapLines.push([c,a0,c,a1]); }
+  const len=a1-a0, t=fenceTex.clone(); t.needsUpdate=true; t.repeat.set(4,len/0.9);
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.36,len,10,1,true), new THREE.MeshLambertMaterial({map:t,alphaTest:0.45,side:THREE.DoubleSide}));
+  if (ax==='x'){ m.rotation.z=Math.PI/2; m.position.set((a0+a1)/2,h+0.45,c); } else { m.rotation.x=Math.PI/2; m.position.set(c,h+0.45,(a0+a1)/2); }
+  scene.add(m);
+}
+function tower(x,z,guard){
+  B(x-1.1,x+1.1,0,8,z-1.1,z+1.1,0xb8b0a0,true); hm(x-1.1,x+1.1,z-1.1,z+1.1,10.8);
+  B(x-1.9,x+1.9,8,8.3,z-1.9,z+1.9,0xa39b8c); B(x-1.9,x+1.9,8.3,9.1,z-1.9,z-1.75,0xd9d0bd); B(x-1.9,x+1.9,8.3,9.1,z+1.75,z+1.9,0xd9d0bd);
+  B(x-1.9,x-1.75,8.3,9.1,z-1.9,z+1.9,0xd9d0bd); B(x+1.75,x+1.9,8.3,9.1,z-1.9,z+1.9,0xd9d0bd);
+  GL(x-1.85,x+1.85,9.1,10.45,z-1.85,z+1.85,false);
+  for (const [a,b] of [[-1.9,-1.75],[1.75,1.9]]) for (const [c,d] of [[-1.9,-1.75],[1.75,1.9]]) B(x+a,x+b,9.1,10.5,z+c,z+d,C.steelDk);
+  B(x-2.3,x+2.3,10.5,10.8,z-2.3,z+2.3,C.roof); B(x-0.3,x+0.3,10.8,11.4,z-0.3,z+0.3,C.steelDk);
+  mapRects.push({x0:x-1.9,x1:x+1.9,z0:z-1.9,z1:z+1.9,t:'tower'});
+  if (guard) npc({kind:'gc',x,z:z,y:8.3,h:z>0?0:Math.PI,role:'Guardia Civil · Garita',lines:['Desde la garita vigilamos el perímetro y el camino de ronda. La seguridad exterior del centro es competencia de las Fuerzas y Cuerpos de Seguridad del Estado.']});
+}
+/* ============ Suelos y accesos ============ */
+const flags=[];
+const PZ0=90, PZ1=-620, PX0=-108, PX1=140; // perímetro exterior
+function buildGround(){
+  B(-260,260,-0.3,0,-680,180,C.grass,false);
+  // Vial de entrada (fuera del recinto)
+  B(-3,3,0,0.02,PZ0,155,C.asphalt); mapRect(-3,3,PZ0,155,'road');
+  for (let z=95;z<152;z+=8) B(-0.12,0.12,0.02,0.03,z,z+4,C.line);
+  B(-64,-8,0,0.03,95,148,C.paving); mapRect(-64,-8,95,148,'paving'); // parking familiares
+  for (let x=-60;x<-10;x+=6){ B(x,x+0.12,0.03,0.04,98,144,C.line); }
+  // Rotonda de acceso
+  B(-9,9,0,0.04,111,129,C.asphalt); mapRect(-9,9,111,129,'road');
+  B(-4.4,4.4,0,0.4,116.6,123.4,C.grass2,true); tree(0,120,1.1);
+  // Vial interior central (dentro del recinto, columna x=0)
+  B(-6,6,0,0.05,PZ0,-30,C.vial); mapRect(-6,6,PZ0,-30,'vial');
+  B(-6,-4,0,0.055,PZ0,-30,C.paving); B(4,6,0,0.055,PZ0,-30,C.paving);
+  for (let z=PZ0-4;z>-26;z-=6) B(-0.12,0.12,0.055,0.06,z,z-3,C.line);
+  // Plaza de vial de módulos (columna oeste, desde aislamiento hasta módulo 1)
+  B(-100,-8,0,0.05,-8,-430,C.vial); mapRect(-100,-8,-8,-430,'vial');
+  for (let z=-20;z>-420;z-=6) B(-58.1,-57.9,0,0.055,z,z-3,C.line);
+  // Vial este (sociocultural / piscina / tratamiento / jardín)
+  B(6,140,0,0.05,45,-70,C.vial); mapRect(6,140,45,-70,'vial');
+  // Vial de servicios (cocina / talleres)
+  B(-25,145,0,0.05,-440,PZ1+10,C.vial); mapRect(-25,145,-440,PZ1+10,'vial');
+  B(6,140,0,0.052,-70,-440,C.paving); mapRect(6,140,-70,-440,'paving');
+  // Césped decorativo del resto del recinto
+  B(-100,140,0,0.045,-440,PZ1+8,0xbdb298);
+  zone({id:'entrada',title:'Exterior',sub:'Vial de acceso',x0:-64,x1:64,z0:95,z1:155});
+  // Banderas de entrada
+  for (const [x,cols] of [[10,[C.red,C.yellow,C.red]],[16,[0x2c4f9e,0x2c4f9e,0x2c4f9e]]]){
+    B(x-0.08,x+0.08,0,9,96.9,97.1,0xd7dadb,true);
+    const fl=new Batch(); fl.box(0,1.9,0,0.32,-0.02,0.02,cols[0]); fl.box(0,1.9,0.32,0.95,-0.02,0.02,cols[1]); fl.box(0,1.9,0.95,1.25,-0.02,0.02,cols[2]);
+    const m=fl.mesh(worldMat); m.position.set(x+0.1,7.6,97); scene.add(m); flags.push(m);
+  }
+}
+
+/* ============ Perímetro exterior (doble valla + torres) ============ */
+function buildPerimeter(){
+  fence('x',PX0,PZ1,PZ0,6); fence('x',PX1,PZ1,PZ0,6); fence('z',PZ0,PX0,PX1,6); fence('z',PZ1,PX0,PX1,6);
+  fence('x',PX0+9,PZ1+9,PZ0-9,5); fence('x',PX1-9,PZ1+9,PZ0-9,5); fence('z',PZ0-9,PX0+9,PX1-9,5); fence('z',PZ1+9,PX0+9,PX1-9,5);
+  const towers=[[PX0,PZ0],[PX1,PZ0],[PX0,PZ1],[PX1,PZ1],[PX0,-160],[PX1,-160],[PX0,-350],[PX1,-350],[0,PZ1],[-50,PZ0],[50,PZ0]];
+  towers.forEach(([x,z],i)=>tower(x,z,i%2===0));
+  // Esclusa de entrada de vehículos en la valla (visible desde fuera)
+  sign('Perímetro exterior','Doble valla y camino de ronda',-PX0*0.0-40,5.6,PZ0+0.3,0,7,1,'warn');
+  zone({id:'ronda',title:'Camino de ronda',sub:'Entre la doble valla',x0:PX0-2,x1:PX1+2,z0:PZ1-2,z1:PZ0+2,late:true});
+}
+
+/* ============ Esclusa genérica (rastrillo de doble reja) ============ */
+function buildRastrillo(name,sub,zc,gap,mapName){
+  const x0=-12,x1=12,z0=zc-gap/2-9,z1=zc+gap/2+9,h=4.5;
+  const b=bBegin({short:name,name,x0,x1,z0,z1,h,map:mapName,def:'Esclusa'});
+  B(x0,x1,0,0.075,z0,z1,C.floorOff);
+  wallX(z1,x0,x1,h,C.facade,[[-4,4,3.4]],{lin:-1}); wallX(z0,x0,x1,h,C.facade,[[-4,4,3.4]],{lin:1});
+  wallZ(x0,z0,z1,h,C.facade,[],{lin:1}); wallZ(x1,z0,z1,h,C.facade,[],{lin:-1});
+  for (const x of [-5,5]){ B(x-0.15,x+0.15,0,1.0,z0,z1,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,z0,z0+2,C.wallIn,true); B(x-0.15,x+0.15,1.0,2.3,z1-2,z1,C.wallIn,true); GL(x-0.08,x+0.08,1.0,2.3,z0+2,z1-2,true); B(x-0.15,x+0.15,2.3,h,z0,z1,C.wallIn); }
+  B(-11.8,-9.8,0.72,0.77,zc-gap/2-4,zc-gap/2+3,C.wood,true); for (let i=0;i<3;i++){ const z=zc-gap/2-2.6+i*2.4; B(-11.5,-11.45,0.95,1.35,z,z+0.6,C.screen); }
+  sign(name,sub,0,h-0.55,z1+0.2,0,7,1,'inst'); sign(name,'Zona de acceso',0,h-0.55,z0-0.2,Math.PI,7,1,'inst');
+  roofBox(x0,x1,z0,z1,h);
+  b.rooms.push({name:'Esclusa',x0:-5,x1:5,z0,z1},{name:'Cabina del rastrillo',x0,x1:-5,z0,z1},{name:'Sala de cacheos',x0:5,x1,z0,z1});
+  bEnd();
+  const g1=gate(0,zc+gap/2,8,'x'), g2=gate(0,zc-gap/2,8,'x'); g1.partner=g2; g2.partner=g1;
+  npc({kind:'func',x:-10.6,z:zc,h:Math.PI/2,role:`Funcionario · ${name}`,lines:['Esto es una esclusa: las dos rejas nunca se abren a la vez. Acérquese a una y se abrirá cuando la otra esté cerrada.','Todo movimiento de personas y objetos queda registrado aquí.']});
+  return b;
+}
+
+/* ============ Comunicaciones Exteriores ============ */
+function buildComunicaciones(){
+  return corridorBuilding({short:'Comunicaciones',sub:'Oficina y sala de espera familiares',x0:-48,x1:-16,z0:60,z1:88,h:5.5,door:'east',hall:10,map:'Comunicaciones',hallName:'Sala de espera familiares',
+    a:[{name:'Locutorios',w:16,f:'locutorios'},{name:'Locutorio de abogados',label:'Abogados',w:8,f:'lawyer'}],
+    b:[{name:'Vis a vis familiar',label:'V. a V. familiar',w:9,f:'vavfam'},{name:'Vis a vis íntimo',label:'V. a V. íntimo',w:7,f:'vavint'},{name:'Oficina de comunicaciones',label:'Oficina',f:'office'}]});
+}
+
+/* ============ Oficinas: Régimen, Comisión Disciplinaria... ============ */
+function buildOficinas(){
+  return corridorBuilding({short:'Oficinas',sub:'Régimen · Disciplinaria · Dirección',x0:12,x1:46,z0:60,z1:88,h:6.5,door:'west',hall:10,map:'Oficinas',
+    a:[{name:'Dirección',w:11,f:'director'},{name:'Subdirección de Régimen',label:'Subdir. Régimen',w:11,f:'office'},{name:'Comisión Disciplinaria',label:'C. Disciplinaria',f:'meeting'}],
+    b:[{name:'Oficina de Régimen',w:11,f:'openoffice'},{name:'Junta de Tratamiento',label:'J. de Tratamiento',w:11,f:'meeting'},{name:'Oficina de Gestión',f:'office2'}]});
+}
+function buildPasarela(){
+  B(-16,12,3.1,3.3,71,77,C.steelDk,true); GL(-15.9,11.9,3.3,4.6,71.1,76.9,false); B(-16,12,4.6,4.8,71,77,C.parapet);
+  B(-16.3,-15.9,0,4.8,71,77,C.steelDk,true); B(11.9,12.3,0,4.8,71,77,C.steelDk,true);
+  sign('Pasarela acristalada',null,-2,5.1,73.9,0,4.5,0.75,'inst');
+}
+
+/* ============ Módulo de Ingresos ============ */
+function buildIngresos(){
+  return corridorBuilding({short:'Módulo de Ingresos',sub:'Ingresos y salidas',x0:-46,x1:-14,z0:32,z1:54,h:4.5,door:'east',hall:7,cw:2.6,map:'Ingresos',
+    a:[{name:'Identificación y reseña',label:'Identificación',w:9,f:'ident'},{name:'Cacheo y registro',label:'Cacheo',f:'search'}],
+    b:[{name:'Consulta médica de ingresos',label:'Consulta médica',w:8,f:'medical'},{name:'Celdas de ingreso',w:8,f:'holding'},{name:'Depósito de pertenencias',label:'Depósito',f:'storage'}]});
+}
+
+/* ============ Cafetería ============ */
+function buildCafeteria(){
+  const b=bBegin({short:'Cafetería',x0:-8,x1:8,z0:38,z1:52,h:3.6,map:'Cafetería'});
+  B(-8,8,0,0.075,38,52,C.floorOff);
+  wallX(52,-8,8,3.6,C.facade2,[[-2.5,2.5,2.6]],{lin:-1}); wallX(38,-8,8,3.6,C.facade2,[],{lin:1});
+  wallZ(-8,38,52,3.6,C.facade2,[],{lin:1}); wallZ(8,38,52,3.6,C.facade2,[],{lin:-1});
+  winsZ(8,1,39,51,[[1.1,2.4]],3,1.6); winsZ(-8,-1,39,51,[[1.1,2.4]],3,1.6);
+  const k=kit(B); k.table(-5,42,2,1.4,0xd9d4c6); k.chair(-4,41.4,-1); k.chair(-2.6,41.4,-1); k.chair(-4,43.5,1); k.chair(-2.6,43.5,1);
+  k.table(1,42,2,1.4,0xd9d4c6); k.chair(2,41.4,-1); k.chair(3.4,41.4,-1); k.chair(2,43.5,1); k.chair(3.4,43.5,1);
+  B(-7.6,-4,0.72,1.0,47,50.6,0xcfcac0,true); B(-7.4,-4.2,0,0.72,47.2,50.4,C.steel);
+  sign('Cafetería',null,0,3.05,52.2,0,4,0.7,'inst');
+  roofBox(-8,8,38,52,3.6);
+  b.rooms.push({name:'Cafetería',x0:-8,x1:8,z0:38,z1:52});
+  bEnd();
+  npc({kind:'func',x:-6,z:44,h:Math.PI/2,role:'Cafetería',lines:['Aquí puede tomar algo el personal y las familias que esperan comunicación. No es una dependencia regulada específicamente, es un servicio de apoyo del centro.']});
+  return b;
+}
+
+/* ============ Plaza interior y Torre ============ */
+function buildPlazaInterior(){
+  B(-11,11,0,0.06,-6,22,C.paving,false); mapRect(-11,11,-6,22,'paving');
+  B(-9.5,9.5,0.06,0.09,-4,20,C.paving);
+  for (let a=0;a<Math.PI*2;a+=Math.PI/8) B(Math.cos(a)*8-0.15,Math.cos(a)*8+0.15,0.09,0.14,8+Math.sin(a)*8-0.15,8+Math.sin(a)*8+0.15,C.courtLine);
+  zone({id:'plaza',title:'Plaza interior',sub:'Distribuidor del recinto de seguridad',x0:-11,x1:11,z0:-6,z1:22});
+  tower(9,-3,false);
+  sign('Torre de control',null,9-1.85,10.6,-3,0,3.6,0.7,'inst');
+}
+
+/* ============ Sociocultural: gimnasio, salón de actos, polideportivo ============ */
+function buildSociocultural(){
+  const x0=20,x1=66,z0=-15,z1=35,h=8;
+  const b=bBegin({short:'Sociocultural',x0,x1,z0,z1,h,map:'Sociocultural',def:'Pabellón sociocultural'});
+  B(x0,x1,0,0.075,z0,z1,0xb98b5a);
+  wallX(z0,x0,x1,h,C.facade,[],{lin:1}); wallX(z1,x0,x1,h,C.facade,[[38,42,2.8]],{lin:-1});
+  wallZ(x0,z0,z1,h,C.facade,[],{lin:1}); wallZ(x1,z0,z1,h,C.facade,[],{lin:-1});
+  wallX(z0+14,x0,x1,3.2,C.wallIn,[[26,27.4],[48,49.4]],{t:0.2}); wallZ(x0+18,z0,z0+14,3.2,C.wallIn,[],{t:0.2}); wallZ(x0+38,z0,z0+14,3.2,C.wallIn,[],{t:0.2});
+  for (const [a,bb,c1,d1] of [[x0+2,x1-2,z1-24,z1-23.88],[x0+2,x1-2,z1-1.9,z1-1.78],[x0+2,x0+2.12,z1-24,z1-1.9],[x1-2.12,x1-2,z1-24,z1-1.9],[(x0+x1)/2-0.06,(x0+x1)/2+0.06,z1-24,z1-1.9]]) B(a,bb,0.075,0.085,c1,d1,C.courtLine);
+  for (let i=0;i<4;i++){ B(x0+2,x1-2,0,0.45*(i+1),z1-3.4-0.8*i,z1-2.3,i===0?0x7d8b95:null,i===0); if (i) B(x0+2,x1-2,0.45*(i+1),0.45*(i+1)+0.05,z1-3.4-0.8*i,z1-3.35-0.8*i,i%2?0x2f5d9a:0xd05a2a); }
+  const k=kit(B); for (let x=x0+3;x<x0+16;x+=1.2) B(x,x+1.0,0,1.9,z0+2.2,z0+2.7,0x5c7da0,false);
+  addCol(x0+3,x0+16,z0+2.2,z0+2.7); B(x0+5,x0+14,0,0.45,z0+5,z0+5.5,C.wood,true);
+  sign('Sociocultural','GYM · Salón de actos · Polideportivo',x0-0.18,4.4,10,-Math.PI/2,6.5,1.1,'inst');
+  B(x0,x0-2.2,2.9,3.1,6,14,C.steelDk);
+  roofBox(x0,x1,z0,z1,h,0x5f7482);
+  b.rooms.push({name:'Gimnasio',x0,x1:x0+18,z0,z1:z0+14},{name:'Salón de actos',x0:x0+18,x1:x0+38,z0,z1:z0+14},{name:'Vestuarios',x0:x0+38,x1,z0,z1:z0+14},{name:'Pista polideportiva',x0,x1,z0:z0+14,z1});
+  furnish('auditorium',{x0:x0+18,W:20,D:14,near:z0+14,far:z0,dir:-1});
+  bEnd();
+  npc({kind:'staff',x:x0+2,z:z0+7,h:Math.PI/2,role:'Monitor deportivo',lines:['El deporte, el gimnasio y el salón de actos son instalaciones de uso común: los módulos las usan por turnos, sin coincidir.',"LOGP art. 13: los centros deben contar con las instalaciones necesarias para el deporte, la cultura y el ocio."]});
+  for (let i=0;i<5;i++) npc({kind:'civ',x:x0+8+i*8,z:z0+22,wander:{x0:x0+3,x1:x1-3,z0:z0+16,z1:z1-3},role:'Interno',lines:INMATE,run:i%2===0});
+  return b;
+}
+
+/* ============ Piscina ============ */
+function buildPiscina(){
+  const x0=20,x1=58,z0=-55,z1=-25,h=4;
+  const b=bBegin({short:'Piscina',sub:'Vestuarios',x0,x1,z0,z1,h,map:'Piscina',kind:'mod'});
+  B(x0,x1,0,0.075,z0,z1,0xd8d2c4);
+  wallX(z0,x0,x1,h,C.facade2,[],{lin:1}); wallX(z1,x0,x1,h,C.facade2,[[16,20,2.6]],{lin:-1});
+  wallZ(x0,z0,z1,h,C.facade2,[],{lin:1}); wallZ(x1,z0,z1,h,C.facade2,[],{lin:-1});
+  winsZ(x0,-1,z0+2,z1-2,[[1.2,2.4]],3.2,1.4); winsZ(x1,1,z0+2,z1-2,[[1.2,2.4]],3.2,1.4);
+  sign('Piscina',null,x0+9,h-0.9,z1+0.2,0,4,0.75,'inst');
+  roofBox(x0,x1,z0,z1,h);
+  b.rooms.push({name:'Vestuarios',x0,x1,z0,z1});
+  bEnd();
+  B(64,98,0.02,0.18,z0,z1,0x3f86c6); B(63.6,98.4,0,0.3,z0-0.4,z0,C.paving,true); B(63.6,98.4,0,0.3,z1,z1+0.4,C.paving,true); B(63.6,64,0,0.3,z0,z1,C.paving,true); B(98,98.4,0,0.3,z0,z1,C.paving,true);
+  for (let x=66;x<96;x+=4) B(x,x+0.06,0.18,0.2,z0+1,z1-1,0xffffff);
+  fence('x',64,z1-1,z0+1,1.1); fence('x',98,z1-1,z0+1,1.1);
+  mapRect(64,98,z0,z1,'patio');
+  zone({id:'piscina',title:'Piscina',sub:'Recreo y actividades acuáticas',x0:64,x1:98,z0:z1,z1:z0});
+  npc({kind:'civ',x:80,z:-40,wander:{x0:66,x1:96,z0:z0+3,z1:z1-3},role:'Interno',lines:INMATE});
+  return b;
+}
+
+/* ============ Oficinas de Tratamiento: psicólogos, trabajo social, educadores ============ */
+function buildTratamiento(){
+  const b=corridorBuilding({short:'Oficinas de Tratamiento',sub:'Psicólogos · Trabajo Social · Educadores',x0:74,x1:112,z0:-5,z1:35,h:4.5,door:'west',hall:8,cw:2.8,map:'Tratamiento',
+    a:[{name:'Psicología',w:10,f:'office2'},{name:'Trabajo Social',w:10,f:'office2'},{name:'Educadores',f:'office2'}],
+    b:[{name:'Pedagogía',w:10,f:'office'},{name:'Sala de entrevistas',label:'Entrevistas',w:10,f:'lawyer'},{name:'Archivo de expedientes',label:'Archivo',f:'storage'}]});
+  npc({kind:'staff',x:80,z:5,h:Math.PI/2,role:'Psicóloga · Equipo Técnico',lines:['El Equipo Técnico (juristas, psicólogos, educadores, trabajadores sociales y médico) hace el estudio científico de cada interno y propone su clasificación y su programa de tratamiento.','El tratamiento es voluntario: nadie puede ser obligado a participar. LOGP arts. 59 a 72.']});
+  npc({kind:'staff',x:96,z:8,h:-Math.PI/2,role:'Trabajador social',lines:['Preparamos la salida: permisos, contacto con la familia, informes para la Junta de Tratamiento y coordinación con los recursos sociales del exterior.']});
+  return b;
+}
+
+/* ============ Jardín, agrícola, cursos de jardinería ============ */
+function buildJardin(){
+  const x0=74,x1=112,z0=-50,z1=-10;
+  B(x0,x1,0,0.05,z0,z1,0x7a9a5a); mapRect(x0,x1,z0,z1,'field');
+  for (let x=x0+2;x<x1-2;x+=4) for (let z=z0+2;z<z1-2;z+=3) B(x,x+2.6,0.05,0.18,z,z+1.6,(x*7+z*3|0)%3?0x4f7a3e:0x6a9a4e,false);
+  B(x0+2,x0+10,0,2.2,z0+2,z0+9,0xdfeef2,true); GL(x0+2.1,x0+9.9,0.2,2.1,z0+2.1,z0+8.9,false);
+  sign('Jardín · cursos de jardinería',null,x0+0.2,2.4,z0+5.5,Math.PI/2,3.6,0.75,'green');
+  npc({kind:'staff',x:x0+14,z:z1-6,h:0,role:'Monitor de jardinería',lines:['El destino de jardinería es un trabajo remunerado más: cultivamos y mantenemos las zonas verdes del centro, y también se imparten cursos de formación agrícola.']});
+  npc({kind:'civ',x:x0+20,z:z0+20,wander:{x0:x0+4,x1:x1-4,z0:z0+4,z1:z1-4},role:'Interno · Jardinería',lines:INMATE});
+  zone({id:'jardin',title:'Jardín agrícola',sub:'Zona verde y cursos de jardinería',x0,x1,z0,z1});
+}
+
+/* ============ Enfermería ============ */
+function buildEnfermeria(){
+  return corridorBuilding({short:'Módulo Enfermería',sub:'Sanidad penitenciaria',x0:-18,x1:42,z0:-515,z1:-460,h:7,door:'east',hall:10,map:'Enfermería',
+    a:[{name:'Consulta médica 1',label:'Consulta 1',w:8,f:'medical'},{name:'Consulta médica 2',label:'Consulta 2',w:8,f:'medical'},{name:'Sala de curas',w:8,f:'medical2'},{name:'Odontología',w:8,f:'dentist'},{name:'Radiología',f:'xray'}],
+    b:[{name:'Farmacia',w:10,f:'pharmacy'},{name:'Control de enfermería',label:'Control enfermería',w:8,f:'office'},{name:'Hospitalización',f:'beds'}]});
+}
+
+/* ============ Cocina, Lavandería y Economato Central ============ */
+function buildCocina(){
+  const b=corridorBuilding({short:'Cocina · Lavandería · Economato',sub:'Servicios generales',x0:48,x1:118,z0:-530,z1:-460,h:7,door:'west',hall:10,cw:4,map:'Cocina · Economato',kind:'svc',
+    a:[{name:'Cocina central',w:28,f:'kitchen'},{name:'Cámaras frigoríficas',label:'Cámaras',w:14,f:'cold'},{name:'Panadería',w:16,f:'bakery'},{name:'Almacén general',f:'storage'}],
+    b:[{name:'Lavandería',w:24,f:'laundry'},{name:'Economato central',w:16,f:'storage'},{name:'Ropería',f:'storage'}]});
+  // Muelle de carga y descarga de camiones de cocina y alimentos, en el muro este
+  B(118,120.2,0,0.9,-500,-478,C.steel,true); B(117.9,118.1,0.9,3.4,-500,-478,C.wallIn); GL(117.8,118,0.9,3.0,-497,-481,false);
+  B(118,124,0,0.06,-502,-476,C.paving,false); sign('Carga y descarga','Cocina y alimentos',119,3.6,-489,Math.PI/2,4,0.85,'yellow');
+  B(122,124.2,0,2.4,-497,-481,0x2f6fb0,true); npc({kind:'staff',x:122,z:-489,h:-Math.PI/2,role:'Zona de carga · Cocina',lines:['Por aquí entran los camiones con los alimentos. Descargan en el muelle y todo pasa a las cámaras frigoríficas y al almacén antes de ir a cocina.']});
+  npc({kind:'civ',x:60,z:-476,wander:{x0:52,x1:114,z0:-527,z1:-478},role:'Interno · Cocina',lines:['Salen de aquí unos mil menús al día, en carros térmicos para cada módulo.','El trabajo en cocina, panadería o lavandería es un destino remunerado, LOGP art. 21.']});
+  return b;
+}
+
+/* ============ Talleres ============ */
+function buildTalleres(){
+  const b=corridorBuilding({short:'Talleres',sub:'Empresas · Mantenimiento',x0:48,x1:130,z0:-600,z1:-535,h:8,door:'west',hall:10,cw:4,map:'Talleres',kind:'svc',
+    a:[{name:'Taller de carpintería',label:'Carpintería',w:28,f:'wood'},{name:'Taller de manipulados',label:'Empresa: manipulados',w:26,f:'pack'}],
+    b:[{name:'Taller de confección',label:'Confección',w:28,f:'sew'},{name:'Mantenimiento',w:26,f:'workshop'},{name:'Almacén de talleres',label:'Almacén',f:'storage'}]});
+  B(130,132.2,0,1.0,-582,-560,C.steel,true); B(129.9,130.1,1.0,3.8,-582,-560,C.wallIn); GL(129.8,130,1.0,3.4,-579,-563,false);
+  B(130,137,0,0.06,-584,-558,C.paving,false); sign('Carga y descarga','Camiones de talleres',131,4.0,-571,Math.PI/2,4,0.85,'yellow');
+  npc({kind:'staff',x:52,z:-540,h:0,role:'Maestro de taller',lines:['Los internos que trabajan en talleres productivos tienen una relación laboral de carácter especial, gestionada por Trabajo Penitenciario y Formación para el Empleo.','LOGP arts. 26 a 35 y RD 782/2001.']});
+  for (let i=0;i<5;i++) npc({kind:'civ',x:54+i*14,z:-585,wander:{x0:50,x1:126,z0:-596,z1:-560},role:'Interno · Taller',lines:INMATE});
+  return b;
+}
+
+/* ============ Campo de fútbol ============ */
+function buildCampoFutbol(){
+  const x0=-100,x1=-25,z0=-462,z1=-560;
+  B(x0,x1,0,0.06,z0,z1,0x6f9a4e); mapRect(x0,x1,z0,z1,'field');
+  for (const [a,bb,c1,d1] of [[x0+2,x1-2,z0-2,z0-1.85],[x0+2,x1-2,z1+1.85,z1+2],[x0+2,x0+2.15,z0-2,z1+2],[x1-2.15,x1-2,z0-2,z1+2],[(x0+x1)/2-0.06,(x0+x1)/2+0.06,z0-2,z1+2]]) B(a,bb,0.06,0.07,c1,d1,C.courtLine);
+  for (const [gx,dz] of [[x0,-2],[x1,-2]]){ FENCE.wall(gx+ (gx===x0?2:-2)*0,z0-14,gx+(gx===x0?2:-2)*0,z0-6,0,2.4); }
+  B(x0+30,x0+34,0,2.44,z0-2,z0-1.85,C.white,true); B(x1-34,x1-30,0,2.44,z0-2,z0-1.85,C.white,true);
+  sign('Campo de fútbol',null,(x0+x1)/2,3.6,z0+1.4,0,6,0.9,'inst');
+  zone({id:'futbol',title:'Campo de fútbol',sub:'Zona extramodular',x0,x1,z0:z1,z1:z0});
+  for (let i=0;i<8;i++) npc({kind:'civ',x:x0+8+((i*97)%(x1-x0-16)),z:z0-20-((i*53)%(z0-z1-40)),wander:{x0:x0+4,x1:x1-4,z0:z1+4,z1:z0-4},role:'Interno',lines:INMATE,run:true});
+}
+
+/* ============ Exterior: garita, parkings, rotonda ============ */
+function buildExterior(){
+  const R=rng(11);
+  B(6,10,0,2.6,126,130,0xefe9dc,true); B(5.9,10.1,2.6,2.9,125.9,130.1,0x7b6f63); sign('Garita de seguridad',null,8,3.1,130.2,0,3.2,0.7,'gc');
+  npc({kind:'gc',x:8,z:127.5,h:Math.PI,role:'Guardia Civil · Garita de seguridad',lines:['La vigilancia del perímetro exterior corresponde a la Guardia Civil. Dentro del recinto, la seguridad es de los funcionarios de Instituciones Penitenciarias.']});
+  const cols=[0x9c2f2f,0x2f4f7a,0xd9d6cf,0x3a3f44,0x6b7d5c,0xb8b3a8,0x1f2a3a,0x8a6f4a];
+  for (let i=0;i<16;i++){ const x=-62+i*3.6+R()*0.4; if (R()<0.7) car(x,101,cols[(i*3)%cols.length]); if (R()<0.55) car(x,142,cols[(i*5+1)%cols.length]); }
+  sign('Parking familiares',null,-64,3.4,121,Math.PI/2,4.2,0.8,'white');
+  // Parking de funcionarios, fuera de la valla este, junto a Tratamiento
+  B(145,182,0,0.03,-10,42,C.paving,false); mapRect(145,182,-10,42,'paving'); for (let z=-6;z<38;z+=6) B(145,181,0.03,0.04,z,z+0.12,C.line);
+  for (let i=0;i<10;i++){ const z=-6+i*4.6+R()*0.3; if (R()<0.75) car(163,z,cols[(i*7)%cols.length]); }
+  sign('Parking funcionarios',null,145,3.4,16,-Math.PI/2,4.2,0.8,'white');
+  npc({kind:'func',x:150,z:16,h:Math.PI/2,role:'Acceso de personal',lines:['Los funcionarios entramos por este lateral, cerca de las oficinas de tratamiento, sin cruzar la puerta principal de familias y visitas.']});
+  for (let x=-100;x<135;x+=18+R()*10){ if (Math.abs(x)<10) continue; tree(x,PZ0+30+R()*10,0.8+R()*0.5); }
+  for (let z=PZ0-30;z>PZ1+30;z-=30+R()*15){ tree(PX0-10-R()*10,z,0.9+R()*0.4); tree(PX1+10+R()*15,z,0.9+R()*0.4); }
+  for (let z=95;z<148;z+=22) lamp(-9.6,z,1);
+  for (let z=PZ0-20;z>-420;z-=24) if (Math.abs(z-8)>10) lamp(-9.5,z,1);
+}
+const gateMat=new THREE.MeshLambertMaterial({vertexColors:true});
+function gate(cx,cz,w,axis){
+  const bt=new Batch(), h=3.1;
+  for (let a=-w/2+0.05;a<w/2;a+=0.14) bt.box(a,a+0.045,0.05,h,-0.03,0.03,C.bar);
+  bt.box(-w/2,w/2,h-0.12,h,-0.06,0.06,C.steel); bt.box(-w/2,w/2,1.1,1.18,-0.05,0.05,C.steel); bt.box(-w/2,w/2,0.05,0.14,-0.05,0.05,C.steel);
+  const m=bt.mesh(gateMat); const grp=new THREE.Group(); grp.add(m); grp.position.set(cx,0,cz); if (axis==='z') grp.rotation.y=Math.PI/2; scene.add(grp);
+  const g={m:grp,cx,cz,w,axis,open:0,partner:null};
+  g.col = axis==='x' ? addCol(cx-w/2,cx+w/2,cz-0.1,cz+0.1,{gate:g}) : addCol(cx-0.1,cx+0.1,cz-w/2,cz+w/2,{gate:g});
+  gates.push(g); return g;
+}
+
+/* ============ Módulo residencial ============ */
+const mods=[];
+function buildModule(n,c,south){
+  const L=81, s=south?1:-1, zb=c+2*s;
+  const X=u=>-12-u, Z=v=>zb+s*v;
+  const M=(u0,u1,y0,y1,v0,v1,col,solid)=>B(X(u0),X(u1),y0,y1,Z(v0),Z(v1),col,solid);
+  const MG=(u0,u1,y0,y1,v0,v1,solid)=>GL(X(u0),X(u1),y0,y1,Z(v0),Z(v1),solid);
+  const WU=(v,u0,u1,h,col,gaps=[],o={})=>wallX(Z(v),X(u0),X(u1),h,col,gaps.map(g=>[X(g[0]),X(g[1]),g[2]]),o.lin?Object.assign({},o,{lin:o.lin*s}):o);
+  const WV=(u,v0,v1,h,col,gaps=[],o={})=>wallZ(X(u),Z(v0),Z(v1),h,col,gaps.map(g=>[Z(g[0]),Z(g[1]),g[2]]),o.lin?Object.assign({},o,{lin:-o.lin}):o);
+  const b=bBegin({short:'Módulo '+n,name:'Módulo residencial '+n,x0:X(L),x1:X(0),z0:Z(0),z1:Z(14),h:7,map:'M'+n,kind:'mod',def:'Interior'});
+  b.module=n;
+  const R=(name,u0,u1,v0,v1)=>b.rooms.push({name,x0:Math.min(X(u0),X(u1)),x1:Math.max(X(u0),X(u1)),z0:Math.min(Z(v0),Z(v1)),z1:Math.max(Z(v0),Z(v1))});
+  M(0,L,0,0.075,0,14,C.floor);
+  M(29.5,76.3,0.075,0.08,0,5,C.floorCell); M(29.5,76.3,0.075,0.08,9,14,C.floorCell); M(76.3,L,0.075,0.085,0,14,C.tile);
+  // Muros exteriores
+  WU(0,0,26,4.2,C.facade2,[],{lin:1}); WU(0,26,L,7,C.facade2,[],{lin:1});
+  WU(14,0,26,4.2,C.facade2,[[20,22.5,2.6]],{lin:-1}); WU(14,26,L,7,C.facade2,[],{lin:-1});
+  WV(0,0,14,4.2,C.facade2,[[8.5,11,2.6]],{lin:1}); WV(L,0,14,7,C.facade2,[],{lin:-1});
+  M(25.85,26.15,4.2,7,0,14,C.facade2);
+  for (const v of [-0.2,14.2]) { for (const [a,bb] of (v>0?[[0,20],[22.5,L]]:[[0,L]])) M(a,bb,0,0.6,v-0.03,v+0.03,C.plinth); M(26,L,3.3,3.5,v-0.04,v+0.04,C.band); }
+  // Particiones
+  WV(8,0,14,3.2,C.wallIn,[[9,11,2.3]],{t:0.2});
+  WV(26,0,14,4.2,C.wallIn,[[5,9,3.0]],{t:0.3});
+  // Office de funcionarios (acristalado)
+  MG(0.2,5.5,0.9,2.6,4.95,5.05,true); MG(6.6,7.9,0.9,2.6,4.95,5.05,true);
+  M(0.2,5.5,0,0.9,4.9,5.1,C.steel,true); M(6.6,7.9,0,0.9,4.9,5.1,C.steel,true); M(0.1,8,2.6,3.2,4.9,5.1,C.steel);
+  M(1,4.5,0.72,0.77,0.4,1.2,C.wood,true); M(1.5,2.05,0.95,1.3,1.1,1.15,C.screen); M(2.8,3.35,0.95,1.3,1.1,1.15,C.screen); M(6.2,7.6,0,1.9,0.2,0.65,0x8d949a,true);
+  M(7.7,7.85,1.3,2.1,1.5,3.2,0x5a3f2a);
+  // Vestíbulo
+  M(1,4.5,0,0.45,13.3,13.8,C.chair,true); M(1.2,4.3,1.3,2.2,13.82,13.86,0x5a7560);
+  // Comedor
+  M(9,16,0,0.95,0.3,1.1,C.steel,true); M(9,16,0.95,1.0,0.25,1.2,0xc7cdd1);
+  for (const u of [9.4,10.6]) M(u,u+0.9,0,1.05,1.5,2.1,C.steel,true);
+  for (const u of [11,14.6]) for (const v of [4,7.4,11.9]){ M(u-0.65,u+0.65,0.72,0.78,v-0.45,v+0.45,0xd9d4c6,true); M(u-0.08,u+0.08,0,0.72,v-0.08,v+0.08,C.steelDk);
+    for (const du of [-0.35,0.35]) for (const dv of [-0.85,0.85]) M(u+du-0.18,u+du+0.18,0.42,0.47,v+dv-0.18,v+dv+0.18,C.steel); }
+  // Sala de día
+  M(25.7,25.85,1.8,2.7,10.4,12.4,C.screen); M(25.68,25.7,1.9,2.6,10.5,12.3,0x3d6f8e);
+  M(21,21.6,0,0.45,9.4,12.4,C.chair,true); M(21,21.1,0.45,0.95,9.4,12.4,C.chair); M(18.4,19,0,0.45,9.4,12.4,C.chair,true); M(18.4,18.5,0.45,0.95,9.4,12.4,C.chair);
+  M(18.3,19.7,0.72,0.77,2.3,3.5,0xd9d4c6,true); M(18.95,19.05,0,0.72,2.85,2.95,C.steelDk);
+  M(22,24.4,0,1.05,0.2,0.65,C.wood,true); M(21.9,24.5,1.05,2.3,0.16,0.2,C.glassDk);
+  for (let i=0;i<3;i++) M(25.62,25.85,1.2,1.7,1.3+i*1.1,1.75+i*1.1,C.black);
+  sign('Economato',null,X(23.2),2.6,Z(0.2),s>0?0:Math.PI,1.8,0.4,'door');
+  sign('Teléfonos',null,X(25.83),2.35,Z(2.4),-Math.PI/2,1.6,0.38,'door');
+  // Galería: escalera, pasarelas y planta primera
+  for (let i=0;i<10;i++) M(26.3+i*0.3,26.6+i*0.3,0,0.33*(i+1),0.3,1.5,C.parapet);
+  addCol(X(26.3),X(29.3),Z(0.3),Z(1.5));
+  M(26,29.5,3.3,3.5,0.3,5,C.floor);
+  M(26,76.3,3.3,3.5,5,6.2,C.floor); M(26,76.3,3.3,3.5,7.8,9,C.floor);
+  M(29.5,76.3,3.3,3.5,0,5,C.floor); M(29.5,76.3,3.3,3.5,9,14,C.floor);
+  for (let u=26.2;u<76.3;u+=2.6){ M(u,u+0.06,3.5,4.5,6.14,6.2,C.steel); M(u,u+0.06,3.5,4.5,7.8,7.86,C.steel); }
+  M(26,76.3,4.45,4.55,6.12,6.22,C.steel); M(26,76.3,4.45,4.55,7.78,7.88,C.steel);
+  M(50,52.2,3.3,3.5,6.2,7.8,C.floor);
+  // Celdas (18 por lado en planta baja; la planta primera repite la serie)
+  let num=1;
+  for (const side of [0,1]){
+    const V=side===0?(d=>d):(d=>14-d), cwv=side===0?5:9, gaps=[];
+    for (let k=0;k<18;k++){
+      const ua=29.5+2.6*k;
+      WV(ua,V(0),V(5),3.3,C.wallIn,[],{t:0.16});
+      M(ua-0.08,ua+0.08,3.5,6.6,V(0),V(5),C.wallIn);
+      gaps.push([ua+1.5,ua+2.4,2.1]);
+      const P=(u0,u1,d0,d1,y0,y1,col,solid)=>M(ua+u0,ua+u1,y0,y1,V(d0),V(d1),col,solid);
+      P(0.12,0.98,0.25,2.25,0.35,0.5,C.steel,true); P(0.14,0.96,0.27,2.23,0.5,0.62,C.mattress); P(0.2,0.9,0.3,0.7,0.62,0.72,C.white);
+      P(0.12,0.98,0.25,2.25,1.45,1.55,C.steel); P(0.14,0.96,0.27,2.23,1.55,1.67,C.blanket);
+      for (const [a,bb] of [[0.12,0.18],[0.92,0.98]]) for (const [c2,d2] of [[0.25,0.31],[2.19,2.25]]) P(a,bb,c2,d2,0,1.7,C.steel);
+      P(2.0,2.45,0.2,0.75,0,0.45,0xd8dde0,true); P(1.45,1.9,0.18,0.5,0.75,0.9,0xd8dde0);
+      P(0.12,0.8,3.2,4.2,0.72,0.77,C.wood,true); P(0.15,0.2,3.25,4.15,0,0.72,C.woodDk); P(1.0,1.35,3.5,3.85,0,0.45,C.steel);
+      P(1.5,2.45,0.16,0.42,1.85,1.9,C.wood);
+      for (const y of [[1.5,2.6],[4.7,5.8]]){ P(1.05,1.55,-0.2,-0.16,y[0],y[1],C.glassDk); P(1.18,1.22,-0.24,-0.2,y[0],y[1],C.bar); P(1.36,1.4,-0.24,-0.2,y[0],y[1],C.bar); }
+      P(1.05,1.55,0.18,0.2,1.5,2.6,C.winIn);
+      P(2.45,3.35,5.1,5.16,0.02,2.1,C.steel); P(2.45,3.35,5.1,5.16,3.52,5.6,C.steel);
+      const cname=`Celda ${num} · planta baja`; R(cname,ua,ua+2.6,V(0),V(5)); num++;
+    }
+    WU(cwv,29.5,76.3,3.3,C.wallIn,gaps,{t:0.2});
+    WU(cwv,29.5,76.3,3.1,C.wallIn,gaps.map(g=>[g[0],g[1],2.1]),{t:0.2,y0:3.5,solid:false});
+  }
+  // Duchas
+  WV(76.3,0,14,3.3,C.wallIn,[[5.5,8.5,2.3]],{t:0.2});
+  for (let v=1.2; v<13; v+=1.8){ M(L-0.6,L-0.3,2.0,2.1,v+0.7,v+0.9,C.steel); if (v>1.3) M(L-1.3,L-0.2,0,2.0,v-0.03,v+0.03,0xdfe6e8,true); }
+  M(77.6,78.6,0,0.45,5.6,8.4,C.wood,true);
+  // Ventanas de comedor y sala de día
+  for (const [u0,u1,v] of [[9.5,16,0],[9.5,16,14],[17.5,19.6,14],[23.2,25.4,14],[17.5,21.5,0]]){
+    const o=v===0?-1:1; M(u0,u1,1.2,2.6,v+o*0.16,v+o*0.2,C.glassDk); M(u0,u1,1.2,2.6,v-o*0.18,v-o*0.2,C.winIn);
+    for (let u=u0+0.2;u<u1;u+=0.3) M(u,u+0.04,1.2,2.6,v+o*0.2,v+o*0.24,C.bar);
+  }
+  // Cubiertas
+  ROOF(X(-0.15),X(26.15),4.2,4.45,Z(-0.15),Z(14.15),C.roof);
+  ROOF(X(25.85),X(L+0.15),7,7.25,Z(-0.15),Z(14.15),C.roof);
+  ROOF(X(30),X(75),7.25,7.5,Z(6),Z(8),0x9fc0cc);
+  for (const [u0,u1,y] of [[-0.15,26.15,4.45],[25.85,L+0.15,7.25]]){ ROOF(X(u0),X(u1),y,y+0.5,Z(-0.15),Z(0.15),C.parapet); ROOF(X(u0),X(u1),y,y+0.5,Z(13.85),Z(14.15),C.parapet); }
+  ROOF(X(-0.15),X(0.15),4.45,4.95,Z(-0.15),Z(14.15),C.parapet); ROOF(X(L-0.15),X(L+0.15),7.25,7.75,Z(-0.15),Z(14.15),C.parapet);
+  sign('Módulo '+n,'Zona residencial',X(0)+0.18,3.4,Z(9.75),Math.PI/2,3.2,0.95,'inst');
+  sign('Office',null,X(4),2.85,Z(5.12),s>0?0:Math.PI,1.4,0.36,'door');
+  sign('Comedor',null,X(8.12),2.7,Z(10),Math.PI/2,1.6,0.38,'door');
+  sign('Galería',null,X(25.84),3.4,Z(7),Math.PI/2,1.8,0.4,'door');
+  sign('Duchas',null,X(76.18),2.6,Z(7),Math.PI/2,1.4,0.36,'door');
+  R('Office de funcionarios',0,8,0,5); R('Vestíbulo',0,8,5,14); R('Comedor',8,17,0,14); R('Sala de día',17,26,0,14); R('Galería · escalera',26,29.5,0,14);
+  R('Galería · planta baja',29.5,76.3,5,9); R('Duchas',76.3,L,0,14);
+  bEnd();
+  // Patio
+  M(0,L,0,0.065,14.15,40,C.patio);
+  WV(0,14,40,5,C.patioWall); WV(L,14,40,5,C.patioWall); WU(40,0,L,5,C.patioWall);
+  hm(X(0)-0.3,X(0)+0.3,Z(14),Z(40),5); hm(X(L)-0.3,X(L)+0.3,Z(14),Z(40),5); hm(X(0),X(L),Z(40)-0.3,Z(40)+0.3,5);
+  M(0,L,5,5.9,39.9,40.1,C.steelDk); M(-0.1,0.1,5,5.9,14,40,C.steelDk); M(L-0.1,L+0.1,5,5.9,14,40,C.steelDk);
+  for (const [a,bb,c1,d1] of [[38,52,15,15.12],[38,52,38.88,39],[38,38.12,15,39],[51.88,52,15,39],[38,52,26.94,27.06]]) M(a,bb,0.065,0.075,c1,d1,C.courtLine);
+  for (const v of [15.2,38.8]){ const d=v<27?1:-1; M(44.9,45.1,0,3.05,v-0.1*d,v+0.1*d,C.steel,true); M(44.1,45.9,2.9,3.95,v+0.1*d,v+0.15*d,C.white); M(44.8,45.2,3.05,3.09,v+0.15*d,v+0.55*d,0xd05a2a); }
+  M(60,L,3.1,3.25,14,21,0x8c8f8f); for (const u of [60.2,67,74,80.5]) M(u,u+0.25,0,3.1,20.7,20.95,C.steel,true);
+  M(62,67,0,0.45,15,15.5,C.wood,true); M(69,74,0,0.45,15,15.5,C.wood,true);
+  M(3,3.5,0,1.0,15,15.4,C.steel,true); M(18,20.7,0.72,0.76,28,29.5,0x2e6b4f,true); M(19.33,19.37,0.76,0.92,28,29.5,C.white); M(19.2,19.5,0,0.72,28.6,28.9,C.steelDk);
+  for (const u of [8,24,62]) M(u,u+4,0,0.45,39.3,39.8,C.concrete,true);
+  sign('Patio · Módulo '+n,null,X(0)+0.18,4.2,Z(27),Math.PI/2,4,0.7,'inst');
+  const px0=Math.min(X(0),X(L)), px1=Math.max(X(0),X(L)), pz0=Math.min(Z(14),Z(40)), pz1=Math.max(Z(14),Z(40));
+  mapRect(px0,px1,pz0,pz1,'patio');
+  zone({id:'patio'+n,patio:true,module:n,title:'Módulo '+n,sub:'Patio',x0:px0,x1:px1,z0:pz0,z1:pz1});
+  const gt=gate(X(26),Z(7),4,'z');
+  const md={n,b,X,Z,s,L,patio:{x0:px0+2,x1:px1-2,z0:pz0+2,z1:pz1-2},gate:gt};
+  mods[n]=md;
+  // Personas
+  npc({kind:'func',x:X(3),z:Z(2.2),h:s>0?0:Math.PI,role:'Funcionario del módulo '+n,lines:['Desde el office controlamos el módulo: recuentos, apertura y cierre de celdas y todos los movimientos de internos.','Las 72 celdas están en dos plantas: 36 abajo y 36 arriba. La reja de la galería se abre al acercarse.','Los internos de este módulo no se cruzan con los de otros: cada módulo tiene su comedor, su sala de día y su patio.']});
+  const sp=(u,v)=>[X(u),Z(v)];
+  for (let i=0;i<5;i++){ const [x,z]=sp(6+i*14,20+(i%3)*6); npc({kind:'civ',x,z,wander:md.patio,role:'Interno',lines:INMATE}); }
+  for (let i=0;i<2;i++){ const [x,z]=sp(19+i*4,5+i*2); npc({kind:'civ',x,z,wander:{x0:Math.min(X(17.5),X(25.4)),x1:Math.max(X(17.5),X(25.4)),z0:Math.min(Z(4.2),Z(8.8)),z1:Math.max(Z(4.2),Z(8.8))},role:'Interno',lines:INMATE}); }
+  for (const [u,v] of [[10.65,4.85],[14.95,8.25]]){ const [x,z]=sp(u,v); npc({kind:'civ',x,z,sit:true,h:s>0?Math.PI:0,role:'Interno',lines:INMATE}); }
+  const [cx,cz]=sp(29.5+2.6*3+1.7,2.8); npc({kind:'civ',x:cx,z:cz,h:s>0?Math.PI:0,role:'Interno',lines:INMATE});
+  return md;
+}
+function sharedBooth(c,a,b){
+  B(-20,-12,0,0.9,c-2,c+2,C.steel,true); GL(-19.8,-12.2,0.9,2.6,c-1.9,c+1.9,false); B(-20.2,-11.8,2.6,3.0,c-2.2,c+2.2,C.steelDk);
+  hm(-20,-12,c-2,c+2,3);
+  sign('Cabina de control',`Módulos ${a} y ${b}`,-11.75,3.45,c,Math.PI/2,3.6,0.8,'inst');
+  npc({kind:'func',x:-15.5,z:c,h:Math.PI/2,role:`Cabina compartida · Módulos ${a} y ${b}`,lines:[`Esta cabina da servicio a la pareja de módulos ${a} y ${b}: los módulos se construyen por parejas, simétricos, con el control en el centro.`]});
+}
+
+/* ============ Polideportivo ============ */
+function rng(seed){ return () => { seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function car(x,z,col,gc){
+  B(x-0.9,x+0.9,0.35,1.0,z-2.15,z+2.15,col,true); B(x-0.8,x+0.8,1.0,1.55,z-1.1,z+1.0,gc?0xf2f2ee:0x2d3a44); B(x-0.78,x+0.78,1.05,1.5,z-1.12,z+0.98,0x2d3a44);
+  for (const dz of [-1.35,1.35]) { B(x-0.95,x-0.75,0,0.6,z+dz-0.32,z+dz+0.32,C.black); B(x+0.75,x+0.95,0,0.6,z+dz-0.32,z+dz+0.32,C.black); }
+  if (gc){ B(x-0.92,x+0.92,0.6,0.78,z-2.16,z+2.16,0x2f6b3a); B(x-0.4,x+0.4,1.55,1.68,z-0.2,z+0.2,0x2f5d9a); }
+}
+function tree(x,z,s=1){ B(x-0.2,x+0.2,0,2*s,z-0.2,z+0.2,0x6b4f35,true); B(x-1.4*s,x+1.4*s,1.8*s,4.2*s,z-1.4*s,z+1.4*s,0x5d7f45); B(x-0.9*s,x+0.9*s,4.2*s,5.4*s,z-0.9*s,z+0.9*s,0x678a4c); }
+function lamp(x,z,dir){ B(x-0.08,x+0.08,0,6,z-0.08,z+0.08,0x59626a,true); B(x,x+dir*1.2,5.9,6.0,z-0.06,z+0.06,0x59626a); B(x+dir*0.8,x+dir*1.4,5.72,5.9,z-0.18,z+0.18,0xf3eed0); }
+const SKIN=[0xf0c8a8,0xe0ac86,0xc68d64,0x9a6644,0x6e4630], HAIR=[0x2a1f1a,0x3b2a20,0x5a3e2b,0x1a1a1a,0x8a8a88,0xb08a58];
+const CLOTH=[0x3d5a80,0x7a2e2e,0x2f5d4a,0x444a52,0x8a8f96,0xd9d4c8,0x1f2a38,0x5c3f6e,0xa5663c,0x28303a,0xc9c1a6];
+const OUT={
+  func:{shirt:0x9dbfe3,pants:0x1f2b45,shoe:0x15181c,badge:0xe0c050,belt:0x14171b},
+  player:{shirt:0x9dbfe3,pants:0x1f2b45,shoe:0x15181c,badge:0xf5c400,belt:0x14171b,vest:0xf5c400},
+  gc:{shirt:0x5d6b40,pants:0x4a5733,shoe:0x15181c,cap:0x4a5733,badge:0xc9a227,belt:0x2a2a22},
+  sanit:{shirt:0xf3f4f2,pants:0xe6ecef,shoe:0xeeeeee,badge:0x7fb2c2},
+  staff:{shirt:0x6c8a7a,pants:0x3b3f46,shoe:0x2a2a2a}
+};
+const shadowGeo=new THREE.CircleGeometry(0.36,14), shadowMat=new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.22,depthWrite:false});
+let pseed=1; const PR=rng(99);
+function human(o){
+  const g=new THREE.Group(), bd=new Batch();
+  bd.box(-0.23,0.23,0.86,1.44,-0.13,0.13,o.shirt);
+  if (o.belt) bd.box(-0.235,0.235,0.84,0.93,-0.135,0.135,o.belt);
+  if (o.vest){ bd.box(-0.235,-0.12,1.0,1.44,0.13,0.14,o.vest); bd.box(0.12,0.235,1.0,1.44,0.13,0.14,o.vest); }
+  bd.box(-0.07,0.07,1.44,1.5,-0.07,0.07,o.skin);
+  bd.box(-0.14,0.14,1.5,1.78,-0.14,0.14,o.skin);
+  bd.box(-0.15,0.15,1.74,1.83,-0.15,0.12,o.hair); bd.box(-0.15,0.15,1.52,1.8,-0.15,-0.1,o.hair);
+  bd.box(-0.085,-0.04,1.63,1.67,0.14,0.15,0x1d1d1d); bd.box(0.04,0.085,1.63,1.67,0.14,0.15,0x1d1d1d);
+  if (o.cap){ bd.box(-0.16,0.16,1.78,1.9,-0.16,0.16,o.cap); bd.box(-0.15,0.15,1.78,1.81,0.14,0.28,o.cap); }
+  if (o.badge) bd.box(0.08,0.17,1.26,1.35,0.13,0.145,o.badge);
+  g.add(bd.mesh(charMat));
+  const lb=new Batch(); lb.box(-0.09,0.09,-0.86,0,-0.1,0.1,o.pants); lb.box(-0.1,0.1,-0.86,-0.76,-0.12,0.17,o.shoe); const lg=lb.geo();
+  const ab=new Batch(); ab.box(-0.07,0.07,-0.56,0.02,-0.08,0.08,o.sleeve||o.shirt); ab.box(-0.06,0.06,-0.7,-0.56,-0.06,0.06,o.skin); const ag=ab.geo();
+  const mk=(geo,x,y)=>{ const p=new THREE.Group(); p.position.set(x,y,0); p.add(new THREE.Mesh(geo,charMat)); g.add(p); return p; };
+  const legL=mk(lg,-0.11,0.86), legR=mk(lg,0.11,0.86), armL=mk(ag,-0.31,1.42), armR=mk(ag,0.31,1.42);
+  const sh=new THREE.Mesh(shadowGeo,shadowMat); sh.rotation.x=-Math.PI/2; sh.position.y=0.09; g.add(sh);
+  scene.add(g);
+  return {g,legL,legR,armL,armR,phase:0};
+}
+function outfit(kind){
+  const base=OUT[kind]||null, skin=SKIN[(PR()*SKIN.length)|0], hair=HAIR[(PR()*HAIR.length)|0];
+  if (base) return Object.assign({skin,hair},base);
+  const shirt=CLOTH[(PR()*CLOTH.length)|0]; let pants=CLOTH[(PR()*CLOTH.length)|0]; if (pants===shirt) pants=0x2b3440;
+  return {skin,hair,shirt,pants,shoe:PR()<0.5?0xeeeeee:0x2a2a2a};
+}
+function npc(o){
+  const h=human(outfit(o.kind));
+  const n=Object.assign({x:o.x,z:o.z,y:o.y||0,t:{x:o.x,z:o.z},wait:PR()*3,speed:o.run?2.6+PR()*1.2:1.0+PR()*0.5,li:0},o);
+  n.hum=h; n.hd=n.home=o.h||0;
+  if (o.sit){ h.legL.rotation.x=h.legR.rotation.x=-Math.PI/2; h.armL.rotation.x=h.armR.rotation.x=-0.5; n.y=-0.4; }
+  h.g.position.set(n.x,n.y+0.075,n.z); h.g.rotation.y=n.hd;
+  npcs.push(n); return n;
+}
+
+/* ============ Personas ============ */
+const INMATE=['Buenos días, funcionario.','¿Sabe si esta semana tengo comunicación?','Me he apuntado al taller de carpintería.','Voy al economato antes del recuento.','Estoy sacándome la ESO en la escuela del centro.','Hoy toca patio largo, menos mal.'];
+
+/* ============ Construcción del mundo ============ */
+let RP1,COM,OFI,ING,CAF,RA,SOC,PIS,TRA,ENF,COC,TAL,mP=[];
+function buildWorld(){
+  buildGround();
+  buildPerimeter();
+  buildExterior();
+  RP1=buildRastrillo('Rastrillo puerta principal','Acceso al recinto',90,8,'Rastrillo ppal.');
+  COM=buildComunicaciones();
+  OFI=buildOficinas();
+  buildPasarela();
+  ING=buildIngresos();
+  CAF=buildCafeteria();
+  RA=buildRastrillo('Rastrillo de accesos','Al recinto de seguridad',28,8,'Rastrillo accesos');
+  buildPlazaInterior();
+  // Módulos residenciales, en columna al oeste, por parejas con cabina compartida
+  const pairs=[{c:-55,a:1,b:2,label:'Módulo de Aislamiento',aisl:true},{c:-165,a:3,b:4,label:null},{c:-275,a:5,b:6,label:'Módulo 2'},{c:-385,a:7,b:8,label:'Módulo 1'}];
+  for (const p of pairs){ buildModule(p.a,p.c,true); buildModule(p.b,p.c,false); sharedBooth(p.c,p.a,p.b); mP[p.a]=mP[p.b]=p; }
+  SOC=buildSociocultural();
+  PIS=buildPiscina();
+  TRA=buildTratamiento();
+  buildJardin();
+  ENF=buildEnfermeria();
+  COC=buildCocina();
+  TAL=buildTalleres();
+  buildCampoFutbol();
+  // Rótulos de zona a lo largo del vial de módulos
+  sign('Módulo de Aislamiento','Régimen cerrado · RP arts. 91-93',-58.2,4.2,-40,Math.PI/2,4.4,1,'warn');
+  sign('Módulo 2','Zona residencial',-58.2,3.6,-260,Math.PI/2,3.6,0.85,'inst');
+  sign('Módulo 1','Zona residencial',-58.2,3.6,-370,Math.PI/2,3.6,0.85,'inst');
+  zone({id:'central',title:'Recinto de seguridad',sub:'Módulos y servicios interiores',x0:PX0,x1:PX1,z0:PZ1,z1:28,late:true});
+  npc({kind:'func',x:-30,z:-8,wander:{x0:-56,x1:-4,z0:-420,z1:0},role:'Funcionario de vial',lines:['Hago ronda por el vial de módulos. Los internos no circulan solos: los movimientos se hacen en grupo, controlados y a horas fijas.']});
+  npc({kind:'func',x:30,z:0,wander:{x0:10,x1:130,z0:-450,z1:20},role:'Funcionaria de vial',lines:['Por este lado están los servicios comunes: sociocultural, piscina, tratamiento, enfermería, cocina y talleres.']});
+}
+
+/* ============ Fichas didácticas ============ */
+const ROUTE=['principal','comunicaciones','oficinas','ingresos','cafeteria','accesos','plaza','aislamiento','modulo3','modulo2','modulo1','sociocultural','piscina','tratamiento','jardin','enfermeria','cocina','talleres','futbol'];
+function definePOIs(){
+  const P=o=>pois.push(o);
+  P({id:'exterior',match:l=>l.zone&&l.zone.id==='entrada',zone:'Exterior',title:'Centro Penitenciario Tipo',
+     text:'Recinto amurallado con doble valla perimetral y garitas. Se entra por un vial con rotonda; a un lado, el aparcamiento de familiares. Todo el conjunto —oficinas, módulos y servicios— queda dentro del perímetro, unido por viales internos.',
+     refs:['LOGP art. 7: tipos de establecimientos','Perímetro de seguridad']});
+  P({id:'principal',route:1,match:l=>l.b===RP1,zone:'Acceso',title:'Rastrillo · Puerta principal',
+     text:'Primera esclusa del centro: dos rejas que nunca se abren a la vez. Aquí se identifica a todo el que entra desde el exterior —familias, abogados, proveedores— antes de pasar a la zona de oficinas.',
+     refs:['Seguridad exterior'],target:{x:0,z:90},spawn:{x:0,z:100,h:Math.PI}});
+  P({id:'comunicaciones',route:1,match:l=>l.b===COM,zone:'Zona de acceso',title:'Comunicaciones Exteriores',
+     text:'Oficina y sala de espera para las familias, locutorios con cristal e interfono, y salas de vis a vis familiar e íntimo. Es el punto de contacto entre el interno y el exterior.',
+     refs:['RP arts. 41-49: comunicaciones y visitas','LOGP arts. 51-53'],target:{x:-16,z:74},spawn:{x:-10,z:74,h:-Math.PI/2}});
+  P({id:'oficinas',route:1,match:l=>l.b===OFI,zone:'Zona de acceso',title:'Oficinas: Régimen y Comisión Disciplinaria',
+     text:'Aquí trabajan la Dirección, la Subdirección de Régimen, la Comisión Disciplinaria y la Junta de Tratamiento. La Comisión Disciplinaria instruye y resuelve los expedientes sancionadores; la Junta de Tratamiento decide la clasificación y los permisos de cada interno.',
+     refs:['RP arts. 231-247: régimen disciplinario','RP: Junta de Tratamiento y Consejo de Dirección'],target:{x:12,z:74},spawn:{x:6,z:74,h:Math.PI/2}});
+  P({id:'ingresos',route:1,match:l=>l.b===ING,zone:'Zona de acceso',title:'Módulo de Ingresos',
+     text:'Por aquí entra y sale cada interno del centro. Se comprueba el mandamiento de ingreso, se identifica y reseña, se cachean él y sus pertenencias —que quedan en depósito— y pasa reconocimiento médico. Después se le asigna módulo.',
+     refs:['RP art. 15: ingreso','RP art. 214: reconocimiento médico'],target:{x:-46,z:43},spawn:{x:-40,z:43,h:Math.PI/2}});
+  P({id:'cafeteria',route:1,match:l=>l.b===CAF,zone:'Zona de acceso',title:'Cafetería',
+     text:'Servicio de apoyo para el personal y las familias que esperan su turno de comunicación, entre las oficinas y el rastrillo de accesos.',
+     refs:['Servicio complementario'],target:{x:0,z:45},spawn:{x:0,z:36,h:Math.PI}});
+  P({id:'accesos',route:1,match:l=>l.b===RA,zone:'Zona de acceso',title:'Rastrillo de Accesos',
+     text:'Segunda esclusa: separa la zona administrativa, donde llegan visitas y proveedores, del recinto de seguridad donde están los módulos y los servicios. A partir de aquí solo circula personal autorizado e internos.',
+     refs:['Doble línea de seguridad'],target:{x:0,z:28},spawn:{x:0,z:20,h:Math.PI}});
+  P({id:'plaza',route:1,match:l=>l.zone&&l.zone.id==='plaza',zone:'Recinto de seguridad',title:'Plaza interior y Torre',
+     text:'Distribuidor central del recinto de seguridad: desde aquí parten el vial de los módulos residenciales, hacia el oeste, y el de los servicios comunes, hacia el este. La torre permite vigilar el conjunto.',
+     refs:['Vigilancia interior'],target:{x:0,z:8},spawn:{x:0,z:0,h:Math.PI}});
+  const modText=(nom,extra)=>`Edificio autosuficiente con office de funcionarios, comedor, sala de día, economato, duchas, patio y 72 celdas en dos plantas. ${extra}`;
+  P({id:'aislamiento',route:1,match:l=>l.b&&(l.b.module===1||l.b.module===2),zone:'Zona residencial',title:'Módulo de Aislamiento',
+     text:modText('','En un centro real, este módulo suele tener celdas y patios individuales para cumplir el régimen cerrado o las sanciones de aislamiento, con actividades muy limitadas y programadas.'),
+     refs:['RP art. 91: régimen cerrado','RP art. 93: patios individuales'],target:{x:-12,z:-55},spawn:{x:-8,z:-55,h:-Math.PI/2}});
+  P({id:'modulo3',route:1,match:l=>l.b&&(l.b.module===3||l.b.module===4),zone:'Zona residencial',title:'Módulos 3 y 4',
+     text:modText('','Los módulos se construyen por parejas simétricas, con la cabina de control compartida en el centro, para separar y clasificar a los internos por perfiles.'),
+     refs:['LOGP art. 16: separación interior'],target:{x:-12,z:-165},spawn:{x:-8,z:-165,h:-Math.PI/2}});
+  P({id:'modulo2',route:1,match:l=>l.b&&(l.b.module===5||l.b.module===6),zone:'Zona residencial',title:'Módulo 2',
+     text:modText('Módulos 5 y 6.',''),refs:['LOGP art. 12: máx. 350 internos por unidad'],target:{x:-12,z:-275},spawn:{x:-8,z:-275,h:-Math.PI/2}});
+  P({id:'modulo1',route:1,match:l=>l.b&&(l.b.module===7||l.b.module===8),zone:'Zona residencial',title:'Módulo 1',
+     text:modText('Módulos 7 y 8.',''),refs:['LOGP art. 19: celda individual'],target:{x:-12,z:-385},spawn:{x:-8,z:-385,h:-Math.PI/2}});
+  P({id:'patio',match:l=>l.zone&&l.zone.patio,zone:'Zona residencial',title:'Patio del módulo',
+     text:'Cada módulo tiene su propio patio cerrado, para que los internos de distintos módulos no coincidan.',refs:['LOGP art. 16']});
+  P({id:'sociocultural',route:1,match:l=>l.b===SOC,zone:'Zona extramodular',title:'Sociocultural: GYM, Teatro y Polideportivo',
+     text:'Gimnasio, salón de actos y pista polideportiva bajo un mismo techo. El deporte, la cultura y el ocio son parte de las actividades de tratamiento; los módulos las usan por turnos.',
+     refs:['LOGP art. 13: instalaciones','LOGP art. 55: escuela'],target:{x:20,z:10},spawn:{x:14,z:10,h:Math.PI/2}});
+  P({id:'piscina',route:1,match:l=>l.b===PIS||(l.zone&&l.zone.id==='piscina'),zone:'Zona extramodular',title:'Piscina',
+     text:'Zona de recreo y actividades acuáticas, con su edificio de vestuarios, dentro del bloque de instalaciones deportivas del centro.',
+     refs:['LOGP art. 13'],target:{x:20,z:-40},spawn:{x:14,z:-40,h:Math.PI/2}});
+  P({id:'tratamiento',route:1,match:l=>l.b===TRA,zone:'Zona extramodular',title:'Oficinas de Tratamiento',
+     text:'Aquí trabaja el Equipo Técnico: psicólogos, trabajadores sociales, educadores y pedagogos. Estudian a cada interno y proponen a la Junta de Tratamiento su clasificación, su programa individualizado y sus permisos.',
+     refs:['LOGP arts. 59-72: tratamiento','RP: Equipos Técnicos'],target:{x:74,z:15},spawn:{x:68,z:15,h:Math.PI/2}});
+  P({id:'jardin',route:1,match:l=>l.zone&&l.zone.id==='jardin',zone:'Zona extramodular',title:'Jardín agrícola',
+     text:'Zona verde del centro, mantenida por internos como destino de trabajo, con cursos de formación en jardinería.',
+     refs:['LOGP arts. 26-35: trabajo'],target:{x:90,z:-30},spawn:{x:90,z:-8,h:Math.PI}});
+  P({id:'enfermeria',route:1,match:l=>l.b===ENF,zone:'Zona de servicios',title:'Módulo Enfermería',
+     text:'Centro sanitario del establecimiento: consultas de medicina general, curas, odontología, radiología, farmacia y hospitalización. La atención especializada se deriva a hospitales de la red pública.',
+     refs:['LOGP art. 36','RP arts. 207-220'],target:{x:-18,z:-488},spawn:{x:-12,z:-488,h:Math.PI/2}});
+  P({id:'cocina',route:1,match:l=>l.b===COC,zone:'Zona de servicios',title:'Cocina, Lavandería y Economato Central',
+     text:'Servicios generales del centro: cocina, panadería, cámaras frigoríficas, lavandería y el economato central. Muchos internos trabajan aquí como destino remunerado. Los camiones de alimentos descargan en el muelle del muro este.',
+     refs:['LOGP art. 21: alimentación y economato'],target:{x:48,z:-495},spawn:{x:44,z:-495,h:Math.PI/2}});
+  P({id:'talleres',route:1,match:l=>l.b===TAL,zone:'Zona de servicios',title:'Talleres: Empresas y Mantenimiento',
+     text:'Talleres productivos —carpintería, confección, manipulados— con relación laboral especial gestionada por Trabajo Penitenciario y Formación para el Empleo, y el taller de mantenimiento del propio centro. Muelle de carga propio para los camiones de las empresas.',
+     refs:['LOGP arts. 26-35','RD 782/2001'],target:{x:48,z:-567},spawn:{x:42,z:-567,h:Math.PI/2}});
+  P({id:'futbol',route:1,match:l=>l.zone&&l.zone.id==='futbol',zone:'Zona extramodular',title:'Campo de fútbol',
+     text:'Campo de tierra para el deporte al aire libre, en el extremo norte del recinto junto a la enfermería.',
+     refs:['LOGP art. 13'],target:{x:-62,z:-500},spawn:{x:-62,z:-470,h:Math.PI}});
+  P({id:'gc',match:l=>l.b&&l.b.short&&l.b.short.startsWith('Garita'),zone:'Exterior',title:'Vigilancia exterior',
+     text:'La seguridad exterior —perímetro, garitas y camino de ronda— corresponde a la Guardia Civil. La seguridad interior es de los funcionarios de Instituciones Penitenciarias.',refs:['Seguridad exterior e interior']});
+  for (const p of pois){ p.seen=false; p.visited=false; }
+}
+const CG=8, grid=new Map(); let stamp=1;
+function buildGrid(){
+  for (const c of colliders){
+    const i0=Math.floor((c.x0+400)/CG), i1=Math.floor((c.x1+400)/CG), j0=Math.floor((c.z0+400)/CG), j1=Math.floor((c.z1+400)/CG);
+    for (let i=i0;i<=i1;i++) for (let j=j0;j<=j1;j++){ const k=i*1000+j; let a=grid.get(k); if(!a){a=[];grid.set(k,a);} a.push(c); }
+  }
+}
+const qbuf=[];
+function query(x,z){
+  qbuf.length=0; stamp++;
+  const i=Math.floor((x+400)/CG), j=Math.floor((z+400)/CG);
+  for (let a=i-1;a<=i+1;a++) for (let b=j-1;b<=j+1;b++){ const l=grid.get(a*1000+b); if(!l) continue; for (const c of l){ if(c.s!==stamp){c.s=stamp;qbuf.push(c);} } }
+  return qbuf;
+}
+function resolve(p,r){
+  for (let it=0;it<3;it++){
+    let moved=false;
+    for (const c of query(p.x,p.z)){
+      if (c.gate && c.gate.open>0.75) continue;
+      const qx=clamp(p.x,c.x0,c.x1), qz=clamp(p.z,c.z0,c.z1), dx=p.x-qx, dz=p.z-qz, d2=dx*dx+dz*dz;
+      if (d2<r*r){
+        if (d2>1e-9){ const dd=Math.sqrt(d2); p.x+=dx/dd*(r-dd); p.z+=dz/dd*(r-dd); }
+        else { const l=p.x-c.x0, rr=c.x1-p.x, t=p.z-c.z0, bb=c.z1-p.z, m=Math.min(l,rr,t,bb);
+          if (m===l) p.x=c.x0-r; else if (m===rr) p.x=c.x1+r; else if (m===t) p.z=c.z0-r; else p.z=c.z1+r; }
+        moved=true;
+      }
+    }
+    if (!moved) break;
+  }
+}
+
+/* ============ Minimapa y plano ============ */
+const MAPCOL={out:'#1a3037',road:'#34525c',paving:'#2d4c56',ronda:'#27434c',in:'#223f48',vial:'#46707a',patio:'#3a6a74',field:'#2c5c46',bld:'#d9e2dc',mod:'#e8dcb8',svc:'#9fb0aa',tower:'#8fb0a6'};
+let mapBase=null;
+function drawMapBase(){
+  const c=document.createElement('canvas'); c.width=c.height=1200; const x=c.getContext('2d');
+  x.scale(2,2); x.translate(300,300);
+  for (const r of mapRects){ x.fillStyle=MAPCOL[r.t]||'#444'; x.fillRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0); if (r.t==='bld'||r.t==='mod'||r.t==='svc'){ x.strokeStyle='rgba(15,34,41,.6)'; x.lineWidth=0.6; x.strokeRect(r.x0,r.z0,r.x1-r.x0,r.z1-r.z0);} }
+  x.strokeStyle='#8fb0a6'; x.lineWidth=0.9; x.setLineDash([2,1.5]);
+  for (const l of mapLines){ x.beginPath(); x.moveTo(l[0],l[1]); x.lineTo(l[2],l[3]); x.stroke(); }
+  x.setLineDash([]);
+  mapBase=c;
+}
+const mini=$('#mini'), mctx=mini.getContext('2d');
+function drawMini(){
+  const W=mini.width, R=W/2, S=W/164*1.25;
+  mctx.save(); mctx.clearRect(0,0,W,W); mctx.beginPath(); mctx.arc(R,R,R,0,Math.PI*2); mctx.clip();
+  mctx.fillStyle=MAPCOL.out; mctx.fillRect(0,0,W,W);
+  mctx.translate(R,R); mctx.rotate(camYaw); mctx.scale(S,S); mctx.translate(-player.x,-player.z);
+  mctx.drawImage(mapBase,GX0,GZ0,GW,GH);
+  mctx.restore();
+  const tgt=currentTarget();
+  if (tgt){
+    const dx=tgt.x-player.x, dz=tgt.z-player.z, cs=Math.cos(camYaw), sn=Math.sin(camYaw);
+    let sx=(dx*cs-dz*sn)*S, sy=(dx*sn+dz*cs)*S; const L=Math.hypot(sx,sy), lim=R-12;
+    if (L>lim){ sx*=lim/L; sy*=lim/L; }
+    mctx.save(); mctx.translate(R+sx,R+sy); mctx.rotate(Math.PI/4); mctx.fillStyle='#f5c400'; mctx.strokeStyle='#0f2229'; mctx.lineWidth=3; mctx.fillRect(-8,-8,16,16); mctx.strokeRect(-8,-8,16,16); mctx.restore();
+  }
+  mctx.save(); mctx.translate(R,R); mctx.rotate(Math.PI-player.hd+camYaw);
+  mctx.beginPath(); mctx.moveTo(0,-15); mctx.lineTo(10,11); mctx.lineTo(0,5); mctx.lineTo(-10,11); mctx.closePath();
+  mctx.fillStyle='#ffffff'; mctx.fill(); mctx.lineWidth=3; mctx.strokeStyle='#0f2229'; mctx.stroke(); mctx.restore();
+  const nx=R+Math.sin(camYaw)*(R-16), ny=R-Math.cos(camYaw)*(R-16);
+  mctx.fillStyle='#0f2229'; mctx.beginPath(); mctx.arc(nx,ny,14,0,Math.PI*2); mctx.fill();
+  mctx.fillStyle='#f5c400'; mctx.font='700 18px "Barlow Condensed",sans-serif'; mctx.textAlign='center'; mctx.textBaseline='middle'; mctx.fillText('N',nx,ny+1);
+}
+const big=$('#bigmap'); let bigView=null;
+function drawBig(){
+  const r=big.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2);
+  big.width=Math.max(1,Math.round(r.width*dpr)); big.height=Math.max(1,Math.round(r.height*dpr));
+  const x=big.getContext('2d'); const VX0=-180,VX1=180,VZ0=-222,VZ1=212;
+  const S=Math.min(big.width/(VX1-VX0),big.height/(VZ1-VZ0)), ox=(big.width-(VX1-VX0)*S)/2-VX0*S, oy=(big.height-(VZ1-VZ0)*S)/2-VZ0*S;
+  bigView={S,ox,oy,dpr};
+  x.fillStyle='#0a181d'; x.fillRect(0,0,big.width,big.height);
+  x.save(); x.translate(ox,oy); x.scale(S,S); x.drawImage(mapBase,GX0,GZ0,GW,GH); x.restore();
+  const fs=clamp(S*3.2,9*dpr,15*dpr);
+  x.textAlign='center'; x.textBaseline='middle';
+  for (const l of mapLabels){ x.font=`600 ${fs}px "Barlow Condensed",sans-serif`; x.fillStyle=l.kind==='mod'||l.kind==='bld'||l.kind==='svc'?'#0f2229':'#eef1ea'; x.fillText(l.t.toUpperCase(),ox+l.x*S,oy+l.z*S); }
+  const rp=ROUTE.map(id=>pois.find(p=>p.id===id)), next=nextRoute();
+  rp.forEach((p,i)=>{ const px=ox+p.target.x*S, py=oy+p.target.z*S, rad=11*dpr;
+    x.beginPath(); x.arc(px,py,rad,0,Math.PI*2); x.fillStyle=p.visited?'#62b38a':(p===next?'#f5c400':'#eef1ea'); x.fill(); x.lineWidth=2*dpr; x.strokeStyle='#0f2229'; x.stroke();
+    x.fillStyle='#0f2229'; x.font=`700 ${12*dpr}px "IBM Plex Mono",monospace`; x.fillText(String(i+1),px,py+0.5); });
+  const px=ox+player.x*S, py=oy+player.z*S;
+  x.save(); x.translate(px,py); x.rotate(Math.PI-player.hd); x.beginPath(); x.moveTo(0,-12*dpr); x.lineTo(8*dpr,9*dpr); x.lineTo(0,4*dpr); x.lineTo(-8*dpr,9*dpr); x.closePath(); x.fillStyle='#fff'; x.fill(); x.strokeStyle='#0f2229'; x.lineWidth=2*dpr; x.stroke(); x.restore();
+}
+big.addEventListener('pointerup',e=>{
+  if (!bigView) return; const r=big.getBoundingClientRect(), mx=(e.clientX-r.left)*bigView.dpr, my=(e.clientY-r.top)*bigView.dpr;
+  let best=null, bd=26*bigView.dpr;
+  for (const id of ROUTE){ const p=pois.find(q=>q.id===id); const d=Math.hypot(bigView.ox+p.target.x*bigView.S-mx, bigView.oy+p.target.z*bigView.S-my); if (d<bd){bd=d;best=p;} }
+  if (best){ teleport(best.spawn); toggleMap(false); }
+});
+
+/* ============ Estado del juego ============ */
+const player={x:0,z:192,hd:Math.PI,speed:0,run:false};
+let PL=null, camYaw=0, zoom=1, state='intro', T=0, camRate=8;
+const camPos=new THREE.Vector3(0,160,300), camLook=new THREE.Vector3(0,0,0);
+const keys={}; const stick={active:false,x:0,y:0,id:null}; let runHeld=false, dragging=null;
+let curB=null, loc={title:'',sub:''}, activePoi=null, pending=[];
+const ui={locTitle:$('#locTitle'),locSub:$('#locSub'),objCount:$('#objCount'),objName:$('#objName'),objDist:$('#objDist'),objBar:$('#objBar'),card:$('#card'),cardZone:$('#cardZone'),cardTitle:$('#cardTitle'),cardText:$('#cardText'),cardRefs:$('#cardRefs'),talk:$('#talk'),talkWho:$('#talkWho'),talkText:$('#talkText'),prompt:$('#prompt'),promptText:$('#promptText'),toast:$('#toast')};
+let cardPoi=null, talkTimer=0, toastTimer=0;
+
+function save(){ try{ localStorage.setItem('ctipo-v1',JSON.stringify(pois.filter(p=>p.visited).map(p=>p.id))); }catch(e){} }
+function load(){ try{ const a=JSON.parse(localStorage.getItem('ctipo-v1')||'[]'); for (const p of pois) if (a.includes(p.id)){ p.visited=true; p.seen=true; } }catch(e){} }
+function nextRoute(){ for (const id of ROUTE){ const p=pois.find(q=>q.id===id); if (!p.visited) return p; } return null; }
+function currentTarget(){ const p=nextRoute(); return p?p.target:null; }
+function updateRouteUI(){
+  const done=ROUTE.filter(id=>pois.find(p=>p.id===id).visited).length, n=nextRoute();
+  ui.objCount.textContent=`${done}/${ROUTE.length}`; ui.objBar.style.width=(done/ROUTE.length*100)+'%';
+  ui.objName.textContent=n?`${ROUTE.indexOf(n.id)+1}. ${n.title}`:'Recorrido completado';
+}
+function showCard(p){ cardPoi=p; ui.cardZone.textContent=p.zone; ui.cardTitle.textContent=p.title; ui.cardText.textContent=p.text; ui.cardRefs.replaceChildren(...(p.refs||[]).map(r=>{const li=document.createElement('li'); li.textContent=r; return li;})); ui.card.hidden=false; ui.card.scrollTop=0; }
+function hideCard(){ ui.card.hidden=true; cardPoi=null; if (pending.length){ const p=pending.shift(); setTimeout(()=>{ if (!cardPoi) showCard(p); },250); } }
+function showTalk(who,text){ ui.talkWho.textContent=who; ui.talkText.textContent=text; ui.talk.hidden=false; talkTimer=8; }
+function toast(t){ ui.toast.textContent=t; ui.toast.hidden=false; toastTimer=3.2; }
+function teleport(s){ player.x=s.x; player.z=s.z; player.hd=s.h; camYaw=s.h+Math.PI; ui.talk.hidden=true; }
+
+/* ============ Entrada ============ */
+addEventListener('keydown',e=>{
+  if (state!=='play') return;
+  keys[e.code]=true;
+  const onBtn=document.activeElement&&document.activeElement.tagName==='BUTTON';
+  if ((e.code==='KeyE'||(e.code==='Space'&&!onBtn))){ e.preventDefault(); act(); }
+  if (e.code==='KeyM'){ toggleMap(); }
+  if (e.code==='Escape'){ if (!$('#mapView').hidden) toggleMap(false); else if (!ui.card.hidden) hideCard(); ui.talk.hidden=true; }
+  if (e.code.startsWith('Arrow')) e.preventDefault();
+});
+addEventListener('keyup',e=>{ keys[e.code]=false; });
+addEventListener('blur',()=>{ for (const k in keys) keys[k]=false; });
+canvas.addEventListener('pointerdown',e=>{ if (state!=='play') return; dragging={id:e.pointerId,x:e.clientX,y:e.clientY}; canvas.setPointerCapture(e.pointerId); canvas.focus({preventScroll:true}); });
+canvas.addEventListener('pointermove',e=>{ if (!dragging||dragging.id!==e.pointerId) return; camYaw-=(e.clientX-dragging.x)*0.0065; dragging.x=e.clientX; dragging.y=e.clientY; });
+const endDrag=e=>{ if (dragging&&dragging.id===e.pointerId) dragging=null; };
+canvas.addEventListener('pointerup',endDrag); canvas.addEventListener('pointercancel',endDrag);
+canvas.addEventListener('wheel',e=>{ e.preventDefault(); zoom=clamp(zoom*(e.deltaY>0?1.1:0.9),0.55,1.9); },{passive:false});
+const stickEl=$('#stick'), knob=$('#knob');
+stickEl.addEventListener('pointerdown',e=>{ stick.active=true; stick.id=e.pointerId; stickEl.setPointerCapture(e.pointerId); moveStick(e); e.preventDefault(); });
+stickEl.addEventListener('pointermove',e=>{ if (stick.active&&e.pointerId===stick.id) moveStick(e); });
+const endStick=e=>{ if (e.pointerId!==stick.id) return; stick.active=false; stick.x=stick.y=0; knob.style.transform=''; };
+stickEl.addEventListener('pointerup',endStick); stickEl.addEventListener('pointercancel',endStick);
+function moveStick(e){ const r=stickEl.getBoundingClientRect(), R=r.width/2; let dx=e.clientX-r.left-R, dy=e.clientY-r.top-R; const L=Math.hypot(dx,dy); if (L>R){dx*=R/L;dy*=R/L;} stick.x=dx/R; stick.y=dy/R; knob.style.transform=`translate(${dx}px,${dy}px)`; }
+const runBtn=$('#runBtn');
+runBtn.addEventListener('pointerdown',e=>{ e.preventDefault(); runHeld=!runHeld; runBtn.classList.toggle('on',runHeld); });
+$('#actBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); act(); });
+$('#cardClose').addEventListener('click',hideCard);
+ui.prompt.addEventListener('click',act);
+$('#mapBtn').addEventListener('click',()=>toggleMap());
+$('#mapClose').addEventListener('click',()=>toggleMap(false));
+ui.talk.addEventListener('click',()=>{ ui.talk.hidden=true; });
+function toggleMap(force){ const mv=$('#mapView'), open=force!==undefined?force:mv.hidden; mv.hidden=!open; if (open){ requestAnimationFrame(drawBig); } else canvas.focus({preventScroll:true}); }
+addEventListener('resize',()=>{ resize(); if (!$('#mapView').hidden) drawBig(); });
+
+let nearNpc=null;
+function act(){
+  if (nearNpc){ const n=nearNpc; showTalk(n.role,n.lines[n.li%n.lines.length]); n.li++; return; }
+  if (activePoi){ if (cardPoi===activePoi) hideCard(); else showCard(activePoi); }
+}
+
+/* ============ Bucle ============ */
+function resize(){ const w=innerWidth, h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<h?68:58; camera.updateProjectionMatrix(); }
+function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI; return a+d*t; }
+function updatePlayer(dt){
+  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0), iy=((keys.KeyW||keys.ArrowUp)?1:0)-((keys.KeyS||keys.ArrowDown)?1:0);
+  if (keys.ArrowLeft||keys.KeyQ) camYaw+=1.9*dt; if (keys.ArrowRight) camYaw-=1.9*dt;
+  if (stick.active){ ix=stick.x; iy=-stick.y; }
+  let mag=Math.min(1,Math.hypot(ix,iy));
+  const run=keys.ShiftLeft||keys.ShiftRight||runHeld||(stick.active&&mag>0.96);
+  let moving=false;
+  if (mag>0.08 && $('#mapView').hidden){
+    const fx=-Math.sin(camYaw), fz=-Math.cos(camYaw), rx=Math.cos(camYaw), rz=-Math.sin(camYaw);
+    let mx=fx*iy+rx*ix, mz=fz*iy+rz*ix; const l=Math.hypot(mx,mz); mx/=l; mz/=l;
+    const sp=(run?8.2:4.2)*mag*dt, steps=Math.ceil(sp/0.14);
+    for (let i=0;i<steps;i++){ player.x+=mx*sp/steps; player.z+=mz*sp/steps; resolve(player,0.34); }
+    player.x=clamp(player.x,-290,290); player.z=clamp(player.z,-290,290);
+    player.hd=lerpAngle(player.hd,Math.atan2(mx,mz),1-Math.exp(-14*dt)); moving=true;
+  } else mag=0;
+  for (const n of npcs){ if (!n.vis||n.y>1) continue; const dx=player.x-n.x, dz=player.z-n.z, d=Math.hypot(dx,dz); if (d<0.62&&d>0.001){ player.x=n.x+dx/d*0.62; player.z=n.z+dz/d*0.62; } }
+  resolve(player,0.34);
+  animWalk(PL,moving?(run?2.1:1.1)*mag:0,dt,run);
+  PL.g.position.set(player.x,0.075,player.z); PL.g.rotation.y=player.hd;
+}
+function animWalk(h,amt,dt,run){
+  h.phase+=dt*(run?11:7.2)*(amt>0?1:0);
+  const a=Math.min(1,amt), s=Math.sin(h.phase)*(run?0.85:0.6)*a;
+  h.legL.rotation.x=s; h.legR.rotation.x=-s; h.armL.rotation.x=-s*0.8; h.armR.rotation.x=s*0.8;
+  if (!a){ h.legL.rotation.x*=0.8; }
+}
+function occlude(tx,ty,tz,cx,cy,cz,ignore){
+  const dx=cx-tx, dy=cy-ty, dz=cz-tz, len=Math.hypot(dx,dy,dz), n=Math.ceil(len/0.4);
+  for (let i=2;i<=n;i++){ const t=i/n, x=tx+dx*t, y=ty+dy*t, z=tz+dz*t, gx=Math.floor(x-GX0), gz=Math.floor(z-GZ0);
+    if (gx<0||gz<0||gx>=GW||gz>=GH) continue; const k=gz*GW+gx; if (ignore>=0&&hid[k]===ignore) continue;
+    if (hgt[k]>y) return Math.max(0.14,(t*len-0.6)/len); }
+  return 1;
+}
+function updateCamera(dt){
+  const inside=!!curB, dist=(inside?6.2:7.6)*zoom, hgtC=(inside?10.5:3.7)*(inside?Math.max(0.8,zoom):1)+(zoom>1&&!inside?(zoom-1)*5:0);
+  const tx=player.x, ty=1.55, tz=player.z;
+  let cx=tx+Math.sin(camYaw)*dist, cy=ty+hgtC-1.55+0.3, cz=tz+Math.cos(camYaw)*dist;
+  const f=occlude(tx,ty,tz,cx,cy,cz,curB?curB.id:-1);
+  if (f<1){ cx=tx+(cx-tx)*f; cy=ty+(cy-ty)*f+(1-f)*1.2; cz=tz+(cz-tz)*f; }
+  camRate=Math.min(8,camRate+dt*4);
+  const k=1-Math.exp(-camRate*dt);
+  camPos.x+=(cx-camPos.x)*k; camPos.y+=(cy-camPos.y)*k; camPos.z+=(cz-camPos.z)*k;
+  camLook.x+=(tx-camLook.x)*k; camLook.y+=(ty-camLook.y)*k; camLook.z+=(tz-camLook.z)*k;
+  camera.position.copy(camPos); camera.lookAt(camLook);
+}
+function locate(x,z){
+  for (const b of buildings) if (x>b.x0+0.1&&x<b.x1-0.1&&z>b.z0+0.1&&z<b.z1-0.1){
+    let room=null; for (const r of b.rooms) if (x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1){ room=r.name; break; }
+    return {b,title:b.short,sub:room||b.def,room};
+  }
+  for (const zn of zones) if (x>=zn.x0&&x<=zn.x1&&z>=zn.z0&&z<=zn.z1) return {b:null,zone:zn,title:zn.title,sub:zn.sub};
+  return {b:null,title:'Exterior',sub:'Entorno del centro'};
+}
+function updateWorldState(){
+  const l=locate(player.x,player.z);
+  if (l.b!==curB){
+    if (curB){ curB.rfMesh&&(curB.rfMesh.visible=true); if (curB.upMat){ curB.upMat.opacity=1; curB.upMat.transparent=false; curB.upMat.depthWrite=true; curB.upMat.needsUpdate=true; } }
+    curB=l.b;
+    if (curB){ curB.rfMesh&&(curB.rfMesh.visible=false); if (curB.upMat){ curB.upMat.opacity=0.16; curB.upMat.transparent=true; curB.upMat.depthWrite=false; curB.upMat.needsUpdate=true; } }
+  }
+  if (l.title!==loc.title) ui.locTitle.textContent=l.title;
+  if (l.sub!==loc.sub) ui.locSub.textContent=l.sub;
+  loc=l;
+  // Fichas
+  let first=null; const fresh=[];
+  for (const p of pois){ if (!p.match(l)) continue; if (!first) first=p; if (!p.seen) fresh.push(p);
+    if (p.route&&!p.visited){ p.visited=true; save(); updateRouteUI(); const i=ROUTE.indexOf(p.id)+1, done=ROUTE.filter(id=>pois.find(q=>q.id===id).visited).length; toast(done===ROUTE.length?'Recorrido completado · 15/15':`Parada ${i} · ${p.title} · ${done}/${ROUTE.length}`); } }
+  if (fresh.length){ for (const p of fresh) p.seen=true; showCard(fresh[0]); for (const p of fresh.slice(1)) if (!pending.includes(p)) pending.push(p); }
+  activePoi=first;
+  const t=currentTarget();
+  ui.objDist.textContent=t?`A ${Math.round(Math.hypot(t.x-player.x,t.z-player.z))} m`+(isTouch?'':' · sigue el rombo amarillo'):'Has recorrido las tres zonas';
+}
+function updatePrompt(){
+  nearNpc=null; let bd=2.3;
+  for (const n of npcs){ if (!n.vis) continue; const d=Math.hypot(n.x-player.x,n.z-player.z)+(n.y>1?99:0); if (d<bd){ bd=d; nearNpc=n; } }
+  let txt=null;
+  if (nearNpc) txt='Hablar · '+nearNpc.role;
+  else if (activePoi&&cardPoi!==activePoi) txt='Ver ficha · '+activePoi.title;
+  ui.prompt.hidden=!txt; if (txt&&ui.promptText.textContent!==txt) ui.promptText.textContent=txt;
+  $('#promptKey').textContent=isTouch?'A':'E';
+}
+function updateGates(dt){
+  for (const g of gates){
+    const d=Math.hypot(player.x-g.cx,player.z-g.cz), want=(state==='play'&&d<3.8&&(!g.partner||g.partner.open<0.03))?1:0;
+    g.open=clamp(g.open+(want?1:-1)*dt*1.1,0,1);
+    const off=g.open*g.w*0.95;
+    if (g.axis==='x') g.m.position.x=g.cx+off; else g.m.position.z=g.cz+off;
+  }
+}
+function updateNPCs(dt){
+  for (const n of npcs){
+    const dx=n.x-player.x, dz=n.z-player.z, d2=dx*dx+dz*dz;
+    n.vis=state!=='play'?d2<200*200:d2<80*80; n.hum.g.visible=n.vis; if (!n.vis) continue;
+    let moving=false;
+    if (n.wander){
+      if (n.wait>0){ n.wait-=dt; if (n.wait<=0){ const w=n.wander; n.t={x:w.x0+PR()*(w.x1-w.x0),z:w.z0+PR()*(w.z1-w.z0)}; } }
+      else { const tx=n.t.x-n.x, tz=n.t.z-n.z, L=Math.hypot(tx,tz);
+        if (L<0.3){ n.wait=1+PR()*(n.run?1.5:4); } else { const st=Math.min(L,n.speed*dt); n.x+=tx/L*st; n.z+=tz/L*st; n.hd=lerpAngle(n.hd,Math.atan2(tx,tz),1-Math.exp(-8*dt)); moving=true; } }
+    }
+    if (!moving && !n.sit && d2<36 && state==='play') n.hd=lerpAngle(n.hd,Math.atan2(-dx,-dz),1-Math.exp(-4*dt));
+    else if (!moving && !n.wander && !n.sit) n.hd=lerpAngle(n.hd,n.home,1-Math.exp(-2*dt));
+    if (!n.sit) animWalk(n.hum,moving?(n.run?1.8:0.9):0,dt,n.run);
+    n.hum.g.position.set(n.x,n.y+0.075,n.z); n.hum.g.rotation.y=n.hd;
+  }
+}
+let marker=null, beam=null;
+function updateMarker(){
+  const t=currentTarget(); marker.visible=beam.visible=!!t&&state==='play'; if (!t) return;
+  const bob=reduceMotion?0:Math.sin(T*2.4)*0.25; marker.position.set(t.x,3.4+bob,t.z); marker.rotation.y=T*1.4;
+  beam.position.set(t.x,18,t.z); beam.visible=Math.hypot(t.x-player.x,t.z-player.z)>14;
+}
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now; T+=dt;
+  if (state==='intro'){
+    const a=reduceMotion?0.6:0.6+T*0.045; camera.position.set(Math.sin(a)*235-5,150,Math.cos(a)*235-30); camera.lookAt(-5,0,-30);
+    camPos.copy(camera.position); camLook.set(-5,0,-30);
+  } else {
+    updatePlayer(dt); updateWorldState(); updateCamera(dt); updatePrompt(); drawMini(); updateMarker();
+    if (talkTimer>0){ talkTimer-=dt; if (talkTimer<=0) ui.talk.hidden=true; }
+    if (toastTimer>0){ toastTimer-=dt; if (toastTimer<=0) ui.toast.hidden=true; }
+  }
+  updateGates(dt); updateNPCs(dt);
+  if (!reduceMotion) for (const f of flags) f.rotation.y=Math.sin(T*1.7+f.position.x)*0.25;
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+
+/* ============ Arranque ============ */
+async function boot(){
+  resize();
+  try { await Promise.race([Promise.all([document.fonts.load('700 40px "Barlow Condensed"'),document.fonts.load('500 20px Barlow')]),new Promise(r=>setTimeout(r,2500))]); } catch(e){}
+  buildWorld();
+  const sm=STATIC.mesh(worldMat); scene.add(sm);
+  const gm=GLASS.mesh(glassMat); if (gm){ gm.renderOrder=2; scene.add(gm); }
+  scene.add(FENCE.mesh(fenceMat));
+  for (const b of buildings){
+    const u=b.up.mesh(b.upMat=worldMat.clone()); if (u){ b.upMesh=u; u.renderOrder=1; scene.add(u); } else b.upMat=null;
+    const r=b.rf.mesh(worldMat); if (r){ b.rfMesh=r; scene.add(r); }
+    b.up=b.rf=null;
+  }
+  buildGrid(); drawMapBase(); definePOIs(); load();
+  PL=human(Object.assign({skin:0xe0ac86,hair:0x3b2a20},OUT.player));
+  PL.g.position.set(player.x,0.075,player.z); PL.g.rotation.y=player.hd;
+  marker=new THREE.Mesh(new THREE.OctahedronGeometry(0.7), new THREE.MeshBasicMaterial({color:0xf5c400})); marker.scale.y=1.5; scene.add(marker);
+  beam=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.12,36,6,1,true), new THREE.MeshBasicMaterial({color:0xf5c400,transparent:true,opacity:0.35,depthWrite:false})); scene.add(beam);
+  marker.visible=beam.visible=false;
+  updateRouteUI();
+  const btn=$('#startBtn'); btn.disabled=false; btn.textContent=pois.some(p=>p.visited)?'Continuar el recorrido':'Empezar el recorrido';
+  btn.addEventListener('click',start);
+  requestAnimationFrame(frame);
+}
+function start(){
+  $('#intro').hidden=true; $('#hud').hidden=false; state='play'; camRate=1.2; last=performance.now();
+  scene.fog.near=90; scene.fog.far=420;
+  camYaw=player.hd+Math.PI; canvas.focus({preventScroll:true});
+  updateWorldState();
+}
+boot();
+})();
+</script>
+
+</html>
