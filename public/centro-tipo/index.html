@@ -131,7 +131,7 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
   <div class="talk panel" id="talk" hidden><span class="who" id="talkWho"></span><p id="talkText"></p></div>
   <button class="prompt panel" id="prompt" type="button" hidden><kbd id="promptKey">E</kbd><span id="promptText"></span></button>
   <div class="toast panel" id="toast" hidden></div>
-  <div class="keys panel"><b>WASD</b> moverse · <b>Shift</b> correr<br><b>← →</b> o arrastrar: girar cámara · <b>rueda</b> zoom<br><b>E</b> hablar / ver ficha · <b>M</b> plano</div>
+  <div class="keys panel"><b>WASD</b>/<b>flechas</b> moverse · <b>Shift</b> correr<br><b>Q R</b> o arrastrar: girar cámara · <b>rueda</b> zoom<br><b>E</b> hablar / ver ficha · <b>M</b> plano</div>
   <div class="touch">
     <div id="stick"><div id="knob"></div></div>
     <button class="tbtn" id="runBtn" type="button">Correr</button>
@@ -164,7 +164,7 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
       <li><i style="background:#9fb0aa"></i>Zona de servicios</li>
     </ul>
     <div class="ctl">
-      <section><h3>Teclado</h3><dl><dt>WASD</dt><dd>Caminar</dd><dt>Shift</dt><dd>Correr</dd><dt>← →</dt><dd>Girar la cámara</dd><dt>E</dt><dd>Hablar o ver la ficha</dd><dt>M</dt><dd>Plano y teletransporte</dd></dl></section>
+      <section><h3>Teclado</h3><dl><dt>WASD · flechas</dt><dd>Caminar</dd><dt>Shift</dt><dd>Correr</dd><dt>Q · R</dt><dd>Girar la cámara</dd><dt>E</dt><dd>Hablar o ver la ficha</dd><dt>M</dt><dd>Plano y teletransporte</dd></dl></section>
       <section><h3>Móvil</h3><dl><dt>Joystick</dt><dd>Caminar (a tope, corre)</dd><dt>Arrastrar</dt><dd>Girar la cámara</dd><dt>Acción</dt><dd>Hablar o ver la ficha</dd><dt>Plano</dt><dd>Saltar a cualquier parada</dd></dl></section>
     </div>
     <button class="go" id="startBtn" type="button" disabled>Construyendo el centro…</button>
@@ -1291,8 +1291,8 @@ function act(){
 function resize(){ const w=innerWidth, h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<h?68:58; camera.updateProjectionMatrix(); }
 function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI; return a+d*t; }
 function updatePlayer(dt){
-  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0), iy=((keys.KeyW||keys.ArrowUp)?1:0)-((keys.KeyS||keys.ArrowDown)?1:0);
-  if (keys.ArrowLeft||keys.KeyQ) camYaw+=1.9*dt; if (keys.ArrowRight) camYaw-=1.9*dt;
+  let ix=((keys.KeyD||keys.ArrowRight)?1:0)-((keys.KeyA||keys.ArrowLeft)?1:0), iy=((keys.KeyW||keys.ArrowUp)?1:0)-((keys.KeyS||keys.ArrowDown)?1:0);
+  if (keys.KeyQ) camYaw+=1.9*dt; if (keys.KeyR) camYaw-=1.9*dt;
   if (stick.active){ ix=stick.x; iy=-stick.y; }
   let mag=Math.min(1,Math.hypot(ix,iy));
   const run=keys.ShiftLeft||keys.ShiftRight||runHeld||(stick.active&&mag>0.96);
