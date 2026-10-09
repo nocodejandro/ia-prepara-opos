@@ -833,7 +833,7 @@ const SC={
            {h:cam,k:[[0,-2.7,-10.4],[3.2,0.6,-4.6],[5.4,3.0,-4.3],[11,3.0,-4.3],[14,2.3,-4.8],[15.4,-1.9,-5.2],[16.8,-3.4,-8.5],[19.9,-3.4,-16],[P,-3.4,-16]],face:[3.2,-1.6]},...C];
   for (const a of A){ a.h.g.rotation.order='YXZ'; g.add(a.h.g); }
   const bub=(t,w)=>{ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:signTexture(t,null,'yellow',w,0.6),depthWrite:false})); s.scale.set(w,0.6,1); s.visible=false; g.add(s); return s; };
-  const b1=bub('«En directo desde la acampada de Sol…»',3.6), b2=bub('¡Fuera! ¡Fuera!',2.2), b3=bub('¡La vivienda es un derecho!',3.0), b4=bub('¡Corta, corta!',1.9);
+  const b1=bub('«En directo desde la acampada de Sol…»',3.6), b2=bub('¡Fuera! ¡Fuera!',2.2), b3=bub('¡La vivienda es un derecho!',3.0), b4=bub('¡Corta, Vito, corta!',2.6);
   const put=(s,a,on)=>{ s.visible=on; if (on) s.position.set(a.h.g.position.x,2.75,a.h.g.position.z); };
   L.anim({g,up(t,dt){ const tt=t%P;
     for (const a of A){ const [u,w,du,dw]=KF(a.k,tt), x=X(u), z=Z(w), vx=L.s*du, vz=L.s*dw, sp=Math.hypot(vx,vz), h=a.h;
