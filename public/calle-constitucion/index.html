@@ -683,6 +683,26 @@ const A={
     return L.anim({g,up(t){ a.rotation.x=t*4; c2.rotation.x=-t*4; sh.position.z=((t*0.8)%1.6)-0.8; }}); }
 };
 
+/* ---------- Ayudas para escenas animadas por fotogramas clave (bucles dentro de una parcela) ---------- */
+/* k: [[t,u,w],...] → [u,w,du,dw] en el instante t */
+function KF(k,t){ if (t<=k[0][0]) return [k[0][1],k[0][2],0,0]; for (let i=1;i<k.length;i++){ const a=k[i-1], b=k[i]; if (t<=b[0]){ const d=b[0]-a[0]||1, f=(t-a[0])/d; return [a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f,(b[1]-a[1])/d,(b[2]-a[2])/d]; } } const l=k[k.length-1]; return [l[1],l[2],0,0]; }
+/* Coloca a una persona animada según sus fotogramas clave; face: 'road' o [u,w] hacia donde mira parada */
+function kfMove(L,h,k,t,dt,face){ const [u,w,du,dw]=KF(k,t), x=L.X(u), z=L.Z(w), vx=L.s*du, vz=L.s*dw, sp=Math.hypot(vx,vz);
+  h.g.position.set(x,0.06,z); h.g.rotation.x=0;
+  if (sp>0.05) h.g.rotation.y=Math.atan2(vx,vz); else if (face==='road') h.g.rotation.y=L.HD('road'); else if (face) h.g.rotation.y=Math.atan2(L.X(face[0])-x,L.Z(face[1])-z);
+  walkAnim(h,sp>0.05?(sp>2.6?2:1):0,dt,sp>2.6); return {u,w,sp}; }
+function seat(h,y=-0.4){ h.legL.rotation.x=h.legR.rotation.x=-1.5; h.g.position.y=y; }
+function bubble(g,t,w){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:signTexture(t,null,'yellow',w,0.6),depthWrite:false})); s.scale.set(w,0.6,1); s.visible=false; g.add(s); return s; }
+function bubbleOn(s,h,on,y=2.75){ s.visible=!!on; if (on) s.position.set(h.g.position.x,h.g.position.y+y,h.g.position.z); }
+/* Hoja gigante con texto en dos líneas (p. ej. «Real Decreto» / «Vivienda») */
+function docMesh(l1,l2,small,w=2.3,h=2.6){ const cv=document.createElement('canvas'); cv.width=480; cv.height=Math.round(480*h/w); const c=cv.getContext('2d'), H=cv.height;
+  c.fillStyle='#fffdf6'; c.fillRect(0,0,480,H); c.fillStyle='#c60b1e'; c.fillRect(0,0,480,H*0.05); c.fillStyle='#ffc400'; c.fillRect(0,H*0.05,480,H*0.05); c.fillStyle='#c60b1e'; c.fillRect(0,H*0.1,480,H*0.03);
+  c.strokeStyle='#1f2430'; c.lineWidth=8; c.strokeRect(10,10,460,H-20); c.textAlign='center'; c.textBaseline='middle';
+  const fit=(t,fs,y,col,wt)=>{ c.font=`${wt} ${fs}px "Archivo Narrow","Arial Narrow",sans-serif`; while (c.measureText(t).width>430&&fs>12){ fs--; c.font=`${wt} ${fs}px "Archivo Narrow","Arial Narrow",sans-serif`; } c.fillStyle=col; c.fillText(t,240,y); };
+  fit(l1.toUpperCase(),110,H*0.32,'#1f2430',800); fit(l2.toUpperCase(),130,H*0.56,'#c60b1e',800); if (small) fit(small,34,H*0.78,'#4a5160',600);
+  for (let i=0;i<4;i++){ c.fillStyle='#c9cfdb'; c.fillRect(70,H*0.86+i*10,340-i*60,4); }
+  const tex=new THREE.CanvasTexture(cv); tex.anisotropy=4; const g=new THREE.Group(), mat=new THREE.MeshBasicMaterial({map:tex});
+  const f=new THREE.Mesh(planeGeo,mat); f.scale.set(w,h,1); const b=f.clone(); b.rotation.y=Math.PI; b.position.z=-0.01; g.add(f,b); return g; }
 /* ---------- Una escena por artículo. u: 3..15 hacia el fondo, w: -6.5..6.5 a lo largo de la calle ---------- */
 const HEART=['.##.##.','#######','#######','.#####.','..###..','...#...'].map(r=>r.replace(/\./g,' '));
 const XMARK=['#...#','.#.#.','..#..','.#.#.','#...#'].map(r=>r.replace(/\./g,' '));
@@ -706,13 +726,44 @@ const SC={
   langs.forEach(([t,s],i)=>{ const w=-5+i*2.5; L.board(4.5+(i%2)*1.2,w,'road',2.2,0.6,t,s||null,i?'white':'red',1.6); });
   for (let i=0;i<4;i++){ const w=-4+i*2.6; L.p(8,w,'wp',civ(L.R)); L.p(8,w+1,'wm',civ(L.R)); L.b(8.2,8.4,2.1,2.6,w+0.1,w+0.9,WHITE); } },
 4:L=>{ A.flag(L,9,0,'road',9,'es'); L.flag(12,-4.5,'road',[0xffd400,RED,0xffd400,RED],5,false); L.flag(12,4.5,'road',[WHITE,0x2f7d5a,WHITE],5,false);
-  for (const w of [-2.2,2.2]) L.p(7,w,'road',{c:0x2d3a2a,p:0x2d3a2a,hat:'helmet',hc:0x2d3a2a,num:L.n}); L.board(14.5,0,'road',6,1,'Roja · amarilla (doble) · roja','franjas horizontales'); },
+  for (const w of [-2.2,2.2]) L.p(7,w,'road',{c:0x2d3a2a,p:0x2d3a2a,hat:'helmet',hc:0x2d3a2a,num:L.n}); L.board(14.5,0,'road',6,1,'Roja · amarilla (doble) · roja','franjas horizontales');
+  /* Bandera de Ceuta (gironada en blanco y negro con escudo) y concentración «Ceuta es España» */
+  const rows=[]; for (let j=0;j<10;j++){ let r=''; for (let i=0;i<14;i++){ const sh=i>=5&&i<=8&&j>=2&&j<=7;
+      if (sh) r+=(i===5||i===8||j===2||j===7)?'R':((j===4||j===5)&&(i===6||i===7)?'L':'W'); else if (j===1&&i>=5&&i<=8) r+='Y';
+      else { const a=Math.atan2(4.5-j,i-6.5); r+=(Math.floor((a+Math.PI)/(Math.PI/4))%2)?'B':'W'; } } rows.push(r); }
+  L.b(6.55,6.7,0,5.9,-5.15,-5.0,0xd6dade,true); L.b(6.5,6.75,5.9,6.05,-5.2,-4.95,GOLD);
+  L.pix(rows,6.62,4.1,-3.75,'road',0.17,{W:0xf7f7f2,B:0x111111,R:0xc60b1e,L:0x1d4f91,Y:GOLD});
+  L.label('Ceuta',null,6.5,3.75,-3.75,'road',1.4,0.4,'white');
+  A.jump(L,4.7,5.6,-5.2,-1.4,5,{face:'road',amp:0.3});
+  L.board(3.9,-3.3,'road',3.8,0.85,'Ceuta es España','Art. 4 · Día de Ceuta','white',1.1); },
 5:L=>{ L.b(7,11,0,1,-2.5,2.5,STONE,true); L.b(8.8,9.3,1,3.2,1.2,1.7,0x6b4f35); L.b(7.8,10.2,3,5.4,0.3,2.7,0x3f7f3a); for (let i=0;i<10;i++) L.b(7.8+((i*37)%24)/10,8+((i*37)%24)/10,3.4+(i%4)*0.5,3.6+(i%4)*0.5,0.2+((i*53)%24)/10,0.4+((i*53)%24)/10,RED);
   const bear=0x5a3a22; L.b(8.5,9.6,1,2.6,-1.4,-0.4,bear); L.b(8.6,9.5,2.6,3.3,-1.3,-0.5,bear); L.b(8.8,9.3,3.3,3.5,-1.3,-1.1,bear); L.b(8.8,9.3,3.3,3.5,-0.7,-0.5,bear); L.b(8.7,9.2,2.1,2.3,-0.4,0.5,bear);
   L.num(6.95,0.5,0,'road',0.6,GOLD); L.board(14,0,'road',5.5,1.1,'Madrid','capital del Estado','red'); L.gnum(5,4,1.6,GOLD,'0'); L.label('Km 0',null,4.9,0.2,5.4,'road',1,0.4,'white'); },
 6:L=>{ const cols=[RED,BLU,0x7a4fb0,0x3f9f5a,0xe08a2a]; cols.forEach((c,i)=>{ const w=-5.5+i*2.75; L.b(8,10.5,2.4,2.6,w-1.1,w+1.1,c); L.b(8.05,8.2,0,2.4,w-1.05,w-0.9,GREY); L.b(8.05,8.2,0,2.4,w+0.9,w+1.05,GREY); L.b(8.2,9,0,0.9,w-0.8,w+0.8,WHITE,true); L.p(9.5,w,'road',{c}); L.num(8.15,1.8,w,'road',0.45,c); });
   L.ballot(5,0,'road'); L.board(14,0,'road',6,1,'Pluralismo político','partidos democráticos'); },
-7:L=>{ L.table(8,10,-4,4,WOOD,{a:{c:0x2f6fb0,hat:'hard',num:L.n},b:suit(BLU)}); L.board(5.5,-4.5,'road',3,0.8,'Sindicatos',null,'red'); L.board(13.5,4,'road',3.4,0.8,'Empresarios',null,'blue'); L.board(15,-2,'road',5,1,'Defensa de intereses','económicos y sociales'); },
+7:L=>{ /* Sindicatos: mariscada con una gamba gigante */
+  L.b(12,15.8,0,0.35,-1.2,6.4,0xd9dde2,true); L.b(12.2,15.6,0.35,0.4,-1.0,6.2,0xeef0f2); for (const [u,w] of [[12.5,-0.6],[15.2,5.8],[12.6,5.9],[15.1,-0.5]]) L.b(u-0.3,u+0.3,0.4,0.55,w-0.3,w+0.3,0xf2d23a);
+  { const b=canon(), P1=0xff7f50, P2=0xff9e74, seg=12;
+    for (let i=0;i<=seg;i++){ const t=i/seg, x=-3+6*t, y=1.1+2.1*Math.sin(Math.PI*t*0.9), r=0.8*(1-0.5*t); b.Q(x-0.32,x+0.32,y-r,y+r,-r*0.9,r*0.9,i%2?P1:P2); if (i<7) b.Q(x-0.05,x+0.05,0.35,y-r,-0.3,0.3,0xe8603a); }
+    b.Q(-3.9,-2.7,0.6,2.0,-0.85,0.85,P1); b.Q(-3.75,-3.45,1.6,1.9,0.86,0.9,0x111111); b.Q(-3.75,-3.45,1.6,1.9,-0.9,-0.86,0x111111); b.Q(-4.9,-3.9,1.2,1.35,-0.06,0.06,0xe8603a);
+    for (let i=0;i<16;i++){ const x=-3.9-i*0.22, y=1.9+i*0.18; b.Q(x-0.12,x+0.12,y,y+0.05,0.3,0.35,0xe8603a); b.Q(x-0.12,x+0.12,y,y+0.05,-0.35,-0.3,0xe8603a); }
+    b.Q(2.7,3.7,0.55,1.6,-1.0,1.0,P2); b.Q(3.4,3.9,0.4,1.8,-1.2,1.2,P1);
+    digits(b,7,{x:0,y:2.9,z:0.62},[0,1],0.9,WHITE,0.03); digits(b,7,{x:0,y:2.9,z:-0.62},[0,-1],0.9,WHITE,0.03);
+    const inner=grp(b), g=new THREE.Group(); g.add(inner); g.position.set(L.X(13.9),0.3,L.Z(2.6)); g.rotation.y=L.HD('road');
+    L.anim({g,up(t){ inner.position.y=Math.sin(t*1.2)*0.12; inner.rotation.x=Math.sin(t*0.8)*0.04; }}); }
+  L.label('Gamba de honor',null,11.95,0.2,2.6,'road',2.4,0.3,'white');
+  /* Mesa larga con mantel y platos de gambas */
+  L.table(8.4,9.6,-5.6,0,0xf4f1ea,{people:false}); for (let w=-5.2;w<0;w+=1.1){ L.b(8.9,9.5,0.8,0.84,w-0.3,w+0.3,WHITE); for (let k=0;k<3;k++) L.b(9.0+k*0.14,9.1+k*0.14,0.84,0.92,w-0.2+k*0.12,w-0.05+k*0.12,0xff7f50); }
+  for (const w of [-4.6,-2.4,-0.4]) L.b(8.6,8.75,0.8,1.15,w-0.06,w+0.06,0x7a1a2a);
+  L.board(3.4,3.0,'road',3.8,0.9,'Sindicatos','defensa de intereses · art. 7','red',3.1);
+  const g=new THREE.Group(), D=[], WS=[-5.0,-3.9,-2.8,-1.7,-0.6];
+  WS.forEach((w,i)=>{ const h=human({c:[0xc8323a,0xd9d4c8,0x2f6fb0][i%3],p:0x2a2f38,skin:SKIN[i%5],hair:HAIR[i%7],vest:i%2?0xc8323a:0xf07a1a,num:7}); const gb=new Batch(); gb.box(-0.05,0.05,-0.8,-0.66,-0.03,0.2,0xff7f50); h.armR.add(new THREE.Mesh(gb.geo(),charMat));
+    h.g.position.set(L.X(10.2),0,L.Z(w)); h.g.rotation.y=L.HD('road'); g.add(h.g); L.b(10.0,10.5,0,0.42,w-0.25,w+0.25,DARK); D.push({h,ph:i*1.3}); });
+  const wt=gear(human({c:WHITE,p:0x15171c,skin:SKIN[2],hair:HAIR[3],tie:0x15171c,num:7}),{}); const tb=new Batch(); tb.box(-0.4,0.4,-0.74,-0.7,-0.3,0.3,0xd9dde2); for (let k=0;k<5;k++) tb.box(-0.3+k*0.13,-0.2+k*0.13,-0.82,-0.74,-0.15,0.1,0xff7f50); wt.armR.add(new THREE.Mesh(tb.geo(),charMat)); g.add(wt.g);
+  const WK=[[0,11.2,-6.4],[3,11.2,-3.2],[5,11.2,-3.2],[8,11.2,-0.2],[10,11.2,-0.2],[14,11.2,-6.4],[16,11.2,-6.4]], bw=bubble(g,'¡Marchando otra de gambas!',3.0), bd=bubble(g,'¡Qué buenas están!',2.2);
+  L.anim({g,up(t,dt){ for (const d of D){ seat(d.h,-0.44); const k=Math.max(0,Math.sin(t*2.2+d.ph)); d.h.armR.rotation.x=-0.5-k*1.7; d.h.armL.rotation.x=-1.0; }
+    const tt=t%16; kfMove(L,wt,WK,tt,dt,[9,(tt<9?-3.2:-0.2)]); wt.armR.rotation.x=-2.9; wt.armL.rotation.x=-0.2;
+    bubbleOn(bw,wt,tt>3&&tt<8); bubbleOn(bd,D[1].h,tt>9&&tt<13,2.4); }}); },
 8:L=>{ A.tank(L,9.5,0,3.6); A.plane(L,9,0,15,7); for (const [u,w] of [[4.5,-4.5],[4.5,4.5],[14.5,-5.5],[14.5,5.5]]) L.p(u,w,'road',{c:OLIVE,p:OLIVE,hat:'helmet',hc:OLIVE,num:L.n}); L.board(14.5,0,'road',6,1,'Tierra · Armada · Aire','Fuerzas Armadas','green'); },
 9:L=>{ const lv=[[9,6,0xe9e0c9],[7.4,4.6,0xdfd2b3],[5.8,3.2,0xd3c49c],[4.2,1.8,GOLD]]; lv.forEach(([a,b,c],i)=>L.b(9.5-a/2,9.5+a/2,i*0.8,(i+1)*0.8,-b,b,c,i===0));
   L.book(9.5,0,'road',0x8a1c2b,'Constitución'); L.label('Leyes',null,5,1.2,-4,'road',2,0.5,'white'); L.label('Reglamentos',null,5,0.4,4,'road',2.6,0.5,'white');
@@ -888,7 +939,27 @@ const SC={
 67:L=>{ L.bld(11,15,-6,-1,4.5,0xefe3cf,{label:'Congreso'}); L.bld(11,15,1,6,4.5,0xd9b3a3,{label:'Senado'}); L.p(8.5,0,'road',{pose:'up',...suit()});
   L.pix(XMARK,7,0.4,0,'road',0.3,{'#':RED}); L.board(5,-4,'road',4,0.9,'Sin mandato imperativo',null,'white'); },
 68:L=>{ L.hemi(9,0,'road',3.5,4,0x2e8b57,{every:1}); L.lectern(6,0,'back'); L.b(13.5,15.5,0,4.5,-2.5,2.5,DARK,true); L.num(13.45,3,0,'road',1.3,0x7cf07c,'350'); L.label('300 a 400 diputados',null,13.45,1.4,0,'road',4.6,0.6,'dark');
-  L.board(5,-5,'road',2.6,0.8,'Provincia',null,'white'); },
+  /* Elecciones generales del 29-N: cola de argentinos (con doble nacionalidad) para votar */
+  L.board(6.9,-4.6,'road',3.2,0.9,'Elecciones generales','29 de noviembre','yellow',1.7); L.board(3.4,-5.0,'road',2.4,0.7,'Colegio electoral','mesa 68','white',1.2);
+  L.b(5.7,6.5,0,0.75,-3.4,-0.8,WOOD,true); L.b(5.65,6.55,0.75,0.8,-3.45,-0.75,0xf4f1ea); L.ballot(5.25,-2.0,'road');
+  for (const w of [-3.0,-1.1]) L.p(6.95,w,'road',{pose:'sit',c:[0x3d5a80,0x6c4f8e][w<-2?0:1],num:68});
+  { const u=2.4, w=-6.0, h=5, F=L.FW.road; L.b(u-0.07,u+0.07,0,h,w-0.07,w+0.07,0xd6dade,true); const cc=L.c(u,h-1.5,w);
+    for (const [a,b2,col] of [[0,0.47,0x75aadb],[0.47,0.93,WHITE],[0.93,1.4,0x75aadb]]) plBox(null,cc,F,0.08,2.3,a,b2,-0.02,0.02,col);
+    plBox(null,cc,F,1.04,1.34,0.55,0.85,-0.04,0.04,0xf6b40e); }
+  const g=new THREE.Group(), P=24.5, N=7, slot=j=>[4.4-j*0.8,-2.0], Q=[], ARG=[0x75aadb,WHITE];
+  const k=[[0,-1.6,-8.6],[2,...slot(6)]]; for (let j=5;j>=0;j--){ const s=3.5*(6-j); k.push([s,...slot(j+1)],[s+0.8,...slot(j)]); } k.push([22.7,...slot(0)],[23.5,3.4,-3.8],[24.2,1.0,-5.6],[P,-1.6,-8.6]);
+  for (let i=0;i<N;i++){ const h=human({c:ARG[i%2],p:i%3?0x2a3550:0xf4f1ea,skin:SKIN[(i*2)%5],hair:HAIR[(i*3)%7],num:68});
+    if (i%3===0){ const b=new Batch(); b.box(-0.025,0.025,-2.3,-0.62,-0.025,0.025,0xd6dade); for (const [a,b2,col] of [[-2.3,-2.05,0x75aadb],[-2.05,-1.8,WHITE],[-1.8,-1.55,0x75aadb]]) b.box(-0.015,0.015,a,b2,0.03,1.0,col); b.box(-0.03,0.03,-1.98,-1.87,0.45,0.58,0xf6b40e); h.armR.add(new THREE.Mesh(b.geo(),charMat)); h.flag=true; }
+    else if (i%3===1){ const b=new Batch(); b.box(-0.08,0.08,-0.92,-0.68,-0.08,0.08,0x7a5236); b.box(-0.015,0.015,-0.68,-0.5,-0.015,0.015,0xc9cfdb); h.armL.add(new THREE.Mesh(b.geo(),charMat)); h.mate=true; }
+    const e=new Batch(); e.box(-0.02,0.02,-0.82,-0.7,-0.12,0.12,WHITE); const env=new THREE.Mesh(e.geo(),charMat); h.armR.add(env); h.env=env;
+    g.add(h.g); Q.push({h,off:i*3.5}); }
+  const bq=bubble(g,'¿Es acá la fila para votar?',3.0), bv=bubble(g,'¡Listo, che! Ya voté',2.4);
+  L.anim({g,up(t,dt){ let qh=null, vh=null;
+    for (const q of Q){ const tt=(t+q.off)%P, h=q.h, r=kfMove(L,h,k,tt,dt,[6,-2.0]); h.g.visible=r.w>-7.6;
+      const voting=tt>21.6&&tt<22.6; if (h.flag&&!voting) h.armR.rotation.x=-2.9+Math.sin(t*3+q.off)*0.15; if (h.mate) h.armL.rotation.x=-1.6;
+      if (voting){ h.armR.rotation.x=-1.4+Math.sin((tt-21.6)*Math.PI)*-0.6; } h.env.visible=tt<22.2;
+      if (tt>9&&tt<12.4) qh=h; if (tt>22.4&&tt<24) vh=h; }
+    bubbleOn(bq,qh||Q[0].h,!!qh); bubbleOn(bv,vh||Q[0].h,!!vh); }}); },
 69:L=>{ L.hemi(9.5,0,'road',3,3,0xb3122a,{every:1}); L.lectern(6.5,0,'back'); L.board(14.5,0,'road',6,1.1,'Senado','4 senadores por provincia','red');
   for (let i=0;i<4;i++) L.b(5,6,0.06,0.2,-5.5+i*1.1,-4.6+i*1.1,[0x5aa66a,0xd9b75f,0x6a96d2,0xc46a80][i]); },
 70:L=>{ L.b(9,9.3,0,3,-2,-1.7,GREY,true); L.b(9,9.3,0,3,1.7,2,GREY,true); L.b(9,9.3,3,3.3,-2,2,GREY); L.label('Incompatible',null,8.95,2.6,0,'road',3,0.55,'red');
@@ -906,8 +977,31 @@ const SC={
   L.board(14.5,3,'road',5,1,'Comisión de investigación','comparecer es obligatorio'); },
 77:L=>{ L.b(9,10.5,0,2,-1,1,0xf2c230,true); L.b(9,10.5,2,2.3,-1.1,1.1,0xd8a820); L.num(8.95,1.2,0,'road',0.5,DARK); for (let i=0;i<8;i++) L.b(7+i*0.2,7.6+i*0.2,0.06+i*0.08,0.12+i*0.08,1.5,2.4,WHITE);
   L.p(6,-2,'road',{pose:'fwd',...civ(L.R)}); L.bld(12,15,-6,6,5,0xefe3cf,{label:'Cortes Generales'}); },
-78:L=>{ L.b(8,14,0,3.6,-5,5,0xf3e3b0,true); for (let r=0;r<3;r++) for (let k=0;k<7;k++) L.p(7.2-r*1.1,-3.6+k*1.2,'back',{pose:'sit',...suit()}); L.num(7.95,2.6,0,'road',1.1,DARK,'21');
-  L.label('Diputación Permanente',null,7.95,1.2,0,'road',5,0.6,'blue'); },
+78:L=>{ /* Cortes disueltas: el Congreso entrega el Real Decreto de Vivienda a la Diputación Permanente */
+  L.temple(11,15.6,0.8,6.6,5,0xefe6d2,'Congreso','disuelto · elecciones 29-N');
+  for (const w of [1.3,6.1]){ L.b(9.2,10.2,0,0.7,w-0.4,w+0.4,STONE,true); L.b(9.3,10.1,0.7,1.5,w-0.3,w+0.3,0xb08a3a); L.b(9.8,10.15,1.3,1.75,w-0.2,w+0.2,0xb08a3a); }
+  L.b(5.2,6.4,0,0.76,-5.6,-0.6,0x5a3a26,true); L.b(5.15,6.45,0.76,0.8,-5.65,-0.55,0x2f5d8a);
+  for (const w of [-5.0,-4.0,-2.0,-1.0]) { L.b(6.9,7.4,0,0.42,w-0.25,w+0.25,DARK); }
+  L.b(7.7,8.0,0,1.6,-6.2,-0.2,0x8a1c2b); L.num(7.68,1.15,-4.6,'road',0.6,GOLD,'21'); L.label('Diputación Permanente','mínimo 21 miembros · art. 78',7.66,2.3,-3.2,'road',5.4,0.9,'blue');
+  L.p(6.95,-5.6,'road',{pose:'sit',...suit()}); L.p(6.95,-0.4,'road',{pose:'sit',...suit()});
+  const g=new THREE.Group(), P=24, M=[];
+  for (const w of [-5.0,-4.0,-2.0,-1.0]){ const h=human({c:SUIT,p:SUIT,skin:SKIN[(M.length*2)%5],hair:HAIR[M.length+1],tie:[RED,BLU,0x2f7d5a,0x6c4f8e][M.length],num:78}); h.g.position.set(L.X(7.15),0,L.Z(w)); h.g.rotation.y=L.HD('road'); g.add(h.g); M.push(h); }
+  const pres=human({c:0x2a2f38,p:0x2a2f38,skin:SKIN[1],hair:HAIR[4],tie:GOLD,num:78}); g.add(pres.g); L.b(6.9,7.4,0,0.42,-3.25,-2.75,0x8a1c2b);
+  const uj=human({c:0x15171c,p:0x15171c,skin:SKIN[2],hair:HAIR[3],tie:WHITE,band:GOLD,num:78}); g.add(uj.g);
+  const doc=docMesh('Real Decreto','Vivienda','Decreto-ley · BOE'); g.add(doc); doc.rotation.y=L.HD('road');
+  const UK=[[0,13.2,3.7],[1,12.6,3.7],[3,9.0,3.7],[6,4.3,0.4],[8,4.3,-3.0],[10,4.3,-3.0],[12.5,8.6,2.6],[15,12.6,3.7],[16,13.2,3.7],[P,13.2,3.7]];
+  const b1=bubble(g,'¡Del Congreso a la Diputación Permanente!',4.2), b2=bubble(g,'Recibido: ahora lo votamos aquí',3.4), b3=bubble(g,'¿Votos a favor?',2.0);
+  L.anim({g,up(t,dt){ const tt=t%P;
+    const r=kfMove(L,uj,UK,tt,dt,[7,-3]); uj.g.visible=r.u<12.4; const carrying=tt<8.6;
+    if (carrying||(tt>=8&&tt<9.4)){ uj.armL.rotation.x=uj.armR.rotation.x=tt<8?-2.9:-2.9+(tt-8)*1.2; }
+    const stand=tt>7.4&&tt<15.5; pres.g.position.set(L.X(7.15),0.06,L.Z(-3.0)); pres.g.rotation.y=L.HD('road'); walkAnim(pres,0,dt); if (!stand) seat(pres,-0.44);
+    if (tt>8.6&&tt<15) pres.armL.rotation.x=pres.armR.rotation.x=-2.9; if (tt>=16.5&&tt<20.5){ pres.armR.rotation.x=-2.6; }
+    for (const [i,h] of M.entries()){ seat(h,-0.44); const vote=tt>17.2&&tt<20.5&&i!==2; h.armR.rotation.x=vote?-2.9:-1.0; h.armL.rotation.x=-1.0; }
+    const hold=(h,y)=>doc.position.set(h.g.position.x,y,h.g.position.z);
+    doc.visible=tt>0.8&&tt<21;
+    if (tt<8) hold(uj,3.35); else if (tt<9.2){ const f=(tt-8)/1.2, ax=uj.g.position.x, az=uj.g.position.z, bx=pres.g.position.x, bz=pres.g.position.z; doc.position.set(ax+(bx-ax)*f,3.35+Math.sin(f*Math.PI)*0.3,az+(bz-az)*f); }
+    else if (tt<15) hold(pres,3.4); else doc.position.set(L.X(5.8),2.1,L.Z(-3.0));
+    bubbleOn(b1,uj,tt>2.2&&tt<7.4,5.0); bubbleOn(b2,pres,tt>9.6&&tt<14.6,5.0); bubbleOn(b3,pres,tt>16&&tt<20.5,2.4); }}); },
 79:L=>{ L.b(12,14,0,5,-5,5,DARK,true); for (let r=0;r<4;r++) for (let k=0;k<9;k++) L.b(11.95,12,1+r*0.9,1.6+r*0.9,-4.4+k*1.1,-3.8+k*1.1,(r*9+k)%4===0?0xd21f2b:0x3fbf5a);
   L.num(11.95,4.6,0,'road',0.4,YEL); L.hemi(8,0,'back',2,1,0x2e8b57,{every:1}); L.board(5,-4.5,'road',3.4,0.8,'Voto indelegable',null,'white'); },
 80:L=>{ for (let r=0;r<3;r++){ L.b(9+r*1.2,10.2+r*1.2,0,0.5+r*0.5,-5,5,0x8a6a4a,true); for (let k=0;k<6;k++) L.p(9.6+r*1.2,-4+k*1.6,'road',{pose:'sit',...civ(L.R)}); /* on step */ }
