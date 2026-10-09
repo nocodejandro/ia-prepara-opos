@@ -797,8 +797,58 @@ const SC={
   L.board(4.5,-1,'road',3.8,0.8,'Medio ambiente',null,'green'); },
 46:L=>{ for (let i=0;i<5;i++){ const w=-5.5+i*2.6; L.b(10,11,0,6,w-0.4,w+0.4,0xb89a70,true); } L.b(10,11,6,7.2,-6,6,0xb89a70); for (let i=0;i<4;i++) L.b(10,11,4.8,6,-4.9+i*2.6,-3.3+i*2.6,0xb89a70);
   L.b(13,15,0,7,-6,-3.5,0xc9b48c,true); for (let w=-6;w<-3.5;w+=0.6) L.b(13,15,7,7.6,w,w+0.3,0xc9b48c); L.num(10-0.05,6.6,0,'road',0.6,WHITE); L.board(5,0,'road',6,1,'Patrimonio histórico','cultural y artístico'); },
-47:L=>{ L.bld(10,15,-6,6,10,0xe8b89a,{label:'Vivienda digna',sub:'y adecuada'}); for (let y=3;y<10;y+=2.6) for (let w=-4.5;w<=4.5;w+=3) L.b(9.3,10,y,y+0.15,w-1,w+1,WHITE);
-  L.boxes(7,-3,3); L.boxes(7.5,-1.8,2,0xb48a52); L.p(7,0,'back',civ(L.R)); L.p(6.5,1.2,'back',{sc:0.6,...civ(L.R)}); },
+47:L=>{ /* Puerta del Sol: acampada por la vivienda; una tele llega a grabar y los acampados la echan */
+  const BR=0xb5543c; L.bld(12,15.5,-6.6,6.6,7,BR,{roof:0x8a3a2a});
+  for (const w of [-6.6,-3.3,0,3.3,6.6]) L.b(11.9,12,0,7,w-0.25,w+0.25,0xf0e6d2); L.b(11.9,12,3.4,3.7,-6.6,6.6,0xf0e6d2);
+  L.b(12.6,14.8,7.3,9.4,-1.3,1.3,0xf0e6d2); L.b(12.4,15,9.4,9.7,-1.5,1.5,0x5a5f66); L.b(13.2,14.2,9.7,10.9,-0.5,0.5,0xf0e6d2); L.b(13.5,13.9,10.9,11.6,-0.2,0.2,GOLD);
+  L.b(12.52,12.6,7.7,9.1,-0.7,0.7,0xfaf6ea); L.b(12.48,12.52,8.35,8.45,-0.05,0.5,DARK); L.b(12.48,12.52,8.35,8.95,-0.05,0.05,DARK);
+  L.label('Puerta del Sol','Casa de Correos · Km 0',11.85,5.3,0,'road',7.2,1.3,'red');
+  L.b(2.4,3.4,0.06,0.1,6.3,6.9,0xd9c27a); L.label('Km 0',null,2.38,0.5,6.6,'road',0.6,0.3,'white'); L.b(2.36,2.4,0.1,0.65,6.35,6.85,STONE);
+  /* El Oso y el Madroño */
+  L.b(3.8,5.2,0,0.9,5.2,6.6,STONE,true); L.b(4.4,4.6,0.9,2.6,5.5,5.7,0x6b4f35); L.b(3.9,5.1,2.4,3.8,5.0,6.5,0x3f7f3a); for (let i=0;i<6;i++) L.b(3.9+(i%3)*0.4,4.05+(i%3)*0.4,2.7+(i%2)*0.6,2.85+(i%2)*0.6,5.0+i*0.25,5.15+i*0.25,RED);
+  L.b(4.0,4.8,0.9,2.1,5.9,6.4,0x5a3a22); L.b(4.1,4.7,2.1,2.6,5.95,6.35,0x5a3a22);
+  /* Tiendas de campaña con el 47 */
+  const tent=(u,w,col,sc=1)=>{ const q=(a,b,y0,y1,c)=>L.b(u-a*sc,u+a*sc,y0*sc,y1*sc,w-b*sc,w+b*sc,c,y0===0);
+    q(1,0.9,0,0.5,col); q(0.8,0.7,0.5,0.95,col); q(0.55,0.45,0.95,1.3,col); q(0.3,0.2,1.3,1.5,shade(col,0.8));
+    L.b(u-1.02*sc,u-0.98*sc,0,0.75*sc,w-0.7*sc,w-0.15*sc,0x2a2f38); L.num(u-1.02*sc,0.3*sc,w+0.45*sc,'road',0.3*sc,WHITE); L.num(u-0.82*sc,0.72*sc,w+0.1*sc,'road',0.26*sc,WHITE); };
+  tent(6.3,-4.9,0xf07a1a); tent(8.8,-4.9,0x2f8f4a); tent(4.9,2.6,0xc8323a,0.75); tent(6.2,5.0,0x2f6fb0); tent(8.7,5.0,0xe0c040); tent(10.6,5.4,0x7a4fb0,0.8);
+  /* Lona azul de la asamblea */
+  for (const [u,w] of [[6.8,-2.4],[6.8,2.4],[10.8,-2.4],[10.8,2.4]]) L.b(u-0.05,u+0.05,0,2.4,w-0.05,w+0.05,0x8a8f96,true);
+  L.b(6.6,11,2.4,2.5,-2.6,2.6,0x2f6fd0); L.b(6.55,6.65,1.9,2.4,-2.6,2.6,0x2f6fd0); L.num(6.53,2.15,0,'road',0.42,WHITE);
+  L.table(8.6,9.6,-1.6,1.6,0xd8cfbd,{people:false}); L.boxes(10.2,-1.6,2); L.boxes(10.2,1.4,3,0xb48a52); L.b(7.2,8.2,0.06,0.18,1.0,2.2,0x4f9fb0);
+  L.p(8.15,-0.9,'back',{pose:'sit',num:47}); L.p(10.05,0.2,'road',{pose:'sit',num:47}); L.p(10.05,-0.9,'road',{pose:'sit',num:47}); L.p(7.6,1.6,'wm',{pose:'sit',num:47});
+  /* Pancartas */
+  L.board(3.4,3.2,'road',3.4,0.8,'¡Vivienda digna ya!','Art. 47','yellow',3.1); L.board(11.4,-4.6,'road',3.6,0.9,'Ni casas sin gente','ni gente sin casa','white',1.4); L.board(11.4,2.2,'road',3,0.8,'Acampada Sol','asamblea a las 20 h','red',1.4);
+  /* Escena animada: llega una tele a grabar y los acampados la echan (bucle de 26 s) */
+  const g=new THREE.Group(), P=26, X=L.X, Z=L.Z;
+  const KF=(k,t)=>{ if (t<=k[0][0]) return [k[0][1],k[0][2],0,0]; for (let i=1;i<k.length;i++){ const a=k[i-1], b=k[i]; if (t<=b[0]){ const d=b[0]-a[0]||1, f=(t-a[0])/d; return [a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f,(b[1]-a[1])/d,(b[2]-a[2])/d]; } } const l=k[k.length-1]; return [l[1],l[2],0,0]; };
+  const pres=human({c:0xc8323a,p:0x2a2f38,skin:SKIN[1],hair:HAIR[5],num:47}); { const b=new Batch(); b.box(-0.04,0.04,-0.9,-0.66,-0.04,0.04,0x222222); b.box(-0.07,0.07,-1.0,-0.88,-0.07,0.07,0x444444); b.box(-0.09,0.09,-0.86,-0.74,-0.1,0.1,BLU); h_add(pres.armR,b); }
+  const cam=human({c:0x3a3f48,p:0x2a2f38,skin:SKIN[3],hair:HAIR[3],num:47}); { const b=canon(); b.Q(0.14,0.44,1.5,1.82,-0.35,0.3,0x2a2d33); b.Q(0.2,0.38,1.56,1.76,0.3,0.6,0x15171c); b.Q(0.22,0.36,1.82,1.9,-0.2,0.15,0x2a2d33); b.Q(0.15,0.17,1.58,1.66,-0.3,-0.2,0xff2a2a);
+    digits(b,47,{x:0.45,y:1.66,z:-0.05},[1,0],0.2,YEL,0.02); digits(b,47,{x:0.13,y:1.66,z:-0.05},[-1,0],0.2,YEL,0.02); cam.g.add(grp(b)); }
+  function h_add(arm,b){ arm.add(new THREE.Mesh(b.geo(),charMat)); }
+  const homes=[[5.6,0.6],[6.0,-1.8],[4.4,-3.6],[7.4,2.9],[7.6,-3.3]], sur=[[4.3,-0.9],[4.3,-2.9],[3.9,-5.2],[2.1,-0.3],[4.1,-3.9]], push=[[3.4,-2.1],[3.5,-3.6],[2.9,-5.0],[1.9,-1.4],[3.2,-4.6]], chase=[[-0.6,-2.4],[0.3,-1.2],[-1.3,-3.6],[0.7,-3.4],[-0.5,-0.3]];
+  const C=homes.map((h,i)=>{ const st=7.4+i*0.5, a=civil(47,{sign:i===1||i===3,sc:[YEL,WHITE][i%2]});
+    return {h:a, st, k:[[0,...h],[st,...h],[st+2.6,...sur[i]],[14.6,...push[i]],[17.3,...chase[i]],[21,...chase[i]],[24.6,...h],[P,...h]]}; });
+  const A=[{h:pres,k:[[0,-2.2,-9.6],[3,0.8,-3.0],[5.4,3.2,-1.6],[11,3.2,-1.6],[14,2.6,-2.4],[15.6,-1.6,-3.6],[17,-2.9,-7.5],[20.4,-3,-16],[P,-3,-16]],face:[3.0,-4.3]},
+           {h:cam,k:[[0,-2.7,-10.4],[3.2,0.6,-4.6],[5.4,3.0,-4.3],[11,3.0,-4.3],[14,2.3,-4.8],[15.4,-1.9,-5.2],[16.8,-3.4,-8.5],[19.9,-3.4,-16],[P,-3.4,-16]],face:[3.2,-1.6]},...C];
+  for (const a of A){ a.h.g.rotation.order='YXZ'; g.add(a.h.g); }
+  const bub=(t,w)=>{ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:signTexture(t,null,'yellow',w,0.6),depthWrite:false})); s.scale.set(w,0.6,1); s.visible=false; g.add(s); return s; };
+  const b1=bub('«En directo desde la acampada de Sol…»',3.6), b2=bub('¡Fuera! ¡Fuera!',2.2), b3=bub('¡La vivienda es un derecho!',3.0), b4=bub('¡Corta, corta!',1.9);
+  const put=(s,a,on)=>{ s.visible=on; if (on) s.position.set(a.h.g.position.x,2.75,a.h.g.position.z); };
+  L.anim({g,up(t,dt){ const tt=t%P;
+    for (const a of A){ const [u,w,du,dw]=KF(a.k,tt), x=X(u), z=Z(w), vx=L.s*du, vz=L.s*dw, sp=Math.hypot(vx,vz), h=a.h;
+      h.g.visible=Math.abs(w)<11.5; h.g.position.set(x,0.06,z); h.g.rotation.x=0;
+      if (sp>0.05) h.g.rotation.y=Math.atan2(vx,vz);
+      else if (a.face) h.g.rotation.y=Math.atan2(X(a.face[0])-x,Z(a.face[1])-z);
+      else if (a.st!==undefined){ const tgt=tt<15.5?[X(3.1),Z(-3)]:[X(-3),z]; h.g.rotation.y=Math.atan2(tgt[0]-x,tgt[1]-z); }
+      walkAnim(h,sp>0.05?(sp>2.6?2:1):0,dt*(sp>2.6?1.2:1),sp>2.6);
+      if (a.st!==undefined){ const sit=tt<a.st-0.5||tt>25.5;
+        if (sit){ h.legL.rotation.x=h.legR.rotation.x=-1.5; h.armL.rotation.x=h.armR.rotation.x=-0.5; h.g.position.y=-0.72; h.g.rotation.y=Math.atan2(X(-3)-x,0); }
+        else if (tt>a.st+1.5&&tt<21.2&&sp<2.6){ const k=Math.sin(tt*9+a.st*3); h.armL.rotation.x=-2.7+k*0.4; h.armR.rotation.x=-2.7-k*0.4; } } }
+    const talk=tt>5.4&&tt<11, scared=tt>=11&&tt<14.2;
+    if (talk){ pres.armR.rotation.x=-1.85; pres.armL.rotation.x=-0.6+Math.sin(tt*4)*0.4; } else if (scared){ pres.armR.rotation.x=-1.85; pres.armL.rotation.x=-2.5; }
+    if (tt>5&&tt<15.2){ cam.armR.rotation.x=-1.9; cam.armL.rotation.x=-1.5; } else { cam.armR.rotation.x=-1.9; }
+    put(b1,A[0],talk); put(b2,C[0],tt>11.2&&tt<20.5); put(b3,C[2],tt>17.6&&tt<23); put(b4,A[0],tt>14.2&&tt<17.4); }}); },
 48:L=>{ L.b(12,15,0,1,-5,5,DARK,true); L.b(12,15,4,4.2,-5,5,DARK); for (const w of [-5,5]) L.b(12,12.2,1,4,w-0.1,w+0.1,DARK); L.label('Juventud',null,11.95,3.5,0,'road',3,0.7,'red');
   L.p(13.5,-2,'road',{pose:'up',c:0xe0508a}); L.p(13.5,0,'road',{pose:'fwd',c:0x4f9fb0}); L.p(13.5,2,'road',{pose:'up',c:0xf2c230}); A.jump(L,6,10,-4,4,6,{amp:0.45}); },
 49:L=>{ L.bld(11,15,-6,6,5,0xdce6ee,{label:'Accesible',dw:2}); for (let i=0;i<6;i++) L.b(7+i*0.65,7.65+i*0.65,0,0.12+i*0.13,0.5,3.5,0xb8b0a0); L.b(7,11,0.9,1,0.45,0.5,GREY);
