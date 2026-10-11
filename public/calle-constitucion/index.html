@@ -693,6 +693,8 @@ function kfMove(L,h,k,t,dt,face){ const [u,w,du,dw]=KF(k,t), x=L.X(u), z=L.Z(w),
   walkAnim(h,sp>0.05?(sp>2.6?2:1):0,dt,sp>2.6); return {u,w,sp}; }
 function seat(h,y=-0.4){ h.legL.rotation.x=h.legR.rotation.x=-1.5; h.g.position.y=y; }
 function bubble(g,t,w){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:signTexture(t,null,'yellow',w,0.6),depthWrite:false})); s.scale.set(w,0.6,1); s.visible=false; g.add(s); return s; }
+function nameTag(g,t,w){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:signTexture(t,null,'dark',w,0.4),depthWrite:false})); s.scale.set(w,0.4,1); g.add(s); return s; }
+function tagOn(s,h,y){ s.visible=h.g.visible; if (s.visible) s.position.set(h.g.position.x,h.g.position.y+y,h.g.position.z); }
 function bubbleOn(s,h,on,y=2.75){ s.visible=!!on; if (on) s.position.set(h.g.position.x,h.g.position.y+y,h.g.position.z); }
 /* Hoja gigante con texto en dos líneas (p. ej. «Real Decreto» / «Vivienda») */
 function docMesh(l1,l2,small,w=2.3,h=2.6){ const cv=document.createElement('canvas'); cv.width=480; cv.height=Math.round(480*h/w); const c=cv.getContext('2d'), H=cv.height;
@@ -789,11 +791,70 @@ const SC={
   L.bld(9,15,2.5,6.3,5,0xe9dcb8,{label:'Sinagoga'}); L.board(4.5,0,'road',6,0.9,'Ninguna confesión estatal','libertad religiosa y de culto'); },
 17:L=>{ L.car(6,-3,'wp',WHITE,'police'); A.siren(L,6,1.72,-3); L.p(9,1,'road',{c:POL,p:POL,hat:'cap',hc:POL}); L.p(9,2.2,'road',civ(L.R)); L.p(9,3.4,'road',{c:POL,p:POL,hat:'cap',hc:POL}); L.p(10,5,'road',{robe:ROBE});
   L.b(13,15,0,4,-1.5,1.5,DARK,true); L.num(12.95,2.6,0,'road',1.2,0xff5040,'72'); L.label('horas máximo',null,12.95,1.3,0,'road',2.6,0.45,'dark'); L.board(14.5,4.5,'road',3,0.8,'Habeas corpus',null,'blue'); },
-18:L=>{ L.bld(9,15,-4.5,4.5,5,0xe9d6c0,{label:'Domicilio inviolable',dc:0x3a2616}); L.pix(['.###.','#...#','#####','##.##','#####'],8.9,1.2,-3,'road',0.25,{'#':GOLD});
-  L.b(6.5,7.5,0.8,1.5,2.5,3.8,WHITE); L.b(6.45,6.5,1.05,1.25,3,3.3,RED); L.board(4.5,-3.5,'road',3.2,0.8,'Secreto de las comunicaciones',null,'white'); L.p(6,1,'road',civ(L.R)); },
+18:L=>{ /* Okupación y Desokupa: Dani saca al okupa y sus maletas */
+  L.bld(9,15,-6.2,4.5,5,0xe9d6c0,{label:'Domicilio inviolable',dw:-2.5,dc:0x3a2616});
+  L.label('¡OKUPADA!',null,8.94,2.75,1.7,'road',2.6,0.6,'red'); L.pix(['.###.','#...#','#####','##.##','#####'],8.9,3.4,-5.2,'road',0.2,{'#':GOLD});
+  L.board(3.4,3.0,'road',3.6,0.8,'Inviolabilidad del domicilio','sin consentimiento ni orden judicial, nadie entra','white',3.1);
+  const g=new THREE.Group(), P=26;
+  const ok=human({c:0x3a3f48,p:0x2a3550,skin:SKIN[2],hair:HAIR[3],num:18}); { const b=canon(); b.Q(-0.17,0.17,1.72,1.88,-0.2,0.12,0x3a3f48); ok.g.add(grp(b)); }
+  const dani=human({c:0x111111,p:0x111111,skin:SKIN[1],hair:SKIN[1],num:18}); dani.g.scale.set(1.22,1.1,1.22); { const b=canon(); b.Q(-0.12,0.12,1.48,1.6,0.12,0.16,0x2a1f1a); b.Q(-0.23,0.23,1.25,1.33,0.13,0.14,0xd0202a); dani.g.add(grp(b)); }
+  const H=[0,1].map(i=>human({c:0x111111,p:0x2a2f38,skin:SKIN[i*2+1],hair:HAIR[i],num:18}));
+  for (const h of [ok,dani,...H]){ h.g.rotation.order='YXZ'; g.add(h.g); }
+  const tagD=nameTag(g,'Dani Desokupa',2.0), tagH=H.map(h=>nameTag(g,'Desokupa',1.3)), tagO=nameTag(g,'Okupa',1.0);
+  const bag=c=>{ const b=canon(); b.Q(-0.3,0.3,0,0.7,-0.14,0.14,c); b.Q(-0.08,0.08,0.7,0.8,-0.03,0.03,0x222222); digits(b,18,{x:0,y:0.35,z:0.15},[0,1],0.22,WHITE,0.02); const m=grp(b); g.add(m); return m; };
+  const S=[bag(0x2f6fb0),bag(0xc8323a),bag(0x2f8f4a)];
+  const KO=[[0,9.6,-2.5],[1.2,8.4,-2.5],[11,8.4,-2.5],[14,2.6,-2.6],[14.6,1.4,-3.6],[17.2,1.4,-3.6],[18,1.0,-4.2],[20.5,-1.6,-9.2],[P,-1.6,-9.2]];
+  const KD=[[0,-1.8,-9.0],[2.5,-0.8,-3.6],[5,7.4,-2.5],[11,7.4,-2.5],[14,3.6,-2.6],[24,3.6,-2.6],[P,-1.8,-9.0]];
+  const KH=[[[0,-2.2,-9.4],[3,-1.0,-4.2],[6,6.6,-3.6],[11,6.6,-3.6],[12.2,8.8,-2.7],[12.8,9.6,-2.7],[13.4,9.6,-2.7],[14,8.6,-2.7],[16,1.6,-4.6],[24,1.6,-4.6],[P,-2.2,-9.4]],
+            [[0,-2.6,-9.8],[3.2,-1.2,-4.6],[6.2,6.6,-1.4],[11.3,6.6,-1.4],[12.5,8.8,-2.3],[13,9.6,-2.3],[13.6,9.6,-2.3],[14.2,8.6,-2.3],[16.2,2.0,-3.0],[24,2.0,-3.0],[P,-2.6,-9.8]]];
+  const PILE=[[0.6,-4.0],[0.6,-3.3],[0.9,-3.65]];
+  const b1=bubble(g,'¡Ahora esta casa es mía!',2.8), b2=bubble(g,'¡Desokupa! ¡Fuera de aquí!',3.0), b3=bubble(g,'¡Mis maletas!',1.8), b4=bubble(g,'Casa devuelta a su dueña',2.8);
+  L.anim({g,up(t,dt){ const tt=t%P;
+    const ro=kfMove(L,ok,KO,tt,dt,'road'); ok.g.visible=ro.u<9.1&&ro.w>-7.6;
+    if (tt>5&&tt<11){ ok.g.rotation.y=L.HD('road'); ok.armL.rotation.x=ok.armR.rotation.x=-2.6+Math.sin(tt*6)*0.3; }
+    const rd=kfMove(L,dani,KD,tt,dt,tt<14?[8.4,-2.5]:(tt<20?[1.0,-4.0]:'road')); dani.g.visible=rd.w>-7.6;
+    if (tt>5&&tt<11){ dani.armL.rotation.x=dani.armR.rotation.x=-1.1; dani.armL.rotation.z=0.5; dani.armR.rotation.z=-0.5; } else { dani.armL.rotation.z=dani.armR.rotation.z=0; }
+    if (tt>=11&&tt<14){ dani.armL.rotation.x=dani.armR.rotation.x=-1.5; }
+    H.forEach((h,i)=>{ const r=kfMove(L,h,KH[i],tt,dt,tt<12?[8.4,-2.5]:[1.4,-3.6]); h.g.visible=r.u<9.2&&r.w>-7.6; if (tt>13.4&&tt<16.2) h.armR.rotation.x=-0.3; });
+    /* maletas: dentro de la casa, en manos de los de Desokupa, en la acera y una se la lleva el okupa */
+    S.forEach((m,i)=>{ const carrier=i<2&&tt>13.4&&tt<16+i*0.2?H[i]:(i===0&&tt>18&&tt<20.5?ok:null);
+      if (tt<13.4||tt>=20.5&&i===0){ m.visible=false; return; } m.visible=true;
+      if (carrier){ const a=carrier.g.rotation.y; m.position.set(carrier.g.position.x+Math.cos(a)*0.38,0.12,carrier.g.position.z-Math.sin(a)*0.38); m.rotation.y=a; m.visible=carrier.g.visible; }
+      else { if (i===2&&tt<16.4){ m.visible=false; return; } m.position.set(L.X(PILE[i][0]),0.06,L.Z(PILE[i][1])); m.rotation.y=L.HD('road')+i*0.4; } });
+    tagOn(tagD,dani,2.45); H.forEach((h,i)=>tagOn(tagH[i],h,2.2)); tagOn(tagO,ok,2.2);
+    bubbleOn(b1,ok,tt>1.5&&tt<5,2.85); bubbleOn(b2,dani,tt>5.5&&tt<10.5,3.0); bubbleOn(b3,ok,tt>14.6&&tt<17.6,2.85); bubbleOn(b4,dani,tt>19.5&&tt<23.8,3.0); }}); },
 19:L=>{ A.mover(L,'car',8.5,-5,5,{col:0x2f8f6f,bags:true,speed:0.18}); L.b(12,12.2,0,2.6,-3,-2.8,GREY); L.label('Libre circulación',null,12.15,2.4,-2.9,'road',2.6,0.7,'blue'); L.p(13,2,'road',{...civ(L.R)}); L.b(13.3,13.8,0.3,1.3,1.8,2.2,0x3a6a8a); L.board(15,3,'road',5,1,'Entrar y salir de España','residencia libre'); },
-20:L=>{ L.bld(10,13,-6,-2,3.2,0x2f5d8a,{label:'Prensa',style:'yellow'}); L.b(8,8.8,0,0.5,1,2,WOOD,true); L.p(8.4,1.5,'road',{pose:'wave',...civ(L.R)}); L.b(7.8,8.1,1.3,1.6,1.45,1.9,DARK);
-  L.b(6.2,6.3,0,1.4,4,4.1,DARK); L.b(6,6.6,1.4,1.9,3.8,4.4,DARK); L.p(6.8,4.1,'back',civ(L.R)); L.board(14.5,2.5,'road',6,1,'Sin censura previa','libertad de expresión e información'); },
+20:L=>{ /* Rueda de prensa del Gobierno: los compañeros sacan a Vito Quiles y a Bertrand Ndongo */
+  L.b(11.6,11.9,0,3.4,-6.4,0.2,0x1d4f91,true); L.label('Rueda de prensa','Gobierno de España',11.55,2.5,-3.1,'road',4.6,1.1,'blue');
+  L.flag(11.2,-6.0,'road','es',3.6,false); L.flag(11.2,-0.2,'road','eu',3.6,false);
+  A.speaker(L,10.6,-3.1,'road',{c:SUIT,tie:BLU});
+  for (const w of [-5.2,-3.0,-1.0]) L.p(7.6,w,'back',{pose:'sit',...civ(L.R)}); L.p(6.3,-5.6,'back',{pose:'sit',...civ(L.R)});
+  for (const w of [-5.2,-4.0,-3.0,-2.0,-1.0]) L.b(7.75,8.15,0,0.45,w-0.22,w+0.22,DARK); for (const w of [-5.6,-4.6,-3.4,-2.4,-1.2]) L.b(6.45,6.85,0,0.45,w-0.22,w+0.22,DARK);
+  for (const w of [-5.6,-0.6]){ L.b(4.55,4.65,0,1.4,w-0.05,w+0.05,DARK); L.b(4.3,4.9,1.4,1.85,w-0.25,w+0.25,0x2a2d33); L.b(4.9,5.05,1.5,1.75,w-0.1,w+0.1,0x15171c); }
+  L.board(3.4,3.0,'road',3.6,0.8,'Libertad de información','sin censura previa · art. 20','yellow',3.1);
+  const g=new THREE.Group(), P=24;
+  const vito=human({c:0x2b3140,p:0x2a2f38,skin:SKIN[1],hair:HAIR[3],tie:0x5a7fb0,num:20}); { const b=new Batch(); b.box(-0.05,0.05,-0.85,-0.7,0.02,0.14,0x111111); vito.armR.add(new THREE.Mesh(b.geo(),charMat)); }
+  const bert=human({c:0x5a6070,p:0x2a2f38,skin:SKIN[4],hair:HAIR[3],tie:RED,num:20});
+  const C=[0,1,2,3].map(i=>human({c:CLOTH[(i*3+1)%12],p:0x2a2f38,skin:SKIN[i%4],hair:HAIR[(i+2)%7],num:20}));
+  for (const h of [vito,bert,...C]){ h.g.rotation.order='YXZ'; g.add(h.g); }
+  const tV=nameTag(g,'Vito Quiles',1.6), tB=nameTag(g,'Bertrand Ndongo',2.0);
+  const seatV=[7.6,-4.0], seatB=[7.6,-2.0], seatsC=[[6.3,-4.6],[6.3,-3.4],[6.3,-2.4],[6.3,-1.2]];
+  const KV=[[0,...seatV],[7.2,...seatV],[8.6,7.2,-4.0],[12.2,-1.2,-4.0],[19,-1.2,-4.0],[22.6,...seatV],[P,...seatV]];
+  const KB=[[0,...seatB],[7.2,...seatB],[8.6,7.2,-2.0],[12.2,-1.2,-2.0],[19.4,-1.2,-2.0],[23,...seatB],[P,...seatB]];
+  const side=[[-4.6,-0.6],[-3.4,0.6],[-2.6,-0.6],[-1.4,0.6]];
+  const KC=seatsC.map((s,i)=>{ const tw=(i<2?-4.0:-2.0)+side[i][1]; return [[0,...s],[7,...s],[8.6,7.2,tw],[12.2,-0.6,tw],[12.8,-0.6,tw],[15.8,...s],[P,...s]]; });
+  const b1=bubble(g,'¡Una pregunta! ¿Va a dimitir?',3.2), b2=bubble(g,'¡Responda, por favor!',2.6), b3=bubble(g,'¡Fuera de la rueda de prensa!',3.2), b4=bubble(g,'¡Esto es censura!',2.2), b5=bubble(g,'¡Nos echan por preguntar!',2.8);
+  const sit=(h,on)=>{ if (on){ seat(h,-0.44); h.g.rotation.y=L.HD('back'); } };
+  L.anim({g,up(t,dt){ const tt=t%P;
+    kfMove(L,vito,KV,tt,dt,tt<13?[10.6,-3.1]:'road'); kfMove(L,bert,KB,tt,dt,tt<13?[10.6,-3.1]:'road');
+    const vSit=tt<3||tt>23.2, bSit=tt<4.5||tt>23.6; sit(vito,vSit); sit(bert,bSit);
+    if (!vSit&&tt<8.6){ vito.g.rotation.y=L.HD('back'); vito.armR.rotation.x=-2.8+Math.sin(tt*8)*0.2; }
+    if (!bSit&&tt<8.6){ bert.g.rotation.y=L.HD('back'); bert.armL.rotation.x=-2.7+Math.sin(tt*7)*0.25; }
+    if (tt>12.2&&tt<19){ vito.armR.rotation.x=-1.7; }
+    if (tt>13.5&&tt<19.4){ bert.armL.rotation.x=bert.armR.rotation.x=-2.6+Math.sin(tt*5)*0.3; }
+    C.forEach((h,i)=>{ kfMove(L,h,KC[i],tt,dt,[10.6,-3.1]); const s=tt<7||tt>15.8; sit(h,s); if (tt>8.6&&tt<12.2){ h.armL.rotation.x=h.armR.rotation.x=-1.4; } });
+    tagOn(tV,vito,vSit?1.75:2.2); tagOn(tB,bert,bSit?1.75:2.2);
+    bubbleOn(b1,vito,tt>3.2&&tt<7.4,2.75); bubbleOn(b2,bert,tt>4.8&&tt<8.4,2.75); bubbleOn(b3,C[1],tt>8.8&&tt<12.4,2.4); bubbleOn(b4,vito,tt>13&&tt<17.5,2.75); bubbleOn(b5,bert,tt>15&&tt<19.2,2.75); }}); },
 21:L=>{ A.crowd(L,7,13,-5,5,16,'road',{pose:'down',amp:0.04,speed:2}); L.b(13.5,15,0,0.6,-1.5,1.5,WOOD,true); L.p(14,0,'road',{pose:'wave',...civ(L.R)}); L.board(4.5,-4,'road',3.6,0.8,'Comunicación previa',null,'yellow'); L.board(4.5,3.2,'road',3,0.8,'Pacífica y sin armas',null,'white'); },
 22:L=>{ L.bld(11,15,-6,6,4.5,0xd9e3c9,{label:'Asociación',sub:'inscrita en el Registro'}); L.table(6.5,9,-3,3,WOOD); L.book(5.2,4.8,'road',0x2f5d8a,'Registro'); },
 23:L=>{ L.table(5.5,6.3,-5.5,-2.5,WOOD,{people:false}); L.ballot(5.9,-4,'road'); for (let i=0;i<4;i++) L.p(7.5+i*1.1,-4,'road',civ(L.R));
@@ -817,9 +878,41 @@ const SC={
   L.b(12,15,0,2.4,0,5,0xf07a1a,true); L.b(11.8,15.2,2.4,2.6,-0.2,5.2,0xd96a10); L.label('Protección Civil',null,11.95,1.8,2.5,'road',2.8,0.5,'white'); L.board(14.5,-3.5,'road',4.5,1,'Defender a España','objeción de conciencia · servicio civil','green'); },
 31:L=>{ L.bld(10,15,-6,1,5.5,0xe8e3d6,{label:'Hacienda',sub:'sistema tributario justo'}); L.coins(6,-2,1.2); L.coins(7,-1,1.8); L.coins(6.5,0.2,0.8); L.p(6.5,3,'wm',{pose:'fwd',...civ(L.R)});
   L.pix(['#..#','..#.','.#..','#..#'],12.5,3,4,'road',0.6,{'#':BLU}); L.b(12.4,12.6,0,2.9,3.8,4.2,DARK); L.board(4.5,4.5,'road',3,0.8,'Progresividad',null,'blue'); },
-32:L=>{ L.b(9,9.3,0,3,-1.8,-1.5,WHITE); L.b(9,9.3,0,3,1.5,1.8,WHITE); L.b(9,9.3,3,3.3,-1.8,1.8,0xf3c9d6); for (let w=-1.6;w<=1.6;w+=0.4) L.b(8.95,9.35,3.3,3.5,w,w+0.25,[0xf06a8a,WHITE,0xf2c230][Math.abs(Math.round(w*5))%3]);
-  L.p(9.8,-0.5,'road',{c:WHITE,p:WHITE}); L.p(9.8,0.5,'road',{c:SUIT,p:SUIT,tie:0xd0c0a0}); for (let i=0;i<3;i++) for (const w of [-4.5,-3.3,3.3,4.5]) L.p(6+i*1.3,w,'back',{pose:'sit',...civ(L.R)});
-  L.board(14.5,0,'road',5.5,1,'Plena igualdad jurídica','de los cónyuges'); },
+32:L=>{ /* Boda: los novios se besan y se van en el coche de «Recién casados» */
+  L.b(9,9.3,0,3,-1.8,-1.5,WHITE); L.b(9,9.3,0,3,1.5,1.8,WHITE); L.b(9,9.3,3,3.3,-1.8,1.8,0xf3c9d6); for (let w=-1.6;w<=1.6;w+=0.4) L.b(8.95,9.35,3.3,3.5,w,w+0.25,[0xf06a8a,WHITE,0xf2c230][Math.abs(Math.round(w*5))%3]);
+  for (let i=0;i<3;i++) for (const w of [-4.5,-3.3,3.3,4.5]) L.p(6+i*1.3,w,'back',{pose:'sit',...civ(L.R)});
+  L.b(1.0,9.6,0.06,0.09,-0.7,0.7,0xd8263a);
+  L.board(14.5,0,'road',5.5,1,'Plena igualdad jurídica','de los cónyuges');
+  const g=new THREE.Group(), P=28;
+  const bride=human({c:WHITE,p:WHITE,skin:SKIN[0],hair:HAIR[5],num:32}); { const b=canon(); b.Q(-0.3,0.3,0.05,0.9,-0.32,0.25,WHITE); b.Q(-0.17,0.17,1.7,1.9,-0.22,0.05,0xf4f1ea); bride.g.add(grp(b)); }
+  const groom=human({c:SUIT,p:SUIT,skin:SKIN[2],hair:HAIR[1],tie:0xd0c0a0,num:32});
+  for (const h of [bride,groom]){ h.g.rotation.order='YXZ'; g.add(h.g); }
+  /* Coche descapotable blanco con lazos, latas y cartel */
+  const cb=canon(); cb.Q(-0.95,0.95,0.35,1.0,-2.3,2.3,WHITE); cb.Q(-0.8,0.8,1.0,1.25,-1.6,-0.3,0xf3c9d6); cb.Q(-0.85,0.85,1.0,1.45,0.9,0.95,0x9fb8c8);
+  for (const d of [-1.45,1.45]){ cb.Q(-1.02,-0.82,0,0.66,d-0.34,d+0.34,0x1a1a1a); cb.Q(0.82,1.02,0,0.66,d-0.34,d+0.34,0x1a1a1a); }
+  cb.Q(-0.97,0.97,0.75,0.85,-2.31,2.31,0xf06a8a); cb.Q(-0.15,0.15,1.0,1.3,1.6,1.9,0xf06a8a); cb.Q(-0.35,0.35,1.0,1.18,1.65,1.85,0xf06a8a);
+  for (let k=0;k<4;k++){ const z=-2.9-k*0.35, x=-0.6+k*0.4; cb.Q(x-0.08,x+0.08,0.05,0.25,z-0.08,z+0.08,0xb8c2c8); cb.Q(x-0.01,x+0.01,0.2,0.3,z+0.08,-2.3,0xdddddd); }
+  digits(cb,32,{x:0.96,y:0.5,z:1.4},[1,0],0.3,0xf06a8a,0.02); digits(cb,32,{x:-0.96,y:0.5,z:1.4},[-1,0],0.3,0xf06a8a,0.02);
+  const car=new THREE.Group(); car.add(grp(cb)); g.add(car);
+  const sign=(w,h,x,y,z,ry)=>{ const m=new THREE.Mesh(planeGeo,new THREE.MeshBasicMaterial({map:signTexture('Recién casados',null,'white',w,h)})); m.scale.set(w,h,1); m.position.set(x,y,z); m.rotation.y=ry; car.add(m); };
+  sign(1.7,0.45,0,1.1,-2.32,Math.PI); sign(2.6,0.42,0.97,0.55,0,Math.PI/2); sign(2.6,0.42,-0.97,0.55,0,-Math.PI/2);
+  const rb=human({c:WHITE,p:WHITE,skin:SKIN[0],hair:HAIR[5],num:32}), rg=human({c:SUIT,p:SUIT,skin:SKIN[2],hair:HAIR[1],tie:0xd0c0a0,num:32});
+  { const b=canon(); b.Q(-0.17,0.17,1.7,1.9,-0.22,0.05,0xf4f1ea); rb.g.add(grp(b)); }
+  rb.g.position.set(-0.4,0.55,-1.0); rg.g.position.set(0.4,0.55,-1.0); for (const h of [rb,rg]){ seat(h,0.55); car.add(h.g); }
+  const KBr=[[0,9.8,-0.45],[5,9.8,-0.45],[9,4.0,-0.4],[10.6,3.4,-2.6],[P,3.4,-2.6]], KGr=[[0,9.8,0.45],[5.2,9.8,0.45],[9.2,4.0,0.4],[10.8,3.4,-1.9],[P,3.4,-1.9]];
+  const KC=[[0,2.6,-3.6],[11.6,2.6,-3.6],[13.2,-2.0,-3.8],[14.4,-5.0,-5.5],[15.4,-6.4,-8.5],[22,-6.4,-70],[P,-6.4,-70]];
+  const b1=bubble(g,'¡Que se besen! ¡Que se besen!',3.2), b2=bubble(g,'♥ ¡Muac! ♥',1.6), b3=bubble(g,'¡Vivan los novios!',2.4), b4=bubble(g,'♥ ¡Nos vamos de luna de miel! ♥',3.4);
+  L.anim({g,up(t,dt){ const tt=t%P, inCar=tt>11.2;
+    const r1=kfMove(L,bride,KBr,tt,dt,[9.8,0.45]), r2=kfMove(L,groom,KGr,tt,dt,[9.8,-0.45]); bride.g.visible=groom.g.visible=!inCar;
+    if (tt<1.2){ bride.g.rotation.y=groom.g.rotation.y=L.HD('road'); }
+    const kiss=tt>2&&tt<4.8; bride.g.rotation.x=groom.g.rotation.x=kiss?0.22:0;
+    if (kiss){ bride.armL.rotation.x=bride.armR.rotation.x=groom.armL.rotation.x=groom.armR.rotation.x=-1.4; }
+    if (tt>5&&tt<11){ bride.armL.rotation.x=-2.9; groom.armR.rotation.x=-2.9; }
+    const [u,w,du,dw]=KF(KC,tt), vx=L.s*du, vz=L.s*dw; car.position.set(L.X(u),0.06,L.Z(w)); if (Math.hypot(vx,vz)>0.05) car.rotation.y=Math.atan2(vx,vz); else if (tt<12) car.rotation.y=L.HD('road');
+    car.visible=Math.abs(w)<60; rb.g.visible=rg.g.visible=inCar; rb.armL.rotation.x=rg.armR.rotation.x=-2.8+Math.sin(tt*6)*0.3;
+    b1.visible=tt<2.2; if (b1.visible) b1.position.set(L.X(7.3),2.5,L.Z(-3.9));
+    bubbleOn(b2,groom,kiss,2.6); b3.visible=tt>5.5&&tt<10; if (b3.visible) b3.position.set(L.X(6.0),2.5,L.Z(3.9));
+    b4.visible=tt>12&&tt<17&&car.visible; if (b4.visible) b4.position.set(car.position.x,3.0,car.position.z); }}); },
 33:L=>{ L.bld(9,14,-4,4,4.5,0xe7c9a8,{label:'Propiedad privada'}); L.fence(7,15,-5,5,1,0xffffff); L.b(6,6.1,0,1.6,4.5,4.6,WOOD); L.label('Herencia',null,6.12,1.3,4.5,'road',1.2,0.4,'white');
   L.p(6.5,-5.5,'road',civ(L.R)); L.board(4.5,-3,'road',3.6,0.9,'Expropiación','con justa indemnización','white'); },
 34:L=>{ L.bld(10,15,-5,5,5,0xdce8e2,{label:'Fundación',sub:'fines de interés general'}); L.b(7,7.8,0,1.1,-1,0,0x2f7d5a,true); L.b(7.1,7.7,1.1,1.14,-0.9,-0.1,GOLD); L.num(6.98,0.6,-0.5,'road',0.35,WHITE); for (const w of [2,3.2]) L.p(7.5,w,'road',{c:0xf07a1a}); },
@@ -884,7 +977,7 @@ const SC={
            {h:cam,k:[[0,-2.7,-10.4],[3.2,0.6,-4.6],[5.4,3.0,-4.3],[11,3.0,-4.3],[14,2.3,-4.8],[15.4,-1.9,-5.2],[16.8,-3.4,-8.5],[19.9,-3.4,-16],[P,-3.4,-16]],face:[3.2,-1.6]},...C];
   for (const a of A){ a.h.g.rotation.order='YXZ'; g.add(a.h.g); }
   const bub=(t,w)=>{ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:signTexture(t,null,'yellow',w,0.6),depthWrite:false})); s.scale.set(w,0.6,1); s.visible=false; g.add(s); return s; };
-  const b1=bub('«En directo desde la acampada de Sol…»',3.6), b2=bub('¡Fuera! ¡Fuera!',2.2), b3=bub('¡La vivienda es un derecho!',3.0), b4=bub('¡Corta, Vito, corta!',2.6);
+  const b1=bub('«En directo desde la acampada de Sol…»',3.6), b2=bub('¡Fuera! ¡Fuera!',2.2), b3=bub('¡La vivienda es un derecho!',3.0), b4=bub('¡Vito, corre! ¡Vito, corre!',3.0);
   const put=(s,a,on)=>{ s.visible=on; if (on) s.position.set(a.h.g.position.x,2.75,a.h.g.position.z); };
   L.anim({g,up(t,dt){ const tt=t%P;
     for (const a of A){ const [u,w,du,dw]=KF(a.k,tt), x=X(u), z=Z(w), vx=L.s*du, vz=L.s*dw, sp=Math.hypot(vx,vz), h=a.h;
