@@ -1,0 +1,357 @@
+[
+ {
+  "id": "s0",
+  "frases": [
+   "En unos minutos vas a dominar los derechos fundamentales de la Constitución.",
+   "Sin leer artículos en bucle: con técnicas que funcionan de verdad.",
+   "Un mapa para ver el conjunto.",
+   "Historias para memorizar.",
+   "Casos prácticos para entender.",
+   "Y pausas para sacar lo aprendido de tu cabeza.",
+   "Empezamos con un reto."
+  ]
+ },
+ {
+  "id": "s1",
+  "frases": [
+   "Tres preguntas antes de estudiar.",
+   "Responde rápido, aunque no lo sepas.",
+   "Intentar responder antes de aprender hace que recuerdes mejor la respuesta después."
+  ]
+ },
+ {
+  "id": "s1-fb",
+  "frases": [
+   "Guardado.",
+   "Al final comprobarás cuánto has mejorado."
+  ]
+ },
+ {
+  "id": "s2",
+  "frases": [
+   "Primero, el mapa.",
+   "Todo está en el Título Primero, del artículo 10 al 55.",
+   "Imagínalo como un edificio.",
+   "Los cimientos son el artículo 10: la dignidad de la persona, fundamento del orden político y de la paz social.",
+   "Encima hay cinco plantas: los cinco capítulos."
+  ]
+ },
+ {
+  "id": "s3",
+  "frases": [
+   "Planta uno: españoles y extranjeros, del 11 al 13.",
+   "Planta dos, la grande: derechos y libertades, del 14 al 38.",
+   "Planta tres: principios rectores de la política social y económica, del 39 al 52.",
+   "Planta cuatro: garantías, 53 y 54.",
+   "Planta cinco: suspensión de derechos, el 55."
+  ]
+ },
+ {
+  "id": "s4",
+  "frases": [
+   "Zoom a la planta dos, porque aquí está casi todo el examen.",
+   "Tiene tres habitaciones.",
+   "El artículo 14, la igualdad, que va suelto.",
+   "La Sección Primera, del 15 al 29: los derechos fundamentales y libertades públicas.",
+   "Y la Sección Segunda, del 30 al 38: derechos y deberes de los ciudadanos."
+  ]
+ },
+ {
+  "id": "s5",
+  "frases": [
+   "Si te quedas con una sola cosa, que sean estos seis números.",
+   "Diez: fundamento.",
+   "Catorce: igualdad.",
+   "Del quince al veintinueve: el núcleo duro.",
+   "Treinta punto dos: objeción de conciencia.",
+   "Cincuenta y tres: garantías.",
+   "Cincuenta y cinco: suspensión."
+  ]
+ },
+ {
+  "id": "s6",
+  "frases": [
+   "Pausa activa. Sin mirar atrás:",
+   "¿qué artículos forman la Sección Primera?"
+  ]
+ },
+ {
+  "id": "s6-ok",
+  "frases": [
+   "¡Exacto! Del 15 al 29.",
+   "El 14 va suelto, antes de las secciones."
+  ]
+ },
+ {
+  "id": "s6-ko",
+  "frases": [
+   "Casi. Es del 15 al 29.",
+   "El 14 va suelto, y la Sección Segunda empieza en el 30."
+  ]
+ },
+ {
+  "id": "s7",
+  "frases": [
+   "Ahora, el truco para memorizar la Sección Primera en orden: la historia de una vida.",
+   "Una persona nace y vive: 15, vida e integridad física y moral.",
+   "Piensa y cree lo que quiere: 16, libertad ideológica, religiosa y de culto.",
+   "Nadie la encierra sin motivo: 17, libertad y seguridad.",
+   "Tiene su casa y su intimidad: 18, honor, intimidad, domicilio y comunicaciones.",
+   "Viaja donde quiere: 19, residencia y circulación.",
+   "Y dice lo que piensa: 20, expresión e información."
+  ]
+ },
+ {
+  "id": "s8",
+  "frases": [
+   "Sigue la historia.",
+   "Queda con sus amigos: 21, reunión.",
+   "Montan una asociación: 22.",
+   "Vota y oposita: 23, participación y acceso a cargos públicos.",
+   "Tiene un problema y va al juez: 24, tutela judicial efectiva.",
+   "Solo la pueden castigar si una ley lo preveía antes: 25, legalidad penal.",
+   "Y nunca un tribunal de honor: 26.",
+   "Estudia: 27, educación.",
+   "Trabaja, se afilia a un sindicato e incluso hace huelga: 28.",
+   "Y cuando quiere algo del poder público, lo pide por escrito: 29, petición."
+  ]
+ },
+ {
+  "id": "s9",
+  "frases": [
+   "Pausa activa.",
+   "Recupera la historia y asigna a cada derecho su número."
+  ]
+ },
+ {
+  "id": "s9-fb",
+  "frases": [
+   "Si has fallado alguno, recorre la historia en tu cabeza.",
+   "Nace, piensa, es libre, su casa, viaja, habla, se reúne, se asocia, vota, va al juez, ley previa, sin tribunales de honor, estudia, trabaja y pide."
+  ]
+ },
+ {
+  "id": "s10",
+  "frases": [
+   "Caso uno.",
+   "Te detienen el lunes a las diez de la mañana.",
+   "¿Hasta cuándo, como máximo, pueden tenerte detenido antes de liberarte o llevarte ante un juez?"
+  ]
+ },
+ {
+  "id": "s10-ok",
+  "frases": [
+   "¡Correcto! Setenta y dos horas: el jueves a las diez.",
+   "Pero es un techo, no un plazo fijo: la detención debe durar solo lo estrictamente necesario. Artículo 17.2."
+  ]
+ },
+ {
+  "id": "s10-ko",
+  "frases": [
+   "No. El máximo son setenta y dos horas: el jueves a las diez.",
+   "Y es un techo: la detención debe durar solo lo estrictamente necesario. Artículo 17.2."
+  ]
+ },
+ {
+  "id": "s11",
+  "frases": [
+   "Caso dos.",
+   "La policía quiere registrar tu casa.",
+   "No tiene orden judicial, tú no das permiso y no hay delito flagrante.",
+   "¿Puede entrar?"
+  ]
+ },
+ {
+  "id": "s11-ok",
+  "frases": [
+   "¡Bien! No puede.",
+   "El domicilio es inviolable: solo se entra con consentimiento del titular, resolución judicial o flagrante delito. Artículo 18.2."
+  ]
+ },
+ {
+  "id": "s11-ko",
+  "frases": [
+   "No puede.",
+   "El domicilio es inviolable: solo se entra con consentimiento del titular, resolución judicial o flagrante delito. Artículo 18.2."
+  ]
+ },
+ {
+  "id": "s12",
+  "frases": [
+   "Caso tres.",
+   "Quieres organizar una manifestación en la plaza de tu ciudad.",
+   "¿Qué necesitas?"
+  ]
+ },
+ {
+  "id": "s12-ok",
+  "frases": [
+   "¡Correcto! Basta con comunicarlo antes.",
+   "La autoridad solo puede prohibirla si hay razones fundadas de alteración del orden público, con peligro para personas o bienes. Artículo 21.2."
+  ]
+ },
+ {
+  "id": "s12-ko",
+  "frases": [
+   "No. No hace falta autorización, pero sí comunicarlo antes a la autoridad.",
+   "Y solo puede prohibirla si hay razones fundadas de alteración del orden público, con peligro para personas o bienes. Artículo 21.2."
+  ]
+ },
+ {
+  "id": "s13",
+  "frases": [
+   "Caso cuatro.",
+   "El Gobierno ordena retirar de los quioscos una revista muy crítica con él.",
+   "¿Es válido?"
+  ]
+ },
+ {
+  "id": "s13-ok",
+  "frases": [
+   "¡Exacto!",
+   "El secuestro de publicaciones solo puede acordarlo un juez, y está prohibida la censura previa. Artículo 20."
+  ]
+ },
+ {
+  "id": "s13-ko",
+  "frases": [
+   "No es válido.",
+   "El secuestro de publicaciones solo puede acordarlo un juez, y está prohibida la censura previa. Artículo 20."
+  ]
+ },
+ {
+  "id": "s14",
+  "frases": [
+   "La Sección Segunda, del 30 al 38, se aprende con nueve verbos.",
+   "Defender: 30.",
+   "Pagar impuestos: 31.",
+   "Casarse: 32.",
+   "Tener propiedad y heredar: 33.",
+   "Fundar: 34.",
+   "Trabajar: 35.",
+   "Colegiarse: 36.",
+   "Negociar convenios: 37.",
+   "Emprender: 38.",
+   "Repítelo conmigo: defiende, paga, se casa, posee, funda, trabaja, se colegia, negocia y emprende."
+  ]
+ },
+ {
+  "id": "s15",
+  "frases": [
+   "Planta tres: los principios rectores, del 39 al 52.",
+   "Aquí está la trampa: no son derechos que puedas exigir directamente ante el juez.",
+   "Son mandatos para los poderes públicos.",
+   "Por ejemplo: salud, 43. Medio ambiente, 45. Vivienda digna, 47. Pensiones, 50. Consumidores, 51.",
+   "Solo se pueden alegar ante los jueces según las leyes que los desarrollen: artículo 53.3."
+  ]
+ },
+ {
+  "id": "s16",
+  "frases": [
+   "Las garantías, con tres medallas.",
+   "Oro: el artículo 14, la Sección Primera y la objeción de conciencia del 30.2.",
+   "Tienen recurso de amparo ante el Tribunal Constitucional y un procedimiento preferente y sumario ante los tribunales ordinarios.",
+   "Plata: todo el Capítulo Segundo.",
+   "Vinculan a todos los poderes públicos, y solo una ley que respete su contenido esencial puede regularlos.",
+   "Bronce: los principios rectores, que solo informan la actuación pública.",
+   "Y dos extras de la Sección Primera: se desarrollan por ley orgánica, artículo 81, y su reforma exige el procedimiento agravado del 168."
+  ]
+ },
+ {
+  "id": "s17",
+  "frases": [
+   "Pausa activa.",
+   "¿Cuál de estos derechos tiene recurso de amparo?"
+  ]
+ },
+ {
+  "id": "s17-ok",
+  "frases": [
+   "¡Muy bien! Está en la Sección Segunda, pero tiene medalla de oro.",
+   "El 47 es un principio rector y el 35 es un derecho de la Sección Segunda sin amparo."
+  ]
+ },
+ {
+  "id": "s17-ko",
+  "frases": [
+   "No. Es la objeción de conciencia del 30.2: está en la Sección Segunda, pero tiene medalla de oro.",
+   "El 47 es un principio rector y el 35 es un derecho de la Sección Segunda sin amparo."
+  ]
+ },
+ {
+  "id": "s18",
+  "frases": [
+   "Última planta: el artículo 55.",
+   "En estado de excepción o de sitio se pueden suspender algunos derechos.",
+   "Para recordarlos, imagina un día de excepción.",
+   "Te pueden detener más tiempo: 17.",
+   "Entrar en tu casa: 18.2.",
+   "Intervenir tus comunicaciones: 18.3.",
+   "Impedirte circular: 19.",
+   "Limitar tu expresión e información y secuestrar publicaciones: 20.1 a y d, y 20.5.",
+   "Prohibir reuniones: 21.",
+   "Y parar huelgas y conflictos colectivos: 28.2 y 37.2.",
+   "Pero en estado de excepción nunca se suspenden tus derechos como detenido del 17.3.",
+   "Además, el 55.2 permite suspender de forma individual el 17.2, el 18.2 y el 18.3 en investigaciones sobre terrorismo, con control judicial y parlamentario.",
+   "Y el estado de alarma no suspende derechos: solo los limita."
+  ]
+ },
+ {
+  "id": "s19",
+  "frases": [
+   "Cinco trampas que caen en los exámenes.",
+   "Uno: el artículo 14 no está en la Sección Primera, pero sí tiene amparo.",
+   "Dos: la objeción de conciencia está en la Sección Segunda, y también tiene amparo.",
+   "Tres: las setenta y dos horas son el máximo, no el plazo normal de detención.",
+   "Cuatro: para reunirte no pides permiso; en manifestaciones y lugares de tránsito público, lo comunicas.",
+   "Cinco: la mayoría de edad a los dieciocho años está en el artículo 12, en el Capítulo Primero."
+  ]
+ },
+ {
+  "id": "s20",
+  "frases": [
+   "Ronda rápida: ocho preguntas mezcladas, diez segundos cada una.",
+   "Mezclar temas cuesta más, y justo por eso se fija mejor.",
+   "¡Vamos!"
+  ]
+ },
+ {
+  "id": "s20-hi",
+  "frases": [
+   "¡Muy bien! Tienes el tema bien atado."
+  ]
+ },
+ {
+  "id": "s20-lo",
+  "frases": [
+   "Bien intentado.",
+   "Las que has fallado son tu lista de repaso para mañana."
+  ]
+ },
+ {
+  "id": "s21",
+  "frases": [
+   "Último ejercicio: el vaciado de memoria.",
+   "Tienes noventa segundos para escribir todos los derechos de la Sección Primera que recuerdes, con su número si puedes.",
+   "No mires nada. Usa la historia de una vida."
+  ]
+ },
+ {
+  "id": "s21-fb",
+  "frases": [
+   "Lo que no te ha salido es justo lo que tienes que repasar primero.",
+   "Eso es estudiar con cabeza: dedicar el tiempo a lo que todavía no sabes."
+  ]
+ },
+ {
+  "id": "s22",
+  "frases": [
+   "Terminamos.",
+   "Mira tu reto del principio: seguro que ahora lo aciertas.",
+   "Para que no se te olvide, usa el repaso espaciado.",
+   "Repasa mañana, dentro de tres días, dentro de una semana y dentro de dos semanas.",
+   "Y en cada repaso, primero intenta recordar y después comprueba.",
+   "¡Nos vemos en el siguiente tema!"
+  ]
+ }
+]

@@ -1,0 +1,1093 @@
+<title>Derechos fundamentales en modo estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;600;700;800&display=swap">
+<style>
+/* =====================================================================
+   MOTOR DE VIDEO-CLASES · estilos de la página (claro/oscuro) + lienzo
+   El lienzo (.cv) tiene un único look oscuro "motion graphics".
+   ===================================================================== */
+:root{
+  --bg:#eef2f1; --surface:#ffffff; --ink:#132326; --muted:#55686b; --line:#d4dddc;
+  --accent:#0f6f66; --accent-ink:#ffffff; --accent-soft:#dcefeb; --hot:#e0553a;
+  --ok:#17804a; --ok-soft:#dcf1e4; --bad:#c23a28; --bad-soft:#fbe3de;
+  --shadow:0 14px 34px -16px rgba(10,30,34,.45);
+  --disp:"Bricolage Grotesque","Arial Rounded MT Bold","Segoe UI",sans-serif;
+  --ui:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0b1517; --surface:#132226; --ink:#e7efee; --muted:#9db3b2; --line:#24393d;
+    --accent:#63d6b5; --accent-ink:#06201b; --accent-soft:#16352f; --hot:#ff8a6a;
+    --ok:#5ad08f; --ok-soft:#133224; --bad:#ff8a78; --bad-soft:#3a1d19;
+    --shadow:0 14px 34px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0b1517; --surface:#132226; --ink:#e7efee; --muted:#9db3b2; --line:#24393d;
+  --accent:#63d6b5; --accent-ink:#06201b; --accent-soft:#16352f; --hot:#ff8a6a;
+  --ok:#5ad08f; --ok-soft:#133224; --bad:#ff8a78; --bad-soft:#3a1d19;
+  --shadow:0 14px 34px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 56px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:8px 24px}
+.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(28px,4.6vw,48px);line-height:1;margin:6px 0 0;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.meta{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+
+.player{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:10px}
+.player:fullscreen{border-radius:0;padding:2vh 3vw;justify-content:center}
+.player:fullscreen .stagewrap{max-width:calc((100vh - 190px) * 16 / 9);margin:0 auto;width:100%}
+.stagewrap{position:relative}
+.stagebox{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#0e272b}
+
+/* ---- Lienzo 1600x900 ---- */
+.cv{--bg:#0e272b;--tile:#16373c;--tile2:#1c454b;--paper:#f4efe6;--y:#ffcf5a;--co:#ff7a59;--mi:#63d6b5;--sk:#8cc8ff;--mut:#a6bfbd;
+  position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;color:var(--paper);font-family:var(--ui);overflow:hidden;
+  background:radial-gradient(circle at 18% 12%,rgba(99,214,181,.10),transparent 42%),radial-gradient(circle at 88% 90%,rgba(255,122,89,.10),transparent 40%),radial-gradient(rgba(244,239,230,.07) 1.6px,transparent 1.8px) 0 0/34px 34px,#0e272b}
+.el{position:absolute;opacity:0}
+.el.on{opacity:1;animation:var(--an,up) .55s cubic-bezier(.2,.9,.25,1.15) both}
+.el.on.ni{animation:none}
+.el.mv{transition:transform .9s cubic-bezier(.55,0,.2,1)}
+.el.a-up{--an:up}.el.a-pop{--an:pop}.el.a-left{--an:left}.el.a-right{--an:right}.el.a-stamp{--an:stamp}.el.a-grow{--an:grow}.el.a-wipe{--an:wipe}.el.a-fade{--an:fade}.el.a-flip{--an:flip}.el.a-drop{--an:drop}
+@keyframes up{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes left{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:none}}
+@keyframes right{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:none}}
+@keyframes stamp{0%{opacity:0;transform:scale(2) rotate(-12deg)}60%{opacity:1;transform:scale(.94) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
+@keyframes grow{from{opacity:1;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+@keyframes wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes flip{from{opacity:1;transform:perspective(1200px) rotateY(92deg)}to{opacity:1;transform:perspective(1200px) rotateY(0)}}
+@keyframes drop{0%{opacity:0;transform:translateY(-260px)}60%{opacity:1;transform:translateY(14px)}80%{transform:translateY(-6px)}100%{opacity:1;transform:none}}
+.el.a-grow{transform-origin:0 50%}
+.el.a-stamp.on{transform:rotate(-6deg)}
+.walker{position:absolute;left:0;top:0;width:84px;height:84px;color:var(--y);transition:transform .75s cubic-bezier(.5,0,.2,1),opacity .3s;opacity:0;z-index:5;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.walker.on{opacity:1}
+.ic{display:block;width:100%;height:100%;fill:currentColor}
+.ic .k{fill:#0e272b}.ic .ks{stroke:#0e272b}.ic .p{fill:#f4efe6}
+
+/* ---- Ilustraciones (dibujos SVG) y sus animaciones en bucle ---- */
+.ilu{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 14px 18px rgba(0,0,0,.28))}
+.ilu .bob,.ilu .spin,.ilu .sway,.ilu .wig,.ilu .pulse,.ilu .roll,.ilu .clink,.ilu .clinkr,.ilu .float{transform-box:fill-box;transform-origin:50% 50%}
+.ilu .bob{animation:bob 2.8s ease-in-out infinite}
+.ilu .float{animation:bob 3.4s ease-in-out infinite}
+.ilu .spin{animation:spin 9s linear infinite}
+.ilu .sway{transform-origin:50% 100%;animation:sway 3s ease-in-out infinite}
+.ilu .wig{animation:wig 1.6s ease-in-out infinite}
+.ilu .pulse{animation:pulse 1.8s ease-in-out infinite}
+.ilu .clink{transform-origin:0% 100%;animation:clink 2.2s ease-in-out infinite}
+.ilu .clinkr{transform-origin:100% 100%;animation:clinkr 2.2s ease-in-out infinite}
+.ilu .shine{animation:shine 3.2s ease-in-out infinite}
+.el.on .ilu .roll{animation:roll 1s cubic-bezier(.2,.8,.2,1) both}
+.el.on .ilu .draw{stroke-dasharray:600;stroke-dashoffset:600;animation:drawk 1.8s .35s ease forwards}
+.el.on.ni .ilu .draw{animation:none;stroke-dashoffset:0}
+@keyframes bob{50%{transform:translateY(-7px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes wig{0%,100%{transform:rotate(-9deg) translateX(-3px)}50%{transform:rotate(5deg) translateX(3px)}}
+@keyframes pulse{50%{transform:scale(1.08)}}
+@keyframes clink{0%,60%,100%{transform:rotate(0)}75%{transform:rotate(12deg)}}
+@keyframes clinkr{0%,60%,100%{transform:rotate(0)}75%{transform:rotate(-12deg)}}
+@keyframes shine{0%,100%{opacity:.25}50%{opacity:.75}}
+@keyframes roll{from{transform:rotate(-260deg) scale(.3)}to{transform:none}}
+@keyframes drawk{to{stroke-dashoffset:0}}
+
+/* ---- Componentes de texto del lienzo ---- */
+.kick{display:inline-flex;align-items:center;gap:10px;font:800 21px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;color:#0e272b;background:var(--y);padding:9px 14px;border-radius:999px}
+.ttl{font:800 58px/1.02 var(--disp);letter-spacing:-.02em;color:var(--paper)}
+.mega{font:800 124px/.92 var(--disp);letter-spacing:-.035em}
+.mega b{color:var(--y);font-weight:800}
+.sub{font:600 38px/1.2 var(--ui);color:var(--mut)}
+.txt{font:600 40px/1.25 var(--ui)}
+.txt.s{font-size:32px}
+.d{font:600 26px/1.25 var(--ui);color:var(--mut)}
+.hl{color:var(--y)}.co{color:var(--co)}.mi{color:var(--mi)}.sk{color:var(--sk)}
+.tile{width:100%;height:100%;background:var(--tile);border-radius:26px;padding:26px 28px;display:flex;flex-direction:column;justify-content:center;gap:8px;box-shadow:inset 0 0 0 2px rgba(244,239,230,.06)}
+.tile.row{flex-direction:row;align-items:center;gap:22px}
+.tile .ico{width:76px;height:76px;flex:none}
+.tile .n{font:800 60px/1 var(--disp);color:var(--y)}
+.tile .l{font:700 34px/1.15 var(--ui)}
+.tile .d{font:600 26px/1.25 var(--ui);color:var(--mut)}
+.bignum{font:800 132px/.9 var(--disp);color:var(--y);letter-spacing:-.03em}
+.station{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.station .c{width:var(--cs,140px);height:var(--cs,140px);border-radius:50%;background:var(--tile2);display:grid;place-items:center;box-shadow:0 0 0 6px var(--bg),0 0 0 9px currentColor;color:var(--cc,var(--mi))}
+.station .c svg{width:56%;height:56%}
+.station .n{font:800 var(--ns,58px)/1 var(--disp);color:var(--y)}
+.station .l{font:700 var(--ls,29px)/1.15 var(--ui);color:var(--paper)}
+.road{width:100%;height:100%;border-radius:10px;background:repeating-linear-gradient(90deg,rgba(244,239,230,.35) 0 34px,transparent 34px 58px)}
+.floor{width:100%;height:100%;border-radius:14px;background:var(--tile2);display:flex;align-items:center;padding:0 26px;font:800 42px var(--disp);color:var(--mut);box-shadow:inset 0 -8px 0 rgba(0,0,0,.18)}
+.floor.two{background:#1f5b55;color:var(--paper)}
+.found{width:100%;height:100%;border-radius:14px;background:var(--y);color:#0e272b;display:flex;align-items:center;justify-content:center;font:800 36px var(--disp)}
+.flabel{width:100%;height:100%;display:flex;align-items:center;gap:22px;font:700 38px/1.1 var(--ui)}
+.rng{font:800 34px/1 var(--disp);background:var(--tile2);color:var(--y);border-radius:12px;padding:10px 14px;white-space:nowrap}
+.room{width:100%;height:100%;border-radius:24px;background:var(--tile);padding:28px;display:flex;flex-direction:column;gap:10px;border:3px solid rgba(244,239,230,.1)}
+.room.hot{background:#1f5b55;border-color:var(--y)}
+.room .n{font:800 88px/1 var(--disp);color:var(--y);letter-spacing:-.03em}
+.room .l{font:800 40px/1.05 var(--disp)}
+.room .d{font:600 28px/1.25 var(--ui);color:var(--mut)}
+.room.hot .d{color:#d6ece6}
+.badge{display:inline-block;font:800 24px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;background:var(--co);color:#1a0d08;padding:12px 18px;border-radius:12px}
+.cchip{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:16px;background:var(--tile2);font:800 28px/1.15 var(--ui);color:var(--paper);padding:0 16px}
+.cchip.y{background:var(--y);color:#0e272b}.cchip.c{background:var(--co);color:#1a0d08}.cchip.m{background:var(--mi);color:#06201b}
+.frame{width:100%;height:100%;border:4px dashed rgba(244,239,230,.25);border-radius:30px}
+.vline{width:100%;height:100%;background:repeating-linear-gradient(180deg,rgba(244,239,230,.25) 0 18px,transparent 18px 32px)}
+.bracket{width:100%;height:100%;border-top:5px solid var(--bc);border-left:5px solid var(--bc);border-right:5px solid var(--bc);border-radius:14px 14px 0 0;display:flex;justify-content:center}
+.bracket span{transform:translateY(-62%);background:#0e272b;padding:0 12px;font:800 24px/1 var(--ui);color:var(--bc);letter-spacing:.06em;text-transform:uppercase;height:max-content}
+.stamp{width:100%;height:100%;display:grid;place-items:center;border:8px solid var(--co);border-radius:26px;color:var(--co);font:800 64px/1 var(--disp);text-transform:uppercase;letter-spacing:.02em;text-align:center}
+.qbox{width:100%;height:100%;border-radius:30px;background:var(--tile);display:flex;flex-direction:column;gap:14px;justify-content:center;padding:34px}
+.qbox .q{font:800 52px/1.08 var(--disp)}
+.caseico{width:100%;height:100%;border-radius:34px;background:var(--tile2);display:grid;place-items:center;color:var(--y)}
+.caseico svg{width:58%;height:58%}
+.caseline{font:600 44px/1.22 var(--ui)}
+.caseline b{color:var(--y)}
+.medal{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;font:800 54px/1 var(--disp);color:#0e272b;box-shadow:inset 0 -10px 0 rgba(0,0,0,.18),0 12px 24px -8px rgba(0,0,0,.5)}
+.pod{width:100%;height:100%;border-radius:18px 18px 0 0;padding:22px 24px;color:#0e272b;display:flex;flex-direction:column;gap:8px}
+.pod .t{font:800 34px/1.05 var(--disp)}
+.pod .d{font:700 25px/1.25 var(--ui);color:#0e272b}
+.bar{width:100%;height:100%;border-radius:20px;display:flex;align-items:center;gap:22px;padding:0 30px;font:700 34px/1.2 var(--ui);background:var(--tile)}
+.bar .ico{width:64px;height:64px;flex:none}
+.trap{width:100%;height:100%;border-radius:20px;background:var(--tile);display:flex;align-items:center;gap:26px;padding:0 28px}
+.trap .i{flex:none;width:66px;height:66px;border-radius:50%;background:var(--co);color:#1a0d08;display:grid;place-items:center;font:800 36px var(--disp)}
+.trap .t{font:600 32px/1.2 var(--ui)}
+.trap .t b{color:var(--y)}
+.cal{width:100%;height:100%;border-radius:24px;background:var(--tile);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.cal .n{font:800 70px/1 var(--disp);color:var(--y)}
+.cal .l{font:700 28px/1.2 var(--ui)}
+.cal .d{text-transform:capitalize}
+.ticker{width:100%;height:100%;border-radius:18px;background:var(--y);color:#0e272b;display:flex;align-items:center;justify-content:center;font:800 36px/1.15 var(--disp);letter-spacing:-.01em;text-align:center;padding:0 20px}
+.mcard{width:100%;height:100%;border-radius:16px;background:#fbf6ec;color:#0e272b;border:4px solid #0e272b;box-shadow:inset 0 0 0 5px #fbf6ec,inset 0 0 0 8px var(--mc,#ffcf5a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.mcard .mn{font:800 52px/1 var(--disp)}
+.mcard .mi{width:54px;height:54px;color:var(--mc,#ffcf5a);filter:brightness(.8)}
+.mlbl{width:100%;text-align:center;font:700 26px/1.1 var(--ui)}
+.fcard{width:100%;height:100%;border-radius:20px;background:#fbf6ec;color:#0e272b;border:4px solid #0e272b;box-shadow:inset 0 0 0 6px #fbf6ec,inset 0 0 0 10px var(--fc,#ffcf5a);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.fcard .fl{font:800 54px/1 var(--disp);align-self:flex-start}
+.fcard .fi{width:76px;height:76px;color:var(--fc);filter:brightness(.78)}
+.fcard .ft{font:700 25px/1.18 var(--ui)}
+.vig{width:100%;height:100%;border-radius:26px;background:var(--tile);padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.vig .vi{flex:1;min-height:0}
+.vig .vt{font:600 27px/1.22 var(--ui)}
+.vig .vt b{color:var(--y)}
+.bubble{width:100%;height:100%;position:relative;background:var(--paper);color:#0e272b;border-radius:30px;display:flex;align-items:center;padding:0 30px;font:700 31px/1.15 var(--ui)}
+.bubble:before{content:"";position:absolute;left:-22px;top:50%;margin-top:-16px;border:16px solid transparent;border-right:22px solid var(--paper);border-left:0}
+.lbl{width:100%;height:100%;display:flex;align-items:flex-start;justify-content:center;text-align:center;font:700 26px/1.2 var(--ui)}
+
+/* ---- Panel de actividad ---- */
+.act{display:flex;justify-content:center;align-items:center;padding:14px;z-index:10}
+.player.ovl .act{position:absolute;left:0;right:0;top:0;height:var(--sh,100%);background:rgba(7,22,25,.74);backdrop-filter:blur(3px);border-radius:12px}
+.card{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px 22px;max-width:640px;width:100%;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.card h2{font-family:var(--disp);font-weight:800;font-size:clamp(22px,2.6vw,30px);line-height:1.08;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.card p{margin:0;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;font-size:16px;text-align:left;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:11px 13px;cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.opt b{font-family:var(--disp);color:var(--accent);min-width:1.1em}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt[disabled]{cursor:default}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opts.inline{flex-direction:row;flex-wrap:wrap}
+.opts.inline .opt{flex:1 1 120px;justify-content:center}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:10px}
+.mrow:first-child{border-top:0;padding-top:0}
+.mrow .w{font-weight:700}
+.chips{display:flex;gap:6px}
+.chip{font:inherit;font-family:var(--disp);font-weight:800;font-size:17px;min-width:52px;height:40px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.chip.right{border-color:var(--ok);background:var(--ok-soft)}
+.chip.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{border-radius:12px;padding:10px 12px;font-size:15px}
+.fb.good{background:var(--ok-soft)}.fb.bad{background:var(--bad-soft)}
+.fb strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-weight:700;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn[disabled]{opacity:.5;cursor:default}
+.timer{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--hot);transform-origin:0 50%}
+.small{font-size:13px;color:var(--muted)}
+.counter{font-family:var(--disp);font-weight:800;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+textarea{font:inherit;font-size:16px;width:100%;min-height:150px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);padding:12px;resize:vertical}
+.gridb{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.g{border-radius:10px;border:1.5px solid var(--line);padding:6px 4px;text-align:center;font-size:12px;line-height:1.2;color:var(--muted)}
+.g b{display:block;font-family:var(--disp);font-size:18px;color:var(--muted)}
+.g.hit{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+.g.hit b{color:var(--ok)}
+@media (max-width:520px){.gridb{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.subs{min-height:3.1em;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(15px,1.9vw,19px);line-height:1.4;padding:2px 8px;text-wrap:balance}
+.subs[data-off="1"]{visibility:hidden}
+.progress{display:flex;gap:3px;height:22px;align-items:center}
+.seg{flex-basis:0;height:8px;border-radius:4px;background:var(--line);position:relative;overflow:hidden;border:0;padding:0;cursor:pointer;transition:height .15s}
+.progress:hover .seg{height:12px}
+.seg i{position:absolute;inset:0 auto 0 0;background:var(--accent);width:0}
+.seg.has-act i{background:var(--hot)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.ctl{font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:40px;height:40px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--ink);cursor:pointer;padding:0 10px;font-size:14px;font-weight:700}
+.ctl:hover{background:var(--accent-soft)}
+.ctl.main{background:var(--accent);color:var(--accent-ink);min-width:48px}
+.ctl svg{width:20px;height:20px}
+.ctl[aria-pressed="false"]{color:var(--muted)}
+.ctl .strike{display:none}
+.ctl[aria-pressed="false"] .strike{display:block}
+.now{flex:1 1 220px;min-width:0;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.now b{color:var(--ink)}
+select{font:inherit;font-size:14px;font-weight:700;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 8px}
+.btn:focus-visible,.ctl:focus-visible,.opt:focus-visible,.chip:focus-visible,.seg:focus-visible,.idx:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.start{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(7,22,25,.55);z-index:12}
+
+.lower{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.lower{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel h2{font-family:var(--disp);font-weight:800;font-size:24px;margin:0 0 12px;letter-spacing:-.01em}
+.panel h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.panel h3:first-of-type{margin-top:0}
+.idxlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.idx{width:100%;font:inherit;text-align:left;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--ink);padding:7px 10px;cursor:pointer;font-size:15px}
+.idx:hover{border-color:var(--line)}
+.idx[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.tag{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.t-rec{color:var(--hot);border-color:var(--hot)}
+.method{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.method li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.method .m{font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:4px 8px;white-space:nowrap}
+.method p{margin:0;font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-family:var(--disp);font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.plan{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.plan label{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:15px}
+.plan input{width:18px;height:18px;accent-color:var(--accent)}
+.plan .when{margin-left:auto;font-size:13px;color:var(--muted);text-transform:capitalize}
+@media (prefers-reduced-motion: reduce){.el.on{animation:none}.walker,.el.mv{transition:none}.ilu *{animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow" id="pgEyebrow"></div>
+      <h1 id="pgH1"></h1>
+    </div>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <section class="player" id="player" aria-label="Vídeo animado">
+    <div class="stagewrap" id="stagewrap">
+      <div class="stagebox" id="stagebox">
+        <div class="cv" id="cv" aria-hidden="true"></div>
+        <div class="start" id="startOv">
+          <div class="card">
+            <div class="eyebrow" id="stEyebrow"></div>
+            <h2 id="stTitle"></h2>
+            <p id="stText"></p>
+            <div class="btnrow">
+              <button class="btn primary" id="startBtn" type="button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Empezar</button>
+              <span class="small">Sube el volumen.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="act" id="act" hidden><div class="card" id="actCard" role="dialog" aria-live="polite"></div></div>
+    </div>
+    <div class="subs" id="subs" aria-live="polite">Pulsa «Empezar».</div>
+    <div class="progress" id="progress" aria-label="Escenas"></div>
+    <div class="controls">
+      <button class="ctl" id="bPrev" type="button" aria-label="Escena anterior" title="Escena anterior (←)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z" fill="currentColor"/></svg></button>
+      <button class="ctl main" id="bPlay" type="button" aria-label="Reproducir" title="Reproducir o pausar (espacio)">
+        <svg viewBox="0 0 24 24" aria-hidden="true" id="icoPlay"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" id="icoPause" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+      </button>
+      <button class="ctl" id="bNext" type="button" aria-label="Escena siguiente" title="Escena siguiente (→)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z" fill="currentColor"/></svg></button>
+      <div class="now" id="now"></div>
+      <button class="ctl" id="bVoice" type="button" aria-pressed="true" title="Voz (V)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path class="strike" d="M3 3l18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Voz</button>
+      <button class="ctl" id="bSubs" type="button" aria-pressed="true" title="Subtítulos (C)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 12.5h4M13 12.5h4M7 15.5h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="strike" d="M3 3l18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Subtítulos</button>
+      <label class="small" for="speed" style="display:inline-flex;align-items:center;gap:6px">Velocidad
+        <select id="speed"><option value="0.9">0,9×</option><option value="1" selected>1×</option><option value="1.15">1,15×</option><option value="1.3">1,3×</option><option value="1.5">1,5×</option></select>
+      </label>
+      <button class="ctl" id="bFull" type="button" aria-label="Pantalla completa" title="Pantalla completa (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></button>
+    </div>
+  </section>
+
+  <div class="lower">
+    <section class="panel" aria-labelledby="idxH">
+      <h2 id="idxH">Índice</h2>
+      <div id="index"></div>
+    </section>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <section class="panel" aria-labelledby="progH">
+        <h2 id="progH">Tu progreso</h2>
+        <div class="stats" id="stats"></div>
+        <h3>Plan de repaso espaciado</h3>
+        <ul class="plan" id="plan"></ul>
+      </section>
+      <section class="panel" aria-labelledby="metH">
+        <h2 id="metH">Por qué está hecho así</h2>
+        <ul class="method">
+          <li><span class="m">Pre-test</span><p>Intentar responder antes de estudiar prepara a la memoria, aunque falles.</p></li>
+          <li><span class="m">Mapa</span><p>Ver primero la estructura completa da un sitio a cada dato nuevo.</p></li>
+          <li><span class="m">Dibujos</span><p>Una imagen concreta y algo absurda se recuerda mucho mejor que una frase: palabra + imagen = doble huella.</p></li>
+          <li><span class="m">Historia</span><p>Una secuencia de escenas convierte artículos sueltos en un recorrido fácil de recordar.</p></li>
+          <li><span class="m">Recuperación</span><p>Sacar la respuesta de tu cabeza fija más que releer. Por eso el vídeo se para.</p></li>
+          <li><span class="m">Mezcla</span><p>La ronda rápida mezcla temas: cuesta más y por eso consolida mejor.</p></li>
+          <li><span class="m">Vaciado</span><p>Escribir todo lo que recuerdas muestra exactamente qué te falta por repasar.</p></li>
+          <li><span class="m">Espaciado</span><p>Repasar a 1, 3, 7 y 14 días frena la curva del olvido.</p></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* =====================================================================
+   1. PIEZAS COMUNES PARA ESCRIBIR CÁPSULAS
+   ===================================================================== */
+/*@@COMUNES-INICIO@@*/
+/* Iconos planos 64x64. "k" = recorte oscuro, "ks" = trazo oscuro, "p" = papel. */
+const IC={
+ heart:'<path d="M32 56C10 41 4 29 8 19c4-10 18-12 24 0 6-12 20-10 24 0 4 10-2 22-24 37z"/>',
+ bulb:'<circle cx="32" cy="26" r="17"/><rect x="24" y="44" width="16" height="7" rx="2"/><rect x="26" y="53" width="12" height="5" rx="2"/>',
+ lock:'<rect x="12" y="28" width="40" height="30" rx="7"/><path d="M21 28v-7a11 11 0 0 1 22 0v7" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="32" cy="42" r="4" class="k"/>',
+ house:'<path d="M6 31 32 8l26 23h-7v25H13V31z"/><rect x="27" y="40" width="10" height="16" class="k"/>',
+ pin:'<path d="M32 60C20 44 13 35 13 25a19 19 0 0 1 38 0c0 10-7 19-19 35z"/><circle cx="32" cy="25" r="7" class="k"/>',
+ mega:'<path d="M8 25h8l26-13v40L16 39H8z"/><path d="M18 40l4 14h8l-4-13z"/><path d="M48 24c4 5 4 11 0 16M53 18c8 8 8 20 0 28" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>',
+ people:'<circle cx="16" cy="22" r="7"/><circle cx="48" cy="22" r="7"/><circle cx="32" cy="17" r="8"/><path d="M4 50c0-10 5-17 12-17s12 7 12 17zM36 50c0-10 5-17 12-17s12 7 12 17z"/><path d="M18 58c0-12 6-21 14-21s14 9 14 21z"/>',
+ link:'<rect x="5" y="22" width="30" height="20" rx="10" fill="none" stroke="currentColor" stroke-width="6"/><rect x="29" y="22" width="30" height="20" rx="10" fill="none" stroke="currentColor" stroke-width="6"/>',
+ ballot:'<path d="M22 4h22l-3 28H19z" class="p"/><path d="M26 12l10 10M36 12 26 22" class="ks" stroke-width="3"/><rect x="8" y="30" width="48" height="28" rx="4"/><rect x="18" y="33" width="28" height="4" rx="2" class="k"/>',
+ gavel:'<rect x="12" y="10" width="30" height="16" rx="3" transform="rotate(-35 27 18)"/><rect x="31" y="22" width="8" height="34" rx="3" transform="rotate(-35 35 39)"/><rect x="6" y="52" width="30" height="8" rx="3"/>',
+ book:'<path d="M8 10h18c3 0 5 2 5 5v42c0-3-2-4-5-4H8z"/><path d="M56 10H38c-3 0-5 2-5 5v42c0-3 2-4 5-4h18z" opacity=".75"/>',
+ ban:'<circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="7"/><path d="M15 15l34 34" stroke="currentColor" stroke-width="7"/>',
+ cap:'<path d="M2 24 32 12l30 12-30 12z"/><path d="M16 31v12c0 5 8 9 16 9s16-4 16-9V31l-16 7z"/><path d="M56 26v16" stroke="currentColor" stroke-width="3"/>',
+ sign:'<rect x="6" y="8" width="52" height="30" rx="4"/><rect x="29" y="38" width="6" height="22"/><rect x="14" y="19" width="36" height="8" rx="3" class="k"/>',
+ letter:'<rect x="6" y="14" width="52" height="36" rx="4"/><path d="M8 17l24 18 24-18" fill="none" class="ks" stroke-width="4"/>',
+ shield:'<path d="M32 4 56 13c0 22-9 38-24 47C17 51 8 35 8 13z"/><path d="M21 32l8 8 15-16" fill="none" class="ks" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>',
+ coins:'<ellipse cx="26" cy="50" rx="18" ry="7"/><ellipse cx="26" cy="41" rx="18" ry="7"/><ellipse cx="26" cy="32" rx="18" ry="7"/><circle cx="46" cy="18" r="14"/><path d="M50 12a8 8 0 1 0 0 12M38 16h10M38 21h10" fill="none" class="ks" stroke-width="3"/>',
+ rings:'<circle cx="24" cy="38" r="15" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="40" cy="38" r="15" fill="none" stroke="currentColor" stroke-width="6"/><path d="M24 6l7 7-7 7-7-7z"/>',
+ key:'<circle cx="18" cy="32" r="12" fill="none" stroke="currentColor" stroke-width="7"/><rect x="29" y="28" width="30" height="8" rx="2"/><rect x="46" y="34" width="6" height="12"/><rect x="54" y="34" width="5" height="9"/>',
+ temple:'<path d="M4 22 32 6l28 16z"/><rect x="8" y="24" width="48" height="5"/><rect x="11" y="31" width="7" height="21"/><rect x="23" y="31" width="7" height="21"/><rect x="34" y="31" width="7" height="21"/><rect x="46" y="31" width="7" height="21"/><rect x="4" y="54" width="56" height="6"/>',
+ case:'<rect x="6" y="20" width="52" height="36" rx="5"/><path d="M22 20v-7h20v7" fill="none" stroke="currentColor" stroke-width="5"/><rect x="6" y="34" width="52" height="4" class="k"/>',
+ doc:'<path d="M12 4h28l12 12v44H12z"/><rect x="19" y="22" width="26" height="4" class="k"/><rect x="19" y="31" width="26" height="4" class="k"/><path d="M19 48c4-6 7 4 11-2s6 2 12-2" fill="none" class="ks" stroke-width="3"/>',
+ store:'<path d="M6 8h52l4 16H2z"/><rect x="8" y="26" width="48" height="32"/><rect x="14" y="36" width="12" height="22" class="k"/><rect x="32" y="34" width="18" height="12" class="k"/>',
+ warn:'<path d="M32 4 62 58H2z"/><rect x="29" y="22" width="6" height="20" rx="2" class="k"/><circle cx="32" cy="49" r="4" class="k"/>',
+ clock:'<circle cx="32" cy="32" r="27"/><path d="M32 14v18l12 8" fill="none" class="ks" stroke-width="5" stroke-linecap="round"/>',
+ compass:'<circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="6"/><path d="M44 18 37 37 20 46l7-19z"/>',
+ plus:'<rect x="24" y="8" width="16" height="48" rx="3"/><rect x="8" y="24" width="48" height="16" rx="3"/>',
+ leaf:'<path d="M54 8C24 8 10 22 10 42c0 6 2 10 4 14 4-16 14-26 28-32-12 8-20 18-24 32 30 2 36-24 36-48z"/>',
+ cart:'<path d="M2 10h10l8 32h32l6-24H16" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><circle cx="24" cy="52" r="5"/><circle cx="48" cy="52" r="5"/>',
+ news:'<rect x="6" y="10" width="46" height="46" rx="4"/><rect x="52" y="20" width="8" height="36" rx="3" opacity=".7"/><rect x="12" y="17" width="34" height="8" class="k"/><rect x="12" y="31" width="16" height="4" class="k"/><rect x="12" y="40" width="16" height="4" class="k"/><rect x="32" y="31" width="14" height="14" class="k"/>',
+ map:'<path d="M4 12l18-6 20 6 18-6v46l-18 6-20-6-18 6z"/><path d="M22 6v46M42 12v46" class="ks" stroke-width="3"/>',
+ bolt:'<path d="M36 2 10 36h18l-4 26 28-36H34z"/>',
+ walker:'<circle cx="32" cy="11" r="9"/><path d="M20 24h24l-3 20h-5l-2 18h-4l-2-18h-5z"/>',
+ scales:'<rect x="30" y="8" width="4" height="46"/><rect x="10" y="14" width="44" height="4"/><path d="M4 38h20l-10-20zM40 38h20l-10-20z"/><rect x="18" y="54" width="28" height="6" rx="2"/>',
+ q:'<circle cx="32" cy="32" r="28"/><path d="M24 25a8 8 0 1 1 12 7c-3 2-4 3-4 7" fill="none" class="ks" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="48" r="4" class="k"/>',
+ crown:'<path d="M6 50 10 16l14 15L32 6l8 25 14-15 4 34z"/><rect x="6" y="48" width="52" height="9" rx="2"/>',
+ tree:'<circle cx="32" cy="11" r="8"/><circle cx="12" cy="48" r="8"/><circle cx="32" cy="48" r="8"/><circle cx="52" cy="48" r="8"/><path d="M32 19v10M12 40v-11h40v11M32 29v11" fill="none" stroke="currentColor" stroke-width="4"/>',
+ ring:'<circle cx="32" cy="40" r="17" fill="none" stroke="currentColor" stroke-width="7"/><path d="M24 4h16l6 10-14 10-14-10z"/>',
+ baby:'<circle cx="32" cy="32" r="24"/><circle cx="24" cy="31" r="3.5" class="k"/><circle cx="40" cy="31" r="3.5" class="k"/><circle cx="32" cy="43" r="5" class="k"/><path d="M27 8q6-8 11 1" fill="none" class="ks" stroke-width="3"/>',
+ scroll:'<rect x="12" y="10" width="40" height="44" rx="4"/><rect x="6" y="5" width="52" height="11" rx="5.5"/><rect x="6" y="48" width="52" height="11" rx="5.5"/><rect x="20" y="24" width="24" height="3" class="k"/><rect x="20" y="32" width="24" height="3" class="k"/>',
+ hand:'<path d="M18 34V18a4 4 0 0 1 8 0v12V10a4 4 0 0 1 8 0v20V12a4 4 0 0 1 8 0v20-12a4 4 0 0 1 8 0v22c0 12-8 20-19 20-9 0-14-5-19-14l-6-10a4 4 0 0 1 7-4z"/>',
+ cards:'<rect x="6" y="14" width="30" height="44" rx="4" transform="rotate(-14 21 36)"/><rect x="28" y="8" width="30" height="44" rx="4" transform="rotate(10 43 30)" opacity=".75"/>',
+ globe:'<circle cx="32" cy="32" r="27"/><path d="M5 32h54M32 5c-11 13-11 41 0 54M32 5c11 13 11 41 0 54" fill="none" class="ks" stroke-width="3"/>',
+ pen:'<path d="M44 6l14 14-30 30-18 4 4-18z"/><path d="M6 60h52" stroke="currentColor" stroke-width="4"/>',
+ bag:'<path d="M24 6h16l-4 10h-8z"/><path d="M28 16h8c14 6 22 18 22 28 0 10-8 16-26 16S6 54 6 44c0-10 8-22 22-28z"/>',
+ whistle:'<path d="M6 26h34a15 15 0 1 1-13 21H6z"/><rect x="6" y="18" width="14" height="10" rx="2"/><circle cx="41" cy="38" r="5" class="k"/>',
+ knot:'<path d="M12 32c0-8 6-12 12-12 10 0 14 24 24 24 6 0 10-4 10-12s-4-12-10-12c-10 0-14 24-24 24-6 0-12-4-12-12z" fill="none" stroke="currentColor" stroke-width="7"/>',
+ sword:'<path d="M29 2h6v42h-6z"/><rect x="16" y="42" width="32" height="7" rx="2"/><rect x="28" y="49" width="8" height="10"/><circle cx="32" cy="60" r="4"/>',
+ star:'<path d="M32 4l8 18 20 2-15 13 5 20-18-11-18 11 5-20L4 24l20-2z"/>',
+ check:'<path d="M10 34l14 14 30-30" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
+ tie:'<path d="M24 4h16l-4 10 8 34-12 12-12-12 8-34z"/>',
+ eye:'<path d="M2 32C12 16 22 10 32 10s20 6 30 22C52 48 42 54 32 54S12 48 2 32z"/><circle cx="32" cy="32" r="12" class="k"/><circle cx="32" cy="32" r="5"/>',
+ dice:'<rect x="6" y="6" width="52" height="52" rx="10"/><circle cx="19" cy="19" r="5" class="k"/><circle cx="32" cy="32" r="5" class="k"/><circle cx="45" cy="45" r="5" class="k"/>'
+};
+const ic=(n,col)=>`<svg class="ic" viewBox="0 0 64 64" style="color:${col||"currentColor"}" aria-hidden="true">${IC[n]||IC.q}</svg>`;
+/* E(momento, x, y, ancho, alto, html, opciones)
+   momento = índice de la frase del guion en la que aparece el elemento.
+   opciones: a (animación de entrada), d (retraso en s), out (frase en la que desaparece),
+             move ([{at,x,y}] desplazamientos posteriores). */
+const E=(at,x,y,w,h,html,o={})=>({at,x,y,w,h,html,...o});
+const tile=(icon,n,l,d,col)=>`<div class="tile row"><div class="ico" style="color:${col||"var(--mi)"}">${ic(icon)}</div><div><div class="n">${n}</div><div class="l">${l}</div>${d?`<div class="d">${d}</div>`:""}</div></div>`;
+const callout=(icon,l,d,col)=>`<div class="tile row"><div class="ico" style="color:${col||"var(--y)"}">${ic(icon)}</div><div><div class="l" style="font-size:31px">${l}</div>${d?`<div class="d">${d}</div>`:""}</div></div>`;
+const st=(icon,n,l,col)=>`<div class="station" style="--cc:${col||"var(--mi)"}"><div class="n">${n}</div><div class="c">${ic(icon)}</div><div class="l">${l}</div></div>`;
+const st2=(icon,n,l,col)=>`<div class="station" style="--cs:118px;--ns:46px;--ls:25px;--cc:${col||"var(--mi)"}"><div class="n">${n}</div><div class="c">${ic(icon)}</div><div class="l">${l}</div></div>`;
+const T={map:"Mapa",pre:"Pre-test",rec:"Recuperación",his:"Historia",caso:"Caso práctico",mne:"Mnemotecnia",con:"Contraste",img:"Imagen mental",err:"Errores típicos",mix:"Práctica mezclada",vac:"Vaciado de memoria",esp:"Repaso espaciado",gan:"Arranque",chu:"Chunking",dib:"Dibujo"};
+/*@@COMUNES-FIN@@*/
+
+/* =====================================================================
+   2. ILUSTRACIONES (se inyecta motor/ilustraciones.js)
+   ===================================================================== */
+/* =====================================================================
+   ILUSTRACIONES · dibujos SVG planos para las video-clases
+   ---------------------------------------------------------------------
+   Cada función devuelve un <svg class="ilu"> que ocupa el 100% de la
+   caja donde se coloca (E(..., ILU.persona({tipo:'rey'})) ).
+   Estilo: plano, sin contorno, sombra suave de bloque (opacity .12–.18),
+   paleta común P. Animaciones en bucle por clase CSS: bob, float, spin,
+   sway, wig, pulse, clink, clinkr, shine; al aparecer: roll, draw.
+   Proporciones de personaje: viewBox 200x300 (caja 2:3).
+   ===================================================================== */
+const P={sk:"#f2c7a5",sk2:"#dca27e",ink:"#162227",paper:"#f4efe6",card:"#fbf6ec",
+  gold:"#ffcf5a",gold2:"#e5a51f",red:"#d9483b",red2:"#a83228",navy:"#2d4170",navy2:"#1f2d4d",
+  teal:"#2f9d8f",teal2:"#1f6f66",sky:"#8cc8ff",sky2:"#5fa6e6",mint:"#63d6b5",coral:"#ff7a59",
+  brown:"#8a5a34",brown2:"#6b4226",pink:"#f39a8c",grey:"#c9d0d4",hair:"#3a2a22",green:"#4caf6e"};
+const svgW=(vb,body,extra="")=>`<svg class="ilu" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" ${extra}>${body}</svg>`;
+
+/* ---------- PERSONAJES ---------- */
+const PERSONAS={
+  rey:{outfit:"manto",oc:P.red,hair:"corto",hc:"#5b4a3f",beard:true,head:"corona",pose:"cetro"},
+  reina:{outfit:"vestido",oc:P.teal,hair:"largo",hc:"#7a4a2a",head:"tiara"},
+  principe:{outfit:"chaqueta",oc:P.sky2,shirt:P.paper,hair:"corto",hc:"#c48a3c",head:"coronita",pants:P.navy},
+  princesa:{outfit:"vestido",oc:P.sky2,hair:"largo",hc:"#c48a3c",head:"coronita"},
+  presidente:{outfit:"traje",oc:P.navy,tie:P.red,hair:"canoso",hc:"#9aa0a6"},
+  presidenta:{outfit:"chaqueta",oc:P.teal2,shirt:P.paper,hair:"mono",hc:"#3a2a22",pants:P.navy2},
+  regente:{outfit:"chaqueta",oc:P.coral,shirt:P.paper,hair:"largo",hc:"#3a2a22",sash:true,pants:P.navy2},
+  tutor:{outfit:"rebeca",oc:P.brown,shirt:P.paper,hair:"canoso",hc:P.grey,glasses:true,pose:"libro",pants:P.navy2},
+  mujer:{outfit:"chaqueta",oc:P.mint,shirt:P.paper,hair:"largo",hc:"#6b3f22",pants:P.navy2},
+  hombre:{outfit:"chaqueta",oc:P.sky,shirt:P.paper,hair:"corto",hc:P.hair,pants:P.navy2},
+  madre:{outfit:"vestido",oc:P.coral,hair:"largo",hc:"#3a2a22"},
+  padre:{outfit:"chaqueta",oc:P.teal,shirt:P.paper,hair:"corto",hc:P.hair,beard:true,pants:P.navy2}
+};
+function coronaPath(x=0,y=0,s=1){
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 40L6 8l14 18L34 0l14 26L62 8l6 32Z" fill="${P.gold}"/><rect x="0" y="34" width="68" height="11" rx="2" fill="${P.gold2}"/><circle cx="34" cy="40" r="4.5" fill="${P.red}"/><circle cx="14" cy="40" r="3.5" fill="${P.sky}"/><circle cx="54" cy="40" r="3.5" fill="${P.sky}"/><circle cx="6" cy="8" r="4" fill="${P.gold}"/><circle cx="34" cy="0" r="4.5" fill="${P.gold}"/><circle cx="62" cy="8" r="4" fill="${P.gold}"/></g>`;
+}
+function personaG(o={}){
+  const c={...(PERSONAS[o.tipo]||PERSONAS.hombre),...o};
+  const sk=c.skin||P.sk, hc=c.hc||P.hair, oc=c.oc||P.navy, pose=c.pose||"normal";
+  let s="";
+  /* pelo largo por detrás */
+  if(c.hair==="largo") s+=`<path d="M62 72Q56 28 100 26Q144 28 138 72L148 158Q126 148 122 112H78Q74 148 52 158Z" fill="${hc}"/>`;
+  /* piernas */
+  if(["traje","chaqueta","rebeca"].includes(c.outfit)) s+=`<rect x="78" y="226" width="20" height="62" rx="6" fill="${c.pants||P.navy2}"/><rect x="102" y="226" width="20" height="62" rx="6" fill="${c.pants||P.navy2}"/><ellipse cx="86" cy="292" rx="15" ry="7" fill="${P.ink}"/><ellipse cx="114" cy="292" rx="15" ry="7" fill="${P.ink}"/>`;
+  /* cuello */
+  s+=`<rect x="90" y="96" width="20" height="30" fill="${P.sk2}"/>`;
+  /* cuerpo */
+  if(c.outfit==="manto"){
+    s+=`<path d="M58 122Q100 108 142 122L168 296H32Z" fill="${oc}"/><path d="M100 114L142 122L168 296H100Z" fill="#000" opacity=".16"/><path d="M95 140h10l5 156H90Z" fill="${P.gold2}"/><path d="M48 120Q100 160 152 120L156 150Q100 190 44 150Z" fill="${P.paper}"/>`;
+    [[60,140],[78,152],[100,158],[122,152],[140,140],[70,130],[130,130],[100,170]].forEach(([x,y])=>s+=`<ellipse cx="${x}" cy="${y}" rx="2.6" ry="4.2" fill="${P.ink}"/>`);
+  } else if(c.outfit==="vestido"){
+    s+=`<path d="M62 124Q100 112 138 124L162 294H38Z" fill="${oc}"/><path d="M100 118L138 124L162 294H100Z" fill="#000" opacity=".13"/><rect x="66" y="176" width="68" height="10" rx="3" fill="${P.gold}"/>`;
+  } else if(c.outfit==="traje"){
+    s+=`<path d="M60 124Q100 112 140 124L150 240H50Z" fill="${oc}"/><path d="M100 118L140 124L150 240H100Z" fill="#000" opacity=".17"/><path d="M85 121L100 160L115 121Z" fill="${P.paper}"/><path d="M97 128h6l3 40-6 8-6-8Z" fill="${c.tie||P.red}"/><path d="M84 122L100 172M116 122L100 172" stroke="#000" stroke-opacity=".28" stroke-width="3" fill="none"/>`;
+  } else if(c.outfit==="chaqueta"||c.outfit==="rebeca"){
+    s+=`<path d="M60 124Q100 112 140 124L148 238H52Z" fill="${oc}"/><path d="M100 118L140 124L148 238H100Z" fill="#000" opacity=".15"/><path d="M86 121L100 152L114 121Z" fill="${c.shirt||P.paper}"/>`;
+    if(c.outfit==="rebeca") s+=`<circle cx="100" cy="170" r="3.5" fill="${P.gold}"/><circle cx="100" cy="192" r="3.5" fill="${P.gold}"/><circle cx="100" cy="214" r="3.5" fill="${P.gold}"/><rect x="66" y="196" width="22" height="16" rx="3" fill="#000" opacity=".15"/>`;
+  }
+  if(c.sash) s+=`<path d="M64 126L80 120L144 232L128 238Z" fill="${P.gold}"/><circle cx="104" cy="182" r="8" fill="${P.red}"/>`;
+  /* brazos */
+  const arm=(x,rot,cx)=>`<rect x="${x}" y="124" width="22" height="88" rx="11" fill="${oc}" transform="rotate(${rot} ${cx} 128)"/>`;
+  const handL=[44,214], up=["jura","copa","saludo"].includes(pose), handR=up?[171,45]:[156,214];
+  s+=arm(48,10,59);
+  s+=up?arm(130,-160,141):arm(130,-10,141);
+  /* objetos en las manos (detrás de la mano) */
+  if(pose==="cetro") s+=`<rect x="153" y="96" width="9" height="176" rx="4" fill="${P.gold2}"/><circle cx="157" cy="90" r="12" fill="${P.gold}"/><path d="M157 70v12M151 76h12" stroke="${P.gold}" stroke-width="4"/>`;
+  if(pose==="copa") s+=`<g class="clinkr"><path d="M156 8h30q0 24-15 28-15-4-15-28Z" fill="${P.gold}"/><rect x="168" y="34" width="6" height="12" fill="${P.gold2}"/></g>`;
+  if(pose==="cartas") s+=[-28,-14,0,14,28].map((r,k)=>`<rect x="150" y="150" width="34" height="50" rx="5" fill="${k%2?P.card:"#fff"}" stroke="${P.ink}" stroke-width="2.5" transform="rotate(${r} 160 212)"/>`).join("");
+  s+=`<circle cx="${handL[0]}" cy="${handL[1]}" r="10" fill="${sk}"/><circle cx="${handR[0]}" cy="${handR[1]}" r="${pose==="jura"?13:10}" fill="${sk}"/>`;
+  if(pose==="libro"||pose==="jura") s+=`<rect x="26" y="186" width="40" height="48" rx="4" fill="${P.red2}"/><rect x="30" y="190" width="32" height="40" rx="2" fill="${P.red}"/><text x="46" y="216" text-anchor="middle" font-size="13" font-weight="800" fill="${P.gold}" font-family="sans-serif">CE</text>`;
+  /* cabeza */
+  s+=`<circle cx="66" cy="76" r="8" fill="${P.sk2}"/><circle cx="134" cy="76" r="8" fill="${P.sk2}"/><circle cx="100" cy="72" r="34" fill="${sk}"/>`;
+  if(c.beard) s+=`<path d="M68 76Q70 116 100 120Q130 116 132 76Q126 100 100 102Q74 100 68 76Z" fill="${hc}"/>`;
+  /* cara */
+  const ex=c.expr||"normal";
+  if(ex==="mareado"){
+    s+=`<path d="M82 66l10 10M92 66l-10 10M108 66l10 10M118 66l-10 10" stroke="${P.ink}" stroke-width="3.5" stroke-linecap="round"/><path d="M88 92q6-6 12 0t12 0" stroke="${P.ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+    s+=`<g class="spin"><path d="M100 4a10 10 0 1 1-10 10 6 6 0 1 1 6 6" stroke="${P.gold}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="72" cy="12" r="4" fill="${P.gold}"/><circle cx="128" cy="14" r="4" fill="${P.gold}"/></g>`;
+    s+=`<rect x="70" y="44" width="60" height="10" rx="5" fill="${P.paper}" transform="rotate(-8 100 49)"/>`;
+  } else {
+    s+=`<ellipse cx="88" cy="72" rx="3.8" ry="4.8" fill="${P.ink}"/><ellipse cx="112" cy="72" rx="3.8" ry="4.8" fill="${P.ink}"/><circle cx="89.3" cy="70.4" r="1.3" fill="#fff"/><circle cx="113.3" cy="70.4" r="1.3" fill="#fff"/>`;
+    s+=`<path d="M81 61q7-5 14 0M105 61q7-5 14 0" stroke="${c.beard||c.hair==="canoso"?hc:P.ink}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>`;
+    s+=ex==="serio"?`<path d="M91 92h18" stroke="${P.ink}" stroke-width="3.5" stroke-linecap="round"/>`
+      :ex==="feliz"?`<path d="M88 88q12 14 24 0Z" fill="${P.ink}"/><path d="M93 92q7 4 14 0" stroke="${P.pink}" stroke-width="3" fill="none"/>`
+      :`<path d="M90 89q10 9 20 0" stroke="${P.ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+    s+=`<circle cx="79" cy="84" r="6" fill="${P.pink}" opacity=".45"/><circle cx="121" cy="84" r="6" fill="${P.pink}" opacity=".45"/>`;
+    if(c.beard) s+=`<path d="M88 86q12-6 24 0q-12 4-24 0Z" fill="${hc}"/>`;
+  }
+  if(c.glasses) s+=`<circle cx="88" cy="72" r="10" fill="none" stroke="${P.ink}" stroke-width="3"/><circle cx="112" cy="72" r="10" fill="none" stroke="${P.ink}" stroke-width="3"/><path d="M98 72h4" stroke="${P.ink}" stroke-width="3"/>`;
+  /* pelo por delante */
+  if(c.hair==="corto") s+=`<path d="M64 74Q60 36 100 34Q140 36 136 74Q132 56 116 52Q100 60 80 54Q68 60 64 74Z" fill="${hc}"/>`;
+  else if(c.hair==="largo") s+=`<path d="M66 68Q68 36 100 36Q132 36 134 68Q120 50 100 52Q82 50 66 68Z" fill="${hc}"/>`;
+  else if(c.hair==="canoso") s+=`<path d="M64 78Q60 52 72 44Q70 62 68 78Z M136 78Q140 52 128 44Q130 62 132 78Z M84 40Q100 34 116 40Q100 44 84 40Z" fill="${hc}"/>`;
+  else if(c.hair==="mono") s+=`<path d="M64 72Q62 36 100 36Q138 36 136 72Q130 52 100 52Q72 52 64 72Z" fill="${hc}"/><circle cx="100" cy="30" r="14" fill="${hc}"/>`;
+  /* tocados */
+  if(c.head==="corona") s+=coronaPath(66,6,1);
+  if(c.head==="coronita") s+=coronaPath(77,22,.68);
+  if(c.head==="tiara") s+=`<path d="M72 44Q100 20 128 44Q100 34 72 44Z" fill="${P.gold}"/><circle cx="100" cy="32" r="4" fill="${P.sky}"/>`;
+  if(pose==="saludo") s+=`<path d="M184 30l10-6M186 46h12M182 60l10 6" stroke="${P.gold}" stroke-width="4" stroke-linecap="round"/>`;
+  return `<g class="${c.anim||"bob"}">${s}</g>`;
+}
+function persona(o={}){return svgW("0 0 200 300",personaG(o));}
+
+/* Rey bebé en un trono enorme, con la corona que le baila */
+function bebeRey(){
+  let s=`<path d="M30 72Q110 0 190 72V252H30Z" fill="${P.red}"/><path d="M30 72Q110 0 190 72V252H30Z" fill="none" stroke="${P.gold2}" stroke-width="9"/><circle cx="110" cy="26" r="11" fill="${P.gold}"/>`;
+  s+=`<rect x="8" y="168" width="34" height="44" rx="8" fill="${P.gold}"/><rect x="178" y="168" width="34" height="44" rx="8" fill="${P.gold}"/><rect x="16" y="204" width="188" height="36" rx="9" fill="${P.gold2}"/><rect x="28" y="238" width="18" height="56" fill="${P.gold2}"/><rect x="174" y="238" width="18" height="56" fill="${P.gold2}"/>`;
+  s+=`<g class="bob"><ellipse cx="92" cy="240" rx="15" ry="10" fill="${P.sky2}"/><ellipse cx="128" cy="240" rx="15" ry="10" fill="${P.sky2}"/><ellipse cx="110" cy="204" rx="40" ry="42" fill="${P.sky}"/><circle cx="72" cy="198" r="11" fill="${P.sk}"/><circle cx="148" cy="198" r="11" fill="${P.sk}"/>`;
+  s+=`<circle cx="110" cy="142" r="40" fill="${P.sk}"/><ellipse cx="96" cy="142" rx="5.5" ry="7.5" fill="${P.ink}"/><ellipse cx="124" cy="142" rx="5.5" ry="7.5" fill="${P.ink}"/><circle cx="98" cy="139" r="2" fill="#fff"/><circle cx="126" cy="139" r="2" fill="#fff"/><circle cx="84" cy="156" r="7" fill="${P.pink}" opacity=".5"/><circle cx="136" cy="156" r="7" fill="${P.pink}" opacity=".5"/><circle cx="110" cy="164" r="9" fill="${P.coral}"/><circle cx="110" cy="164" r="4" fill="${P.paper}"/><path d="M106 104q10-10 12 4" stroke="${P.hair}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  s+=`<g class="wig">${coronaPath(62,60,1.42)}</g></g>`;
+  return svgW("0 0 220 300",s);
+}
+
+/* ---------- BARAJA ESPAÑOLA ---------- */
+function paloG(name){
+  if(name==="oros") return `<circle cx="50" cy="50" r="44" fill="${P.gold}"/><circle cx="50" cy="50" r="31" fill="${P.gold2}"/><circle cx="50" cy="50" r="20" fill="${P.gold}"/><circle cx="50" cy="50" r="8" fill="${P.red}"/>`+[0,45,90,135,180,225,270,315].map(a=>`<circle cx="${50+37.5*Math.cos(a*Math.PI/180)}" cy="${50+37.5*Math.sin(a*Math.PI/180)}" r="3" fill="${P.red2}"/>`).join("");
+  if(name==="copas") return `<ellipse cx="50" cy="18" rx="30" ry="7" fill="${P.gold}"/><path d="M20 18h60q0 38-30 42-30-4-30-42Z" fill="${P.red}"/><path d="M50 18h30q0 38-30 42Z" fill="#000" opacity=".15"/><rect x="45" y="58" width="10" height="24" fill="${P.gold2}"/><ellipse cx="50" cy="86" rx="24" ry="8" fill="${P.gold2}"/><circle cx="50" cy="36" r="6" fill="${P.gold}"/>`;
+  if(name==="espadas") return `<g transform="rotate(-30 50 50)"><path d="M46 2h8v66l-4 8-4-8Z" fill="${P.sky}"/><path d="M50 2h4v66l-4 8Z" fill="#000" opacity=".15"/><rect x="30" y="64" width="40" height="8" rx="3" fill="${P.gold2}"/><rect x="46" y="72" width="8" height="18" fill="${P.brown}"/><circle cx="50" cy="94" r="6" fill="${P.gold}"/></g>`;
+  return `<g transform="rotate(-24 50 50)"><path d="M42 8Q58 0 62 16L58 92Q50 100 42 92L38 22Q36 12 42 8Z" fill="${P.brown}"/><path d="M50 4Q58 4 62 16L58 92Q54 96 50 96Z" fill="#000" opacity=".15"/><circle cx="44" cy="34" r="5" fill="${P.brown2}"/><circle cx="56" cy="56" r="5" fill="${P.brown2}"/><circle cx="46" cy="76" r="4" fill="${P.brown2}"/><path d="M60 20q14-8 18 4-12 2-18-4Z" fill="${P.green}"/></g>`;
+}
+function palo(name,cls="float"){return svgW("0 0 100 100",`<g class="${cls}">${paloG(name)}</g>`);}
+const PALO_COL={oros:P.gold2,copas:P.red,espadas:P.sky2,bastos:P.brown};
+function carta(paloName="oros",figura={tipo:"rey"}){
+  const col=PALO_COL[paloName];
+  let s=`<rect x="4" y="4" width="212" height="332" rx="18" fill="${P.card}" stroke="${P.ink}" stroke-width="4"/><rect x="16" y="16" width="188" height="308" rx="10" fill="none" stroke="${col}" stroke-width="4"/>`;
+  s+=`<text x="30" y="56" font-size="34" font-weight="800" fill="${P.ink}" font-family="Bricolage Grotesque,sans-serif">12</text><text x="190" y="304" font-size="34" font-weight="800" fill="${P.ink}" font-family="Bricolage Grotesque,sans-serif" text-anchor="end">12</text>`;
+  s+=`<g transform="translate(150 26) scale(.42)">${paloG(paloName)}</g><g transform="translate(28 268) scale(.42)">${paloG(paloName)}</g>`;
+  s+=`<g transform="translate(26 44) scale(.84)">${personaG({...figura,anim:"none"})}</g>`;
+  return svgW("0 0 220 340",s);
+}
+function dorso(){
+  let s=`<rect x="4" y="4" width="212" height="332" rx="18" fill="${P.navy}" stroke="${P.ink}" stroke-width="4"/><rect x="16" y="16" width="188" height="308" rx="10" fill="none" stroke="${P.gold}" stroke-width="3"/>`;
+  for(let r=0;r<9;r++)for(let c=0;c<6;c++){const x=30+c*32+(r%2?16:0),y=32+r*34;if(x<200)s+=`<path d="M${x} ${y-9}l9 9-9 9-9-9Z" fill="${P.navy2}"/>`;}
+  s+=`<circle cx="110" cy="170" r="46" fill="${P.red}" stroke="${P.gold}" stroke-width="5"/>${coronaPath(76,140,1)}`;
+  return svgW("0 0 220 340",s);
+}
+function abanico(){
+  return svgW("0 0 300 260",[-30,-15,0,15,30].map((r,k)=>`<g transform="rotate(${r} 150 250)"><rect x="100" y="40" width="100" height="160" rx="12" fill="${k===2?P.card:P.navy}" stroke="${P.ink}" stroke-width="4"/>${k===2?`<g transform="translate(113 60) scale(.37)">${personaG({tipo:"rey",anim:"none"})}</g>`:`<rect x="110" y="50" width="80" height="140" rx="8" fill="none" stroke="${P.gold}" stroke-width="3"/>`}</g>`).join(""));
+}
+function coronaObj(){return svgW("0 0 80 60",`<g class="bob">${coronaPath(6,6,1)}</g>`);}
+
+/* ---------- INSTITUCIONES Y OBJETOS ---------- */
+function hemiciclo(){
+  const cols=[P.coral,P.sky,P.mint,P.gold,P.paper];let s="",n=0;
+  [[70,7],[100,10],[130,13],[160,16]].forEach(([r,k])=>{for(let j=0;j<k;j++){const a=Math.PI*(j/(k-1));s+=`<circle cx="${180-r*Math.cos(a)}" cy="${186-r*Math.sin(a)}" r="9" fill="${cols[(n++)%5]}"/>`;}});
+  s+=`<rect x="156" y="160" width="48" height="30" rx="4" fill="${P.gold2}"/><rect x="164" y="150" width="32" height="14" rx="3" fill="${P.gold}"/>`;
+  return svgW("0 0 360 200",s);
+}
+function dado(n){
+  const pos={1:[[50,50]],2:[[30,30],[70,70]],3:[[28,28],[50,50],[72,72]],4:[[30,30],[70,30],[30,70],[70,70]],5:[[28,28],[72,28],[50,50],[28,72],[72,72]],6:[[30,26],[70,26],[30,50],[70,50],[30,74],[70,74]]}[n];
+  return svgW("0 0 100 100",`<g class="roll"><rect x="6" y="6" width="88" height="88" rx="18" fill="${P.paper}"/><rect x="6" y="80" width="88" height="14" rx="7" fill="#000" opacity=".1"/>${pos.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="9" fill="${P.red}"/>`).join("")}</g>`);
+}
+function cupula(){
+  return svgW("0 0 220 280",`<path d="M14 260V120Q14 14 110 14Q206 14 206 120V260" fill="rgba(140,200,255,.16)" stroke="rgba(214,236,255,.85)" stroke-width="5"/><path class="shine" d="M44 120Q46 50 102 38" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/><path class="shine" d="M40 150v40" stroke="#fff" stroke-width="10" stroke-linecap="round"/><rect x="0" y="256" width="220" height="22" rx="8" fill="${P.gold2}"/>`);
+}
+function mochila(){
+  return svgW("0 0 140 160",`<g class="bob"><path d="M44 30q0-24 26-24t26 24" stroke="${P.red2}" stroke-width="9" fill="none"/><rect x="18" y="28" width="104" height="124" rx="26" fill="${P.coral}"/><path d="M18 60q52 26 104 0V54q0-26-26-26H44q-26 0-26 26Z" fill="${P.red}"/><rect x="40" y="96" width="60" height="40" rx="10" fill="${P.red}"/><rect x="62" y="70" width="16" height="12" rx="3" fill="${P.gold}"/><text x="70" y="124" text-anchor="middle" font-size="22" font-weight="800" fill="${P.paper}" font-family="Bricolage Grotesque,sans-serif">!</text></g>`);
+}
+function pergamino(txt=""){
+  return svgW("0 0 220 260",`<g class="float"><rect x="30" y="30" width="160" height="200" fill="${P.card}"/><rect x="18" y="14" width="184" height="30" rx="15" fill="${P.paper}"/><rect x="18" y="216" width="184" height="30" rx="15" fill="${P.paper}"/><rect x="18" y="14" width="184" height="30" rx="15" fill="#000" opacity=".08"/><text x="110" y="86" text-anchor="middle" font-size="${txt.length>10?20:txt.length>6?26:40}" font-weight="800" fill="${P.ink}" font-family="Bricolage Grotesque,sans-serif">${txt}</text>${[110,130,150,170].map(y=>`<rect x="52" y="${y}" width="${y===170?80:116}" height="6" rx="3" fill="${P.grey}"/>`).join("")}<circle cx="168" cy="196" r="20" fill="${P.red}"/><path d="M158 212l-6 26 16-10 16 10-6-26" fill="${P.red2}"/></g>`);
+}
+function documento(o={}){
+  let s=`<path d="M20 10h120l40 40v200H20Z" fill="${P.card}"/><path d="M140 10v40h40Z" fill="${P.grey}"/>${[70,92,114,136].map(y=>`<rect x="40" y="${y}" width="${y===136?80:120}" height="7" rx="3.5" fill="${P.grey}"/>`).join("")}`;
+  if(o.firma!==false) s+=`<path class="draw" d="M40 206q14-34 24-6t18-4 14-14 12 18 22-8 16 4" stroke="${P.navy}" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="36" y="222" width="130" height="3" fill="${P.ink}" opacity=".4"/>`;
+  if(o.tachado) s+=`<path class="draw" d="M30 30L170 240M170 30L30 240" stroke="${P.red}" stroke-width="16" stroke-linecap="round"/>`;
+  return svgW("0 0 200 270",s);
+}
+function bolsa(){
+  return svgW("0 0 140 160",`<g class="sway"><path d="M54 30h32l-8 16H62Z" fill="${P.gold2}"/><path d="M60 44h20c30 14 48 40 48 66 0 30-26 44-58 44S12 140 12 110c0-26 18-52 48-66Z" fill="${P.gold}"/><path d="M70 44h10c30 14 48 40 48 66 0 30-26 44-58 44Z" fill="#000" opacity=".1"/><path d="M56 40q14 8 28 0" stroke="${P.brown}" stroke-width="6" fill="none"/><text x="70" y="128" text-anchor="middle" font-size="58" font-weight="800" fill="${P.brown2}" font-family="Bricolage Grotesque,sans-serif">€</text></g>`);
+}
+function palacio(){
+  let s=`<rect x="20" y="90" width="280" height="110" fill="${P.paper}"/><rect x="110" y="60" width="100" height="140" fill="${P.card}"/><path d="M100 64L160 24 220 64Z" fill="${P.gold}"/><rect x="20" y="84" width="280" height="10" fill="${P.gold2}"/>`;
+  [40,70,240,270].forEach(x=>{[110,150].forEach(y=>s+=`<rect x="${x}" y="${y}" width="16" height="24" rx="8" fill="${P.sky2}"/>`);});
+  [124,148,172,196].forEach(x=>s+=`<rect x="${x-4}" y="80" width="10" height="120" fill="${P.grey}"/>`);
+  s+=`<path d="M146 200v-40a14 14 0 0 1 28 0v40Z" fill="${P.brown}"/><rect x="0" y="198" width="320" height="10" rx="4" fill="${P.gold2}"/><rect x="158" y="0" width="4" height="30" fill="${P.ink}"/><g class="sway"><rect x="162" y="2" width="36" height="7" fill="${P.red}"/><rect x="162" y="9" width="36" height="10" fill="${P.gold}"/><rect x="162" y="19" width="36" height="7" fill="${P.red}"/></g>`;
+  return svgW("0 0 320 210",s);
+}
+function arco(n,col=P.gold){
+  return svgW("0 0 200 260",`<rect x="18" y="110" width="36" height="146" rx="6" fill="${col}"/><rect x="146" y="110" width="36" height="146" rx="6" fill="${col}"/><path d="M14 124Q100 0 186 124H150Q100 56 50 124Z" fill="${col}"/><rect x="18" y="110" width="36" height="146" rx="6" fill="#000" opacity=".12"/><circle cx="100" cy="44" r="28" fill="${P.paper}"/><text x="100" y="56" text-anchor="middle" font-size="34" font-weight="800" fill="${P.ink}" font-family="Bricolage Grotesque,sans-serif">${n}</text>`);
+}
+function anillosRotos(){
+  return svgW("0 0 200 140",`<circle cx="78" cy="74" r="40" fill="none" stroke="${P.gold}" stroke-width="12"/><circle cx="124" cy="74" r="40" fill="none" stroke="${P.gold2}" stroke-width="12" stroke-dasharray="70 18"/><path d="M100 20l-8 22 12 6-10 24" stroke="${P.coral}" stroke-width="6" fill="none" stroke-linecap="round"/><g class="pulse"><circle cx="100" cy="74" r="62" fill="none" stroke="${P.coral}" stroke-width="10"/><path d="M56 30l88 88" stroke="${P.coral}" stroke-width="10"/></g>`);
+}
+function silbato(){
+  return svgW("0 0 120 80",`<g class="wig"><path d="M10 26h56a22 22 0 1 1-18 30H10Z" fill="${P.grey}"/><rect x="8" y="16" width="24" height="14" rx="3" fill="${P.grey}"/><circle cx="66" cy="44" r="7" fill="${P.ink}"/><path d="M90 30q20-16 26 10" stroke="${P.red}" stroke-width="4" fill="none"/><path d="M14 10l-6-6M24 8v-8" stroke="${P.gold}" stroke-width="4" stroke-linecap="round"/></g>`);
+}
+function globo(){
+  return svgW("0 0 200 240",`<g class="bob"><rect x="78" y="196" width="10" height="34" rx="4" fill="${P.ink}"/><rect x="112" y="196" width="10" height="34" rx="4" fill="${P.ink}"/><circle cx="100" cy="110" r="88" fill="${P.sky2}"/><path d="M40 70q20-20 40-6t10 30-26 10-24-34ZM120 120q26-6 40 10t-14 34-30-10 4-34ZM110 40q20 0 26 12-18 6-26-12Z" fill="${P.mint}"/><ellipse cx="78" cy="108" rx="7" ry="9" fill="${P.ink}"/><ellipse cx="122" cy="108" rx="7" ry="9" fill="${P.ink}"/><path d="M84 136q16 14 32 0" stroke="${P.ink}" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="170" y="70" width="12" height="70" rx="6" fill="${P.sky2}" transform="rotate(-40 176 140)"/><g class="clink"><path d="M150 14h30q0 24-15 28-15-4-15-28Z" fill="${P.gold}"/><rect x="162" y="40" width="6" height="12" fill="${P.gold2}"/></g></g>`);
+}
+function venn(a,b,mid){
+  return svgW("0 0 580 400",`<circle cx="210" cy="200" r="168" fill="${P.coral}" opacity=".35"/><circle cx="370" cy="200" r="168" fill="${P.sky}" opacity=".35"/><circle cx="210" cy="200" r="168" fill="none" stroke="${P.coral}" stroke-width="5"/><circle cx="370" cy="200" r="168" fill="none" stroke="${P.sky}" stroke-width="5"/><text x="120" y="110" text-anchor="middle" font-size="34" font-weight="800" fill="${P.paper}" font-family="Bricolage Grotesque,sans-serif">${a}</text><text x="460" y="110" text-anchor="middle" font-size="34" font-weight="800" fill="${P.paper}" font-family="Bricolage Grotesque,sans-serif">${b}</text>${mid.split("·").map((t,k,arr)=>`<text x="290" y="${200-(arr.length-1)*16+k*34}" text-anchor="middle" font-size="25" font-weight="800" fill="${P.gold}" font-family="Figtree,sans-serif">${t.trim()}</text>`).join("")}`);
+}
+/* Familia: bebé con dos progenitores (ejemplo para temas como el permiso por nacimiento) */
+function familia(){
+  return svgW("0 0 420 300",`<g transform="translate(0 0)">${personaG({tipo:"madre"})}</g><g transform="translate(220 0)">${personaG({tipo:"padre"})}</g><g transform="translate(122 112) scale(.74)"><g class="bob"><ellipse cx="120" cy="206" rx="78" ry="50" fill="${P.paper}"/><ellipse cx="120" cy="214" rx="78" ry="42" fill="${P.sky}" opacity=".6"/><circle cx="120" cy="140" r="48" fill="${P.sk}"/><ellipse cx="104" cy="140" rx="6" ry="8" fill="${P.ink}"/><ellipse cx="136" cy="140" rx="6" ry="8" fill="${P.ink}"/><path d="M106 162q14 10 28 0" stroke="${P.ink}" stroke-width="5" fill="none"/><circle cx="90" cy="156" r="8" fill="${P.pink}" opacity=".5"/><circle cx="150" cy="156" r="8" fill="${P.pink}" opacity=".5"/><path d="M110 96q10-12 14 4" stroke="${P.hair}" stroke-width="5" fill="none" stroke-linecap="round"/></g></g><path class="pulse" d="M210 60c-10-14-30-6-24 8l24 22 24-22c6-14-14-22-24-8Z" fill="${P.coral}"/>`);
+}
+
+const ILU={persona,personaG,bebeRey,carta,dorso,abanico,palo,coronaObj,hemiciclo,dado,cupula,mochila,pergamino,documento,bolsa,palacio,arco,anillosRotos,silbato,globo,venn,familia,P};
+
+
+/* =====================================================================
+   3. CÁPSULA (se inyecta capsulas/<tema>/capsula.js → define CAPSULA)
+   ===================================================================== */
+/* =====================================================================
+   CÁPSULA · Título I de la Constitución: derechos fundamentales (arts. 10–55)
+   Primera cápsula del sistema (sin dibujos de personajes; usa iconos,
+   el "edificio" del Título I, la "historia de una vida" y las medallas).
+   ===================================================================== */
+const building=(anim,at)=>{
+  const out=[E(at,160,700,540,74,'<div class="found">Art. 10 · Dignidad</div>',{a:anim})];
+  [0,1,2,3,4].forEach(i=>out.push(E(at,190,600-i*90,480,80,`<div class="floor${i===1?" two":""}">${i+1}</div>`,{a:anim,d:anim==="none"?0:0.12*i})));
+  return out;
+};
+
+const CAPSULA={
+ id:"dfme",
+ titulo:"Derechos fundamentales en modo estudio",
+ pagina:{
+  eyebrow:"Constitución Española · Título I · Clase 2",
+  h1:'Derechos fundamentales <em>en modo estudio</em>',
+  meta:"23 escenas · 12 ejercicios · voz rápida",
+  inicio:{eyebrow:"Vídeo animado · unos 9 minutos · voz rápida",titulo:"Aprende los derechos fundamentales con técnicas que funcionan",texto:"Pre-test, mapa, historias para memorizar, casos prácticos, pausas activas, ronda rápida y vaciado de memoria. El vídeo se para cuando te toca a ti."}
+ },
+ grupos:[["Arranque",[0,1]],["El mapa del Título I",[2,3,4,5,6]],["Sección 1ª con una historia",[7,8,9]],["Casos prácticos",[10,11,12,13]],["Sección 2ª y principios rectores",[14,15]],["Garantías y suspensión",[16,17,18]],["Consolidar",[19,20,21,22]]],
+ shots:[
+ {tech:"gan",title:"Empezamos",hdr:false,
+  say:["En unos minutos vas a dominar los derechos fundamentales de la Constitución.","Sin leer artículos en bucle: con técnicas que funcionan de verdad.","Un mapa para ver el conjunto.","Historias para memorizar.","Casos prácticos para entender.","Y pausas para sacar lo aprendido de tu cabeza.","Empezamos con un reto."],
+  els:[E(0,120,200,1000,60,'<span class="kick">Constitución Española · Título I</span>',{a:"left"}),
+   E(0,120,280,1100,250,'<div class="mega">Derechos<br><b>fundamentales</b></div>'),
+   E(1,120,540,1200,60,'<div class="sub">en modo estudio · sin leer en bucle</div>',{a:"left"}),
+   E(2,120,650,320,160,tile("map","","Mapa","ver el conjunto","var(--mi)")),
+   E(3,470,650,320,160,tile("book","","Historias","para memorizar","var(--sk)")),
+   E(4,820,650,320,160,tile("gavel","","Casos","para entender","var(--y)")),
+   E(5,1170,650,320,160,tile("bolt","","Pausas","para recuperar","var(--co)")),
+   E(6,1190,230,300,170,'<div class="stamp">¡Reto!</div>',{a:"stamp"})]},
+ {tech:"pre",title:"Tres preguntas antes de estudiar",
+  say:["Tres preguntas antes de estudiar.","Responde rápido, aunque no lo sepas.","Intentar responder antes de aprender hace que recuerdes mejor la respuesta después."],
+  els:[E(0,120,250,430,380,`<div class="qbox"><div style="width:90px;height:90px;color:var(--co)">${ic("q")}</div><div class="q">¿Horas máximas de detención?</div></div>`,{a:"pop"}),
+   E(0,585,250,430,380,`<div class="qbox"><div style="width:90px;height:90px;color:var(--y)">${ic("q")}</div><div class="q">¿Vivienda digna en amparo?</div></div>`,{a:"pop",d:.25}),
+   E(0,1050,250,430,380,`<div class="qbox"><div style="width:90px;height:90px;color:var(--mi)">${ic("q")}</div><div class="q">¿Manifestarse pide permiso?</div></div>`,{a:"pop",d:.5}),
+   E(2,120,690,1360,110,'<div class="bar"><span class="hl">Efecto pre-test:</span> fallar ahora también te ayuda a aprender</div>',{a:"up"})],
+  act:{type:"pretest",qs:[
+   {q:"¿Cuántas horas puede durar como máximo la detención preventiva?",o:["24 horas","48 horas","72 horas"],a:2},
+   {q:"¿El derecho a una vivienda digna se puede defender con recurso de amparo?",o:["Sí","No"],a:1},
+   {q:"Para organizar una manifestación en la calle…",o:["Necesitas autorización","Basta con comunicarlo antes","No hace falta nada"],a:1}]},
+  fb:["Guardado.","Al final comprobarás cuánto has mejorado."]},
+ {tech:"map",title:"El mapa: un edificio",
+  say:["Primero, el mapa.","Todo está en el Título Primero, del artículo 10 al 55.","Imagínalo como un edificio.","Los cimientos son el artículo 10: la dignidad de la persona, fundamento del orden político y de la paz social.","Encima hay cinco plantas: los cinco capítulos."],
+  els:[E(1,820,280,660,140,'<div class="tile row"><div class="n" style="font-size:72px">10</div><div style="flex:1;height:10px;border-radius:5px;background:var(--y)"></div><div class="n" style="font-size:72px">55</div></div>',{a:"wipe"}),
+   E(1,820,440,660,60,'<div class="txt s" style="color:var(--mut)">Título I · «De los derechos y deberes fundamentales»</div>',{a:"fade"}),
+   ...building("up",3).slice(0,1),
+   E(3,820,560,660,150,'<div class="txt">Fundamento del <span class="hl">orden político</span> y de la <span class="hl">paz social</span></div>',{a:"left"}),
+   ...building("up",4).slice(1)]},
+ {tech:"map",title:"Las cinco plantas",
+  say:["Planta uno: españoles y extranjeros, del 11 al 13.","Planta dos, la grande: derechos y libertades, del 14 al 38.","Planta tres: principios rectores de la política social y económica, del 39 al 52.","Planta cuatro: garantías, 53 y 54.","Planta cinco: suspensión de derechos, el 55."],
+  els:[...building("none",0),
+   E(0,720,600,820,80,'<div class="flabel"><span class="rng">11–13</span>Españoles y extranjeros</div>',{a:"left"}),
+   E(1,720,510,820,80,'<div class="flabel"><span class="rng" style="background:var(--y);color:#0e272b">14–38</span><span class="hl">Derechos y libertades</span></div>',{a:"left"}),
+   E(2,720,420,820,80,'<div class="flabel"><span class="rng">39–52</span>Principios rectores</div>',{a:"left"}),
+   E(3,720,330,820,80,'<div class="flabel"><span class="rng">53–54</span>Garantías</div>',{a:"left"}),
+   E(4,720,240,820,80,'<div class="flabel"><span class="rng">55</span>Suspensión</div>',{a:"left"})]},
+ {tech:"map",title:"Zoom: planta 2 (arts. 14–38)",
+  say:["Zoom a la planta dos, porque aquí está casi todo el examen.","Tiene tres habitaciones.","El artículo 14, la igualdad, que va suelto.","La Sección Primera, del 15 al 29: los derechos fundamentales y libertades públicas.","Y la Sección Segunda, del 30 al 38: derechos y deberes de los ciudadanos."],
+  els:[E(0,100,230,1400,560,'<div class="frame"></div>',{a:"fade"}),
+   E(1,1180,190,300,60,'<span class="badge" style="background:var(--mi)">3 habitaciones</span>',{a:"pop"}),
+   E(2,140,280,300,470,'<div class="room"><div class="n">14</div><div class="l">Igualdad</div><div class="d">Va suelto, fuera de las secciones</div></div>'),
+   E(3,470,280,620,470,'<div class="room hot"><div class="n">15–29</div><div class="l">Sección 1ª</div><div class="d">Derechos fundamentales y libertades públicas</div></div>'),
+   E(3,760,640,300,70,'<span class="badge">núcleo duro</span>',{a:"stamp",d:1.4}),
+   E(4,1120,280,340,470,'<div class="room"><div class="n">30–38</div><div class="l">Sección 2ª</div><div class="d">Derechos y deberes de los ciudadanos</div></div>')]},
+ {tech:"chu",title:"Seis números para clavar",
+  say:["Si te quedas con una sola cosa, que sean estos seis números.","Diez: fundamento.","Catorce: igualdad.","Del quince al veintinueve: el núcleo duro.","Treinta punto dos: objeción de conciencia.","Cincuenta y tres: garantías.","Cincuenta y cinco: suspensión."],
+  els:[["10","Fundamento"],["14","Igualdad"],["15–29","Núcleo duro"],["30.2","Objeción de conciencia"],["53","Garantías"],["55","Suspensión"]].map((p,i)=>E(i+1,120+(i%3)*460,240+Math.floor(i/3)*310,430,280,`<div class="tile"><div class="bignum" style="font-size:${p[0].length>3?104:132}px">${p[0]}</div><div class="l">${p[1]}</div></div>`,{a:"pop"}))},
+ {tech:"rec",title:"Pausa activa",
+  say:["Pausa activa. Sin mirar atrás:","¿qué artículos forman la Sección Primera?"],
+  els:[E(0,120,280,200,200,`<div style="width:100%;height:100%;color:var(--co)">${ic("bolt")}</div>`,{a:"pop"}),
+   E(0,360,300,1100,120,'<div class="ttl" style="color:var(--mut)">Sin mirar atrás…</div>',{a:"left"}),
+   E(1,360,430,1100,200,'<div class="mega" style="font-size:96px">¿Sección 1ª: <b>del … al …</b>?</div>',{a:"up"})],
+  act:{type:"mcq",q:"¿Qué artículos forman la Sección 1ª del Capítulo II?",o:["Del 14 al 29","Del 15 al 29","Del 15 al 38"],a:1,
+   why:"El 14 va suelto; la Sección 2ª empieza en el 30."},
+  ok:["¡Exacto! Del 15 al 29.","El 14 va suelto, antes de las secciones."],ko:["Casi. Es del 15 al 29.","El 14 va suelto, y la Sección Segunda empieza en el 30."]},
+ {tech:"his",title:"La historia de una vida · 15 a 20",
+  say:["Ahora, el truco para memorizar la Sección Primera en orden: la historia de una vida.","Una persona nace y vive: 15, vida e integridad física y moral.","Piensa y cree lo que quiere: 16, libertad ideológica, religiosa y de culto.","Nadie la encierra sin motivo: 17, libertad y seguridad.","Tiene su casa y su intimidad: 18, honor, intimidad, domicilio y comunicaciones.","Viaja donde quiere: 19, residencia y circulación.","Y dice lo que piensa: 20, expresión e información."],
+  els:[E(0,120,556,1360,10,'<div class="road"></div>',{a:"grow"}),
+   ...[["heart",15,"Vida e integridad","var(--co)"],["bulb",16,"Ideas y creencias","var(--y)"],["lock",17,"Libertad y seguridad","var(--sk)"],["house",18,"Casa e intimidad","var(--mi)"],["pin",19,"Circulación","var(--co)"],["mega",20,"Expresión e información","var(--y)"]]
+     .map((s,i)=>E(i+1,120+i*230,420,220,380,st(s[0],s[1],s[2],s[3]),{a:"pop"}))],
+  walker:[1,2,3,4,5,6].map((at,i)=>({at,x:73+i*230,y:518}))},
+ {tech:"his",title:"La historia de una vida · 21 a 29",
+  say:["Sigue la historia.","Queda con sus amigos: 21, reunión.","Montan una asociación: 22.","Vota y oposita: 23, participación y acceso a cargos públicos.","Tiene un problema y va al juez: 24, tutela judicial efectiva.","Solo la pueden castigar si una ley lo preveía antes: 25, legalidad penal.","Y nunca un tribunal de honor: 26.","Estudia: 27, educación.","Trabaja, se afilia a un sindicato e incluso hace huelga: 28.","Y cuando quiere algo del poder público, lo pide por escrito: 29, petición."],
+  els:[E(0,120,418,1360,8,'<div class="road"></div>',{a:"grow"}),E(0,260,720,1080,8,'<div class="road"></div>',{a:"grow",d:.2}),
+   ...[["people",21,"Reunión","var(--mi)"],["link",22,"Asociación","var(--sk)"],["ballot",23,"Votar y opositar","var(--y)"],["gavel",24,"Ir al juez","var(--co)"],["book",25,"Ley previa","var(--mi)"]]
+     .map((s,i)=>E(i+1,130+i*280,300,260,260,st2(s[0],s[1],s[2],s[3]),{a:"pop"})),
+   ...[["ban",26,"Sin tribunales de honor","var(--co)"],["cap",27,"Educación","var(--sk)"],["sign",28,"Sindicato y huelga","var(--y)"],["letter",29,"Petición por escrito","var(--mi)"]]
+     .map((s,i)=>E(i+6,270+i*280,602,260,260,st2(s[0],s[1],s[2],s[3]),{a:"pop"}))],
+  walker:[...[1,2,3,4,5].map((at,i)=>({at,x:111+i*280,y:375})),...[6,7,8,9].map((at,i)=>({at,x:251+i*280,y:677}))]},
+ {tech:"rec",title:"Pausa activa · ¿qué número?",
+  say:["Pausa activa.","Recupera la historia y asigna a cada derecho su número."],
+  els:[["Reunión","var(--mi)"],["Tutela judicial","var(--co)"],["Educación","var(--sk)"],["Domicilio e intimidad","var(--y)"]].map((p,i)=>E(i<2?0:1,120+(i%2)*690,260+Math.floor(i/2)*250,660,210,`<div class="tile row"><div class="bignum" style="color:${p[1]};font-size:110px">?</div><div class="l" style="font-size:44px">${p[0]}</div></div>`,{a:"pop",d:(i%2)*.2})),
+  act:{type:"match",q:"Asigna a cada derecho su número",hint:"Recorre la historia: nace, piensa, es libre, su casa, viaja, habla, se reúne, se asocia, vota, va al juez…",rows:[["Reunión",[19,21,22],21],["Tutela judicial efectiva",[23,24,25],24],["Educación",[26,27,28],27],["Domicilio e intimidad",[17,18,19],18]]},
+  fb:["Si has fallado alguno, recorre la historia en tu cabeza.","Nace, piensa, es libre, su casa, viaja, habla, se reúne, se asocia, vota, va al juez, ley previa, sin tribunales de honor, estudia, trabaja y pide."]},
+ {tech:"caso",title:"Caso práctico 1 · la detención",
+  say:["Caso uno.","Te detienen el lunes a las diez de la mañana.","¿Hasta cuándo, como máximo, pueden tenerte detenido antes de liberarte o llevarte ante un juez?"],
+  els:[E(0,120,250,330,330,`<div class="caseico">${ic("clock")}</div>`,{a:"pop"}),
+   E(1,510,270,980,130,'<div class="caseline">Te detienen el <b>lunes a las 10:00</b>.</div>',{a:"left"}),
+   E(2,510,420,980,200,'<div class="caseline">¿Hasta cuándo, como máximo, antes de la <b>libertad</b> o el <b>juez</b>?</div>',{a:"left"}),
+   E(2,510,660,420,110,'<div class="stamp" style="font-size:44px">¿Tú qué dices?</div>',{a:"stamp",d:1.2})],
+  act:{type:"mcq",q:"Detenido el lunes a las 10:00. ¿Límite máximo?",o:["Martes a las 10:00","Jueves a las 10:00","Cuando acabe la investigación"],a:1,why:"Art. 17.2: 72 horas como máximo, y solo lo estrictamente necesario."},
+  ok:["¡Correcto! Setenta y dos horas: el jueves a las diez.","Pero es un techo, no un plazo fijo: la detención debe durar solo lo estrictamente necesario. Artículo 17.2."],
+  ko:["No. El máximo son setenta y dos horas: el jueves a las diez.","Y es un techo: la detención debe durar solo lo estrictamente necesario. Artículo 17.2."]},
+ {tech:"caso",title:"Caso práctico 2 · tu casa",
+  say:["Caso dos.","La policía quiere registrar tu casa.","No tiene orden judicial, tú no das permiso y no hay delito flagrante.","¿Puede entrar?"],
+  els:[E(0,120,250,330,330,`<div class="caseico" style="color:var(--mi)">${ic("house")}</div>`,{a:"pop"}),
+   E(1,510,260,980,90,'<div class="caseline">La policía quiere <b>registrar tu casa</b>.</div>',{a:"left"}),
+   E(2,510,380,980,200,'<div class="caseline">Sin orden judicial, sin tu permiso y sin delito flagrante.</div>',{a:"left"}),
+   E(3,510,620,420,110,'<div class="stamp" style="font-size:44px">¿Puede entrar?</div>',{a:"stamp"})],
+  act:{type:"mcq",q:"Sin orden, sin permiso y sin flagrante delito: ¿puede entrar?",o:["Sí, si es por seguridad","No"],a:1,why:"Art. 18.2: solo con consentimiento, resolución judicial o flagrante delito."},
+  ok:["¡Bien! No puede.","El domicilio es inviolable: solo se entra con consentimiento del titular, resolución judicial o flagrante delito. Artículo 18.2."],
+  ko:["No puede.","El domicilio es inviolable: solo se entra con consentimiento del titular, resolución judicial o flagrante delito. Artículo 18.2."]},
+ {tech:"caso",title:"Caso práctico 3 · la manifestación",
+  say:["Caso tres.","Quieres organizar una manifestación en la plaza de tu ciudad.","¿Qué necesitas?"],
+  els:[E(0,120,250,330,330,`<div class="caseico" style="color:var(--sk)">${ic("people")}</div>`,{a:"pop"}),
+   E(1,510,270,980,200,'<div class="caseline">Quieres organizar una <b>manifestación</b> en la plaza de tu ciudad.</div>',{a:"left"}),
+   E(2,510,560,420,110,'<div class="stamp" style="font-size:44px">¿Qué necesitas?</div>',{a:"stamp"})],
+  act:{type:"mcq",q:"¿Qué necesitas para manifestarte en la plaza?",o:["Autorización del Ayuntamiento","Comunicarlo antes a la autoridad","Nada en absoluto"],a:1,why:"Art. 21.2: comunicación previa; solo se prohíbe por alteración del orden público con peligro para personas o bienes."},
+  ok:["¡Correcto! Basta con comunicarlo antes.","La autoridad solo puede prohibirla si hay razones fundadas de alteración del orden público, con peligro para personas o bienes. Artículo 21.2."],
+  ko:["No. No hace falta autorización, pero sí comunicarlo antes a la autoridad.","Y solo puede prohibirla si hay razones fundadas de alteración del orden público, con peligro para personas o bienes. Artículo 21.2."]},
+ {tech:"caso",title:"Caso práctico 4 · la revista",
+  say:["Caso cuatro.","El Gobierno ordena retirar de los quioscos una revista muy crítica con él.","¿Es válido?"],
+  els:[E(0,120,250,330,330,`<div class="caseico" style="color:var(--co)">${ic("news")}</div>`,{a:"pop"}),
+   E(1,510,270,980,200,'<div class="caseline">El <b>Gobierno</b> ordena retirar de los quioscos una revista crítica.</div>',{a:"left"}),
+   E(2,510,560,420,110,'<div class="stamp" style="font-size:44px">¿Es válido?</div>',{a:"stamp"})],
+  act:{type:"mcq",q:"¿Puede el Gobierno ordenar el secuestro de la revista?",o:["Sí, si lo decide el Consejo de Ministros","No, solo un juez puede acordarlo"],a:1,why:"Art. 20.5: secuestro solo por resolución judicial. Art. 20.2: sin censura previa."},
+  ok:["¡Exacto!","El secuestro de publicaciones solo puede acordarlo un juez, y está prohibida la censura previa. Artículo 20."],
+  ko:["No es válido.","El secuestro de publicaciones solo puede acordarlo un juez, y está prohibida la censura previa. Artículo 20."]},
+ {tech:"mne",title:"Sección 2ª · nueve verbos",
+  say:["La Sección Segunda, del 30 al 38, se aprende con nueve verbos.","Defender: 30.","Pagar impuestos: 31.","Casarse: 32.","Tener propiedad y heredar: 33.","Fundar: 34.","Trabajar: 35.","Colegiarse: 36.","Negociar convenios: 37.","Emprender: 38.","Repítelo conmigo: defiende, paga, se casa, posee, funda, trabaja, se colegia, negocia y emprende."],
+  els:[...[["shield",30,"Defender"],["coins",31,"Pagar impuestos"],["rings",32,"Casarse"],["key",33,"Poseer y heredar"],["temple",34,"Fundar"],["case",35,"Trabajar"],["people",36,"Colegiarse"],["doc",37,"Negociar convenios"],["store",38,"Emprender"]]
+     .map((v,i)=>E(i+1,120+(i%3)*460,215+Math.floor(i/3)*190,430,168,tile(v[0],v[1],v[2],"",["var(--mi)","var(--y)","var(--co)","var(--sk)"][i%4]),{a:"pop"})),
+   E(10,120,800,1360,74,'<div class="ticker" style="font-size:29px">defiende · paga · se casa · posee · funda · trabaja · se colegia · negocia · emprende</div>',{a:"wipe"})]},
+ {tech:"con",title:"Cap. III · principios rectores (39–52)",
+  say:["Planta tres: los principios rectores, del 39 al 52.","Aquí está la trampa: no son derechos que puedas exigir directamente ante el juez.","Son mandatos para los poderes públicos.","Por ejemplo: salud, 43. Medio ambiente, 45. Vivienda digna, 47. Pensiones, 50. Consumidores, 51.","Solo se pueden alegar ante los jueces según las leyes que los desarrollen: artículo 53.3."],
+  els:[E(1,120,230,660,250,`<div class="tile row"><div class="ico" style="color:var(--co)">${ic("gavel")}</div><div><div class="l">Derecho fundamental</div><div class="d">Lo exiges ante el juez, incluso en amparo</div></div></div>`,{a:"left"}),
+   E(2,820,230,660,250,`<div class="tile row" style="background:#1f5b55"><div class="ico" style="color:var(--y)">${ic("compass")}</div><div><div class="l">Principio rector</div><div class="d" style="color:#d6ece6">Orienta leyes y políticas: es un mandato</div></div></div>`,{a:"right"}),
+   ...[["plus",43,"Salud"],["leaf",45,"Medio ambiente"],["house",47,"Vivienda"],["coins",50,"Pensiones"],["cart",51,"Consumidores"]].map((v,i)=>E(3,120+i*276,520,256,190,`<div class="tile" style="align-items:center;text-align:center;padding:18px"><div style="width:64px;height:64px;color:${["var(--co)","var(--mi)","var(--y)","var(--sk)","var(--co)"][i]}">${ic(v[0])}</div><div class="n" style="font-size:44px">${v[1]}</div><div class="d">${v[2]}</div></div>`,{a:"pop",d:i*.45})),
+   E(4,120,750,1360,100,`<div class="bar"><div class="ico" style="color:var(--y)">${ic("warn")}</div>Art. 53.3 · solo se alegan según las leyes que los desarrollen</div>`,{a:"up"})]},
+ {tech:"img",title:"Garantías · tres medallas",
+  say:["Las garantías, con tres medallas.","Oro: el artículo 14, la Sección Primera y la objeción de conciencia del 30.2.","Tienen recurso de amparo ante el Tribunal Constitucional y un procedimiento preferente y sumario ante los tribunales ordinarios.","Plata: todo el Capítulo Segundo.","Vinculan a todos los poderes públicos, y solo una ley que respete su contenido esencial puede regularlos.","Bronce: los principios rectores, que solo informan la actuación pública.","Y dos extras de la Sección Primera: se desarrollan por ley orgánica, artículo 81, y su reforma exige el procedimiento agravado del 168."],
+  els:[E(1,740,350,120,120,'<div class="medal" style="background:#f2b632">1</div>',{a:"pop"}),
+   E(1,600,480,400,360,'<div class="pod" style="background:#f2b632"><div class="t">Art. 14 · 15–29 · 30.2</div></div>',{a:"up"}),
+   E(2,624,560,352,250,'<div class="pod" style="background:transparent;padding:0"><div class="d">Recurso de amparo ante el TC</div><div class="d">Procedimiento preferente y sumario</div></div>',{a:"fade"}),
+   E(3,340,460,120,120,'<div class="medal" style="background:#c9d3d8">2</div>',{a:"pop"}),
+   E(3,200,600,400,240,'<div class="pod" style="background:#c9d3d8"><div class="t">Todo el Cap. II</div></div>',{a:"up"}),
+   E(4,224,672,352,150,'<div class="pod" style="background:transparent;padding:0"><div class="d">Vincula a todos los poderes</div><div class="d">Ley que respete el contenido esencial</div></div>',{a:"fade"}),
+   E(5,1140,520,120,120,'<div class="medal" style="background:#d08a54">3</div>',{a:"pop"}),
+   E(5,1000,660,400,180,'<div class="pod" style="background:#d08a54"><div class="t">Cap. III</div><div class="d">Solo informan la actuación pública</div></div>',{a:"up"}),
+   E(6,200,200,1200,90,'<div class="ticker" style="font-size:32px">Extra Sección 1ª: ley orgánica (art. 81) · reforma agravada (art. 168)</div>',{a:"wipe"})]},
+ {tech:"rec",title:"Pausa activa · ¿quién tiene amparo?",
+  say:["Pausa activa.","¿Cuál de estos derechos tiene recurso de amparo?"],
+  els:[["house","Vivienda digna","47"],["shield","Objeción de conciencia","30.2"],["case","Derecho al trabajo","35"]].map((v,i)=>E(1,120+i*460,300,430,360,`<div class="tile" style="align-items:center;text-align:center"><div style="width:96px;height:96px;color:${["var(--y)","var(--mi)","var(--co)"][i]}">${ic(v[0])}</div><div class="n">${v[2]}</div><div class="l">${v[1]}</div></div>`,{a:"pop",d:i*.25})),
+  act:{type:"mcq",q:"¿Cuál tiene recurso de amparo?",o:["Vivienda digna (art. 47)","Objeción de conciencia (art. 30.2)","Derecho al trabajo (art. 35)"],a:1,why:"El 30.2 está en la Sección 2ª pero tiene medalla de oro (art. 53.2)."},
+  ok:["¡Muy bien! Está en la Sección Segunda, pero tiene medalla de oro.","El 47 es un principio rector y el 35 es un derecho de la Sección Segunda sin amparo."],
+  ko:["No. Es la objeción de conciencia del 30.2: está en la Sección Segunda, pero tiene medalla de oro.","El 47 es un principio rector y el 35 es un derecho de la Sección Segunda sin amparo."]},
+ {tech:"his",title:"Art. 55 · un día de excepción",
+  say:["Última planta: el artículo 55.","En estado de excepción o de sitio se pueden suspender algunos derechos.","Para recordarlos, imagina un día de excepción.","Te pueden detener más tiempo: 17.","Entrar en tu casa: 18.2.","Intervenir tus comunicaciones: 18.3.","Impedirte circular: 19.","Limitar tu expresión e información y secuestrar publicaciones: 20.1 a y d, y 20.5.","Prohibir reuniones: 21.","Y parar huelgas y conflictos colectivos: 28.2 y 37.2.","Pero en estado de excepción nunca se suspenden tus derechos como detenido del 17.3.","Además, el 55.2 permite suspender de forma individual el 17.2, el 18.2 y el 18.3 en investigaciones sobre terrorismo, con control judicial y parlamentario.","Y el estado de alarma no suspende derechos: solo los limita."],
+  els:[E(1,1080,70,420,60,'<span class="badge" style="background:var(--co)">Excepción · Sitio</span>',{a:"pop"}),
+   ...[["clock","17","Detención más larga"],["house","18.2","Entrar en casa"],["letter","18.3","Comunicaciones"],["pin","19","Circulación"],["mega","20.1 a) d) · 20.5","Expresión e información"],["people","21","Reuniones"],["sign","28.2 · 37.2","Huelga y conflicto"]]
+     .map((v,i)=>E(i+3,120+(i%4)*345,220+Math.floor(i/4)*190,325,170,`<div class="tile row" style="padding:18px 20px;gap:16px"><div class="ico" style="width:58px;height:58px;color:var(--co)">${ic(v[0])}</div><div><div class="n" style="font-size:${v[1].length>6?30:48}px">${v[1]}</div><div class="d" style="color:var(--paper)">${v[2]}</div></div></div>`,{a:"pop"})),
+   E(10,1155,410,325,170,`<div class="tile row" style="padding:18px 20px;gap:16px;background:#1f5b55;box-shadow:inset 0 0 0 3px var(--mi)"><div class="ico" style="width:58px;height:58px;color:var(--mi)">${ic("shield")}</div><div><div class="n" style="font-size:48px;color:var(--mi)">17.3</div><div class="d" style="color:var(--paper)">Nunca en excepción</div></div></div>`,{a:"stamp"}),
+   E(11,120,610,1360,100,`<div class="bar"><div class="ico" style="color:var(--sk)">${ic("lock")}</div>55.2 · suspensión individual por terrorismo: 17.2, 18.2 y 18.3</div>`,{a:"up"}),
+   E(12,120,740,1360,100,`<div class="bar" style="background:var(--y);color:#0e272b"><div class="ico" style="color:#0e272b">${ic("warn")}</div>Estado de alarma: limita, pero no suspende</div>`,{a:"up"})]},
+ {tech:"err",title:"Cinco trampas de examen",
+  say:["Cinco trampas que caen en los exámenes.","Uno: el artículo 14 no está en la Sección Primera, pero sí tiene amparo.","Dos: la objeción de conciencia está en la Sección Segunda, y también tiene amparo.","Tres: las setenta y dos horas son el máximo, no el plazo normal de detención.","Cuatro: para reunirte no pides permiso; en manifestaciones y lugares de tránsito público, lo comunicas.","Cinco: la mayoría de edad a los dieciocho años está en el artículo 12, en el Capítulo Primero."],
+  els:[["El <b>art. 14</b> no está en la Sección 1ª… pero <b>sí tiene amparo</b>"],["La <b>objeción (30.2)</b> está en la Sección 2ª… y <b>también tiene amparo</b>"],["<b>72 horas</b> es el máximo, no el plazo normal"],["Reunión: <b>no se pide permiso</b>; las manifestaciones se <b>comunican</b>"],["Mayoría de edad a los <b>18</b>: <b>art. 12</b>, Capítulo I"]]
+   .map((v,i)=>E(i+1,120,200+i*132,1360,112,`<div class="trap"><div class="i">${i+1}</div><div class="t">${v[0]}</div></div>`,{a:"left"}))},
+ {tech:"mix",title:"Ronda rápida",
+  say:["Ronda rápida: ocho preguntas mezcladas, diez segundos cada una.","Mezclar temas cuesta más, y justo por eso se fija mejor.","¡Vamos!"],
+  els:[E(0,120,250,760,300,'<div class="mega" style="font-size:190px">8 × <b>10 s</b></div>',{a:"pop"}),
+   E(1,120,600,1360,110,'<div class="bar">Mezclar temas <span class="hl">cuesta más</span> → <span class="hl">se fija mejor</span></div>',{a:"up"}),
+   E(2,1090,260,390,200,'<div class="stamp">¡Vamos!</div>',{a:"stamp"})],
+  act:{type:"rapid",qs:[
+   {q:"«Queda abolida la pena de muerte»",o:["Art. 15","Art. 16","Art. 17"],a:0},
+   {q:"Libertad de cátedra",o:["Art. 27","Art. 20","Art. 16"],a:1},
+   {q:"Presunción de inocencia",o:["Art. 25","Art. 17","Art. 24"],a:2},
+   {q:"Mayoría de edad a los 18 años",o:["Art. 11","Art. 12","Art. 13"],a:1},
+   {q:"El derecho de petición se ejerce…",o:["Por escrito","De palabra o por escrito","Solo en grupo"],a:0},
+   {q:"«Ninguna confesión tendrá carácter estatal»",o:["Art. 14","Art. 16","Art. 27"],a:1},
+   {q:"Libertad de empresa",o:["Art. 33","Art. 35","Art. 38"],a:2},
+   {q:"Defensor del Pueblo",o:["Art. 53","Art. 54","Art. 55"],a:1}]},
+  hi:["¡Muy bien! Tienes el tema bien atado."],lo:["Bien intentado.","Las que has fallado son tu lista de repaso para mañana."]},
+ {tech:"vac",title:"Vaciado de memoria",
+  say:["Último ejercicio: el vaciado de memoria.","Tienes noventa segundos para escribir todos los derechos de la Sección Primera que recuerdes, con su número si puedes.","No mires nada. Usa la historia de una vida."],
+  els:[E(0,120,240,420,420,`<div class="caseico" style="border-radius:50%;color:var(--co)">${ic("clock")}</div>`,{a:"pop"}),
+   E(1,620,260,860,200,'<div class="mega" style="font-size:150px">90 <b>s</b></div>',{a:"left"}),
+   E(1,620,470,860,120,'<div class="txt">Escribe los derechos del <span class="hl">15 al 29</span> que recuerdes</div>',{a:"left",d:.4}),
+   E(2,620,640,860,110,'<div class="bar" style="font-size:28px">nace · piensa · libre · casa · viaja · habla · se reúne…</div>',{a:"up"})],
+  act:{type:"blurt",q:"Escribe todos los derechos de la Sección 1ª que recuerdes",placeholder:"15 vida, 16 libertad religiosa…",items:[
+   ["15","Vida","vida|integridad|tortura|pena de muerte"],["16","Ideas y religión","ideolog|religi|culto|creencia"],["17","Libertad","libertad personal|libertad y seguridad|detenc|detenid|habeas|seguridad"],["18","Intimidad y casa","intimidad|propia imagen|domicilio|comunicacion|\\bhonor\\b"],["19","Circulación","circula|residencia|desplaza"],["20","Expresión","expresi|informaci|catedra|censura|prensa"],["21","Reunión","reuni|manifesta"],["22","Asociación","asocia"],["23","Participación","particip|sufragio|voto|votar|cargos publicos|acceso"],["24","Tutela judicial","tutela|inocencia|indefension|juez ordinario|defensa"],["25","Legalidad","legalidad|reinsercion|reeducacion|trabajos forzados|irretroactiv"],["26","Trib. de honor","tribunal(es)? de honor",1],["27","Educación","educaci|ensenanza"],["28","Sindicato y huelga","sindic|huelga"],["29","Petición","petici"]]},
+  fb:["Lo que no te ha salido es justo lo que tienes que repasar primero.","Eso es estudiar con cabeza: dedicar el tiempo a lo que todavía no sabes."]},
+ {tech:"esp",title:"Tu plan de repaso",
+  say:["Terminamos.","Mira tu reto del principio: seguro que ahora lo aciertas.","Para que no se te olvide, usa el repaso espaciado.","Repasa mañana, dentro de tres días, dentro de una semana y dentro de dos semanas.","Y en cada repaso, primero intenta recordar y después comprueba.","¡Nos vemos en el siguiente tema!"],
+  els:[E(1,120,200,1360,220,"@pretest",{a:"up"}),
+   ...[[1,"mañana"],[3,"días"],[7,"días"],[14,"días"]].map((v,i)=>E(3,120+i*345,470,325,230,`@cal${i}`,{a:"pop",d:i*.35})),
+   E(4,120,740,1360,100,'<div class="ticker">1º recuerda · 2º comprueba</div>',{a:"wipe"})],
+  act:{type:"end"}}
+]
+};
+
+
+/* =====================================================================
+   4. TIEMPOS DEL AUDIO (se inyecta audio/manifest.json)
+      { "s3": {"d": duración, "s": [inicio de cada frase en segundos]} }
+   ===================================================================== */
+const NARR={"s0":{"d":15.52,"s":[0,3.77,7.13,8.72,10.16,11.86,14.26]},"s1":{"d":8.12,"s":[0,1.92,4.03]},"s1-fb":{"d":2.92,"s":[0,0.65]},"s2":{"d":14.51,"s":[0,1.09,4.62,6.28,11.79]},"s3":{"d":18.45,"s":[0,3.03,6.78,12.12,15.3]},"s4":{"d":16.74,"s":[0,3.08,4.61,7.42,12.4]},"s5":{"d":13.9,"s":[0,3.14,4.24,5.55,7.84,10.07,11.95]},"s6":{"d":3.98,"s":[0,1.88]},"s6-ok":{"d":4.61,"s":[0,2.08]},"s6-ko":{"d":5.34,"s":[0,1.87]},"s7":{"d":27.21,"s":[0,4.16,7.98,12.53,16.09,20.97,24.09]},"s8":{"d":29.97,"s":[0,1.1,3.43,5.52,9.52,13.3,17.71,19.92,22.03,25.68]},"s9":{"d":3.86,"s":[0,0.85]},"s9-fb":{"d":11.35,"s":[0,3.02]},"s10":{"d":7.52,"s":[0,0.67,2.89]},"s10-ok":{"d":9.37,"s":[0,2.9]},"s10-ko":{"d":9.12,"s":[0,3.47]},"s11":{"d":7.27,"s":[0,0.73,2.75,6.52]},"s11-ok":{"d":8.43,"s":[0,1.03]},"s11-ko":{"d":8.07,"s":[0,0.65]},"s12":{"d":4.94,"s":[0,0.81,3.98]},"s12-ok":{"d":10.34,"s":[0,2.24]},"s12-ko":{"d":11.59,"s":[0,3.92]},"s13":{"d":5.29,"s":[0,0.81,4.61]},"s13-ok":{"d":6.35,"s":[0,0.72]},"s13-ko":{"d":6.43,"s":[0,0.81]},"s14":{"d":24.35,"s":[0,4.13,5.38,7.18,8.54,10.78,12.18,13.69,15.21,17.11,18.61]},"s15":{"d":23.28,"s":[0,3.68,7.78,9.99,18.07]},"s16":{"d":32.76,"s":[0,1.81,7.13,13.5,15.25,20.63,24.47]},"s17":{"d":3.21,"s":[0,0.87]},"s17-ok":{"d":8.91,"s":[0,3.45]},"s17-ko":{"d":11.21,"s":[0,5.68]},"s18":{"d":49.5,"s":[0,2.55,6.11,8.83,11.04,13.45,16.4,18.27,24,25.65,30.23,35.14,46.37]},"s19":{"d":24.98,"s":[0,2.14,6.03,10.37,14.41,19.9]},"s20":{"d":7.07,"s":[0,3.4,6.56]},"s20-hi":{"d":1.88,"s":[0]},"s20-lo":{"d":3.78,"s":[0,1.01]},"s21":{"d":10.11,"s":[0,2.32,7.8]},"s21-fb":{"d":7.14,"s":[0,3.31]},"s22":{"d":15.99,"s":[0,0.85,3.94,6.56,10.85,14.39]}};
+
+/* =====================================================================
+   5. MOTOR
+   ===================================================================== */
+const SHOTS=CAPSULA.shots, GROUPS=CAPSULA.grupos;
+const $=id=>document.getElementById(id);
+const cv=$("cv"), stagebox=$("stagebox"), player=$("player"), actEl=$("act"), actCard=$("actCard"), subsEl=$("subs");
+const reduceMotion=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PRE=SHOTS.findIndex(s=>s.act&&s.act.type==="pretest");
+const S={i:0,t:0,phase:"narr",playing:false,started:false,voice:true,subs:true,rate:1,res:{},built:-1,nodes:[],walker:null,sent:-1,waitSince:0,fbEnd:0,autoAt:0};
+const LS={get(k,d){try{const v=localStorage.getItem(CAPSULA.id+":"+k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(CAPSULA.id+":"+k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function dur(i){const n=NARR["s"+i];return n?n.d:Math.max(3,SHOTS[i].say.join(" ").length/16);}
+function starts(i){const n=NARR["s"+i];if(n)return n.s;let acc=0;const tot=SHOTS[i].say.join(" ").length;return SHOTS[i].say.map(x=>{const v=acc/tot*dur(i);acc+=x.length+1;return v;});}
+
+/* textos de la página */
+const PG=CAPSULA.pagina;
+$("pgEyebrow").textContent=PG.eyebrow; $("pgH1").innerHTML=PG.h1; $("meta").textContent=PG.meta;
+$("stEyebrow").textContent=PG.inicio.eyebrow; $("stTitle").textContent=PG.inicio.titulo; $("stText").textContent=PG.inicio.texto;
+
+/* escala del lienzo */
+function fit(){const w=stagebox.clientWidth;cv.style.transform=`scale(${w/1600})`;player.style.setProperty("--sh",stagebox.clientHeight+"px");player.classList.toggle("ovl",stagebox.clientHeight>=440);}
+new ResizeObserver(fit).observe(stagebox);
+
+function dateOff(d){const x=new Date();x.setDate(x.getDate()+d);return x;}
+const fmt=d=>d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"});
+/* contenidos dinámicos: @pretest (tus respuestas iniciales) y @calN (fechas de repaso) */
+function dyn(html){
+  if(html==="@pretest"){
+    if(PRE<0)return"";
+    const pre=S.res.pre||[]; const qs=SHOTS[PRE].act.qs;
+    return `<div style="display:grid;grid-template-columns:repeat(${qs.length},1fr);gap:24px;height:100%">${qs.map((q,k)=>{const a=pre[k];const ok=a===q.a;return `<div class="tile" style="padding:20px 24px"><div class="d">Reto ${k+1}</div><div class="l" style="font-size:30px">${esc(q.o[q.a])}</div><div class="d" style="color:${a===undefined?"var(--mut)":ok?"var(--mi)":"var(--co)"}">${a===undefined?"Sin responder":ok?"Ya lo sabías":"Antes dijiste: "+esc(q.o[a])}</div></div>`;}).join("")}</div>`;
+  }
+  const m=/^@cal(\d)$/.exec(html);
+  if(m){const d=[1,3,7,14][+m[1]];return `<div class="cal"><div class="n">+${d}</div><div class="l">${d===1?"día":"días"}</div><div class="d">${fmt(dateOff(d))}</div></div>`;}
+  return html;
+}
+function build(i){
+  cv.innerHTML=""; S.nodes=[]; S.walker=null;
+  const sh=SHOTS[i]; const st=starts(i);
+  const cue=(at)=>(st[Math.min(at,st.length-1)]||0);
+  const els=[...(sh.hdr===false?[]:[E(0,120,58,1100,50,`<span class="kick">${esc(T[sh.tech]||sh.tech)}</span>`,{a:"left"}),E(0,120,110,1360,80,`<div class="ttl">${esc(sh.title)}</div>`,{a:"left",d:.1})]),...sh.els];
+  els.forEach(e=>{
+    const n=document.createElement("div"); n.className="el a-"+(e.a||"up")+(e.move?" mv":"");
+    n.style.cssText=`left:${e.x}px;top:${e.y}px;width:${e.w}px;height:${e.h}px`+(e.z?`;z-index:${e.z}`:"");
+    n.innerHTML=dyn(e.html); cv.appendChild(n);
+    S.nodes.push({n,e,cue:e.a==="none"?-1:cue(e.at)+(e.d||0),out:e.out!=null?cue(e.out):Infinity,stops:(e.move||[]).map(s=>({...s,cue:cue(s.at)+(s.d||0)})),k:-2,shown:false});
+  });
+  if(sh.walker){const w=document.createElement("div");w.className="walker";w.innerHTML=ic("walker");cv.appendChild(w);S.walker={n:w,stops:sh.walker.map(s=>({...s,cue:cue(s.at)})),k:-2};}
+  S.built=i;
+}
+function render(instant){
+  const t=S.t;
+  for(const o of S.nodes){
+    const vis=t>=o.cue&&t<o.out;
+    if(vis&&!o.shown){o.n.classList.add("on");if(instant||o.cue<0||reduceMotion)o.n.classList.add("ni");o.shown=true;}
+    else if(!vis&&o.shown){o.n.classList.remove("on","ni");o.shown=false;}
+    if(o.stops.length){let k=-1;o.stops.forEach((s,j)=>{if(t>=s.cue)k=j;});
+      if(k!==o.k){o.k=k;if(instant)o.n.style.transition="none";const s=k<0?null:o.stops[k];
+        o.n.style.transform=s?`translate(${s.x-o.e.x}px,${s.y-o.e.y}px)`:"";if(instant){void o.n.offsetWidth;o.n.style.transition="";}}}
+  }
+  if(S.walker){const w=S.walker;let k=-1;w.stops.forEach((s,j)=>{if(t>=s.cue)k=j;});
+    if(k!==w.k){w.k=k;if(k<0)w.n.classList.remove("on");else{const s=w.stops[k];if(instant)w.n.style.transition="none";w.n.style.transform=`translate(${s.x}px,${s.y}px)`;w.n.classList.add("on");if(instant){void w.n.offsetWidth;w.n.style.transition="";}}}}
+  const st=starts(S.i);let si=0;st.forEach((v,j)=>{if(t+0.05>=v)si=j;});
+  if(si!==S.sent&&S.phase==="narr"){S.sent=si;showSub(SHOTS[S.i].say[si]);}
+}
+function showSub(txt){subsEl.textContent=txt||"";}
+
+/* ---- audio: un único <audio> reutilizado (iOS lo desbloquea con el primer toque) ---- */
+const audio=new Audio(); audio.preload="auto"; const pre=new Audio(); pre.preload="auto";
+let clip=null, clipTok=0;
+function playClip(id,from){
+  const tok=++clipTok;
+  if(!S.voice||!NARR[id]){return false;}
+  const go=()=>{if(tok!==clipTok)return;try{audio.currentTime=from||0;}catch(e){}audio.playbackRate=S.rate;const p=audio.play();if(p&&p.catch)p.catch(err=>{if(tok===clipTok&&err.name!=="AbortError"){S.voice=false;syncToggles();showSub("No se ha podido reproducir el audio: sigue con subtítulos.");}});};
+  audio.defaultPlaybackRate=S.rate;
+  if(clip!==id){clip=id;audio.src="audio/"+id+".mp3";audio.addEventListener("loadedmetadata",go,{once:true});audio.load();}
+  else go();
+  return true;
+}
+function stopAudio(){clipTok++;try{audio.pause();}catch(e){}}
+audio.addEventListener("error",()=>{if(S.voice&&clip){S.voice=false;syncToggles();}});
+function prefetch(){const n=S.i+1;if(n<SHOTS.length)pre.src="audio/s"+n+".mp3";}
+
+/* ---- flujo: narración → (actividad → comentario) → siguiente escena ---- */
+function goShot(i,t0,autoplay){
+  stopAudio(); closeAct(); S.i=i; S.t=t0||0; S.phase="narr"; S.sent=-1; S.waitSince=performance.now();
+  build(i); render(true);
+  if(autoplay!==undefined)S.playing=autoplay;
+  if(S.playing) playClip("s"+i,S.t);
+  prefetch(); updateUI();
+}
+function endNarr(){const sh=SHOTS[S.i];if(sh.act){S.phase="act";stopAudio();openAct(sh);return;}next();}
+function next(){if(S.i<SHOTS.length-1)goShot(S.i+1,0);}
+function feedback(key,lines){
+  S.phase="fb"; showSub((lines||[]).join(" "));
+  const played=playClip(`s${S.i}-${key}`,0);
+  const d=(NARR[`s${S.i}-${key}`]?.d)||(lines||[]).join(" ").length/15;
+  S.fbEnd=performance.now()+(d/S.rate)*1000+(played?400:1500);
+}
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(S.playing&&S.started){
+    if(S.phase==="narr"){
+      const useAudio=S.voice&&NARR["s"+S.i]&&clip==="s"+S.i;
+      if(useAudio&&!audio.paused&&audio.readyState>=2){S.t=audio.currentTime;S.waitSince=now;}
+      else if(!useAudio||now-S.waitSince>3500){S.t+=dt*S.rate;}
+      render(false);
+      if(S.t>=dur(S.i)-0.02||(useAudio&&audio.ended)){S.t=dur(S.i);render(false);endNarr();}
+    } else if(S.phase==="fb"&&S.autoAt===0&&now>=S.fbEnd&&(audio.paused||!S.voice)){
+      const btn=actCard.querySelector("[data-go]"); if(btn&&btn.dataset.auto==="1"){S.autoAt=now+1800;}
+    }
+    if(S.autoAt&&now>=S.autoAt){S.autoAt=0;next();}
+    updateProgress();
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---- actividades: pretest · mcq · match · rapid · blurt · end ---- */
+function openAct(sh){
+  S.autoAt=0; actEl.hidden=false; const a=sh.act; const i=S.i;
+  if(a.type==="mcq"){
+    actCard.innerHTML=`<div class="eyebrow">${esc(T[sh.tech]||sh.tech)}</div><h2>${esc(a.q)}</h2><div class="opts">${a.o.map((o,k)=>`<button class="opt" type="button" data-k="${k}"><b>${"ABCD"[k]}</b><span>${esc(o)}</span></button>`).join("")}</div><div id="fbx"></div>`;
+    actCard.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>{
+      const k=+b.dataset.k, ok=k===a.a; S.res["m"+i]=ok; saveRes();
+      actCard.querySelectorAll(".opt").forEach((x,j)=>{x.disabled=true;if(j===a.a)x.classList.add("right");else if(j===k)x.classList.add("wrong");});
+      actCard.querySelector("#fbx").innerHTML=`<div class="fb ${ok?"good":"bad"}"><strong>${ok?"¡Bien!":"Ojo."}</strong> ${esc(a.why)}</div>${goBtn(true)}`;
+      wireGo(); feedback(ok?"ok":"ko",ok?sh.ok:sh.ko); renderStats();
+    }));
+  } else if(a.type==="pretest"){
+    const ans=[];
+    actCard.innerHTML=`<div class="eyebrow">Pre-test · sin presión</div><h2>Responde rápido, aunque no lo sepas</h2>${a.qs.map((q,k)=>`<div><p style="color:var(--ink);font-weight:700;margin-bottom:6px">${k+1}. ${esc(q.q)}</p><div class="opts inline" data-q="${k}">${q.o.map((o,j)=>`<button class="opt" type="button" data-j="${j}">${esc(o)}</button>`).join("")}</div></div>`).join("")}<div class="btnrow"><button class="btn primary" type="button" id="preSave" disabled>Guardar respuestas</button><button class="btn" type="button" id="preSkip">Saltar</button></div>`;
+    actCard.querySelectorAll("[data-q]").forEach(g=>g.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>{g.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");ans[+g.dataset.q]=+b.dataset.j;$("preSave").disabled=ans.filter(x=>x!==undefined).length<a.qs.length;})));
+    const done=()=>{S.res.pre=ans.slice();saveRes();actCard.innerHTML=`<div class="eyebrow">Pre-test</div><h2>Guardado</h2><p>Al final verás cuánto has mejorado.</p>${goBtn(true)}`;wireGo();feedback("fb",sh.fb);renderStats();};
+    $("preSave").addEventListener("click",done); $("preSkip").addEventListener("click",()=>{ans.length=0;done();});
+  } else if(a.type==="match"){
+    const pick={};
+    actCard.innerHTML=`<div class="eyebrow">Recuperación</div><h2>${esc(a.q||"Asigna a cada concepto su número")}</h2><div>${a.rows.map((r,k)=>`<div class="mrow"><span class="w">${esc(r[0])}</span><span class="chips" data-r="${k}">${r[1].map(n=>`<button class="chip" type="button" data-n="${n}">${n}</button>`).join("")}</span></div>`).join("")}</div><div class="btnrow"><button class="btn primary" type="button" id="mCheck" disabled>Comprobar</button></div><div id="fbx"></div>`;
+    actCard.querySelectorAll("[data-r]").forEach(g=>g.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{g.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");pick[g.dataset.r]=b.dataset.n;$("mCheck").disabled=Object.keys(pick).length<a.rows.length;})));
+    $("mCheck").addEventListener("click",()=>{
+      let n=0; a.rows.forEach((r,k)=>{const g=actCard.querySelector(`[data-r="${k}"]`);g.querySelectorAll(".chip").forEach(x=>{x.disabled=true;const v=x.dataset.n;if(v==String(r[2]))x.classList.add("right");else if(v===pick[k])x.classList.add("wrong");});if(pick[k]==String(r[2]))n++;});
+      S.res["m"+i]=n===a.rows.length; saveRes(); $("mCheck").remove();
+      actCard.querySelector("#fbx").innerHTML=`<div class="fb ${n===a.rows.length?"good":"bad"}"><strong>${n}/${a.rows.length}</strong> ${esc(a.hint||"")}</div>${goBtn(true)}`;
+      wireGo(); feedback("fb",sh.fb); renderStats();
+    });
+  } else if(a.type==="rapid"){
+    let k=0,score=0,timer=null; const wrong=[];
+    const ask=()=>{
+      const q=a.qs[k];
+      actCard.innerHTML=`<div class="btnrow" style="justify-content:space-between"><span class="eyebrow">Ronda rápida</span><span class="counter">${k+1}/${a.qs.length} · ${score} aciertos</span></div><div class="timer"><i id="tb"></i></div><h2>${esc(q.q)}</h2><div class="opts">${q.o.map((o,j)=>`<button class="opt" type="button" data-j="${j}"><b>${"ABCD"[j]}</b><span>${esc(o)}</span></button>`).join("")}</div>`;
+      const tb=$("tb"); const T0=performance.now(), L=(a.secs||10)*1000;
+      const tick=()=>{if(!tb.isConnected)return;const f=1-(performance.now()-T0)/L;tb.style.transform=`scaleX(${Math.max(0,f)})`;if(f<=0){answer(-1);return;}timer=requestAnimationFrame(tick);};
+      timer=requestAnimationFrame(tick);
+      const answer=(j)=>{cancelAnimationFrame(timer);const ok=j===q.a;if(ok)score++;else wrong.push(q.q);actCard.querySelectorAll(".opt").forEach((x,m)=>{x.disabled=true;if(m===q.a)x.classList.add("right");else if(m===j)x.classList.add("wrong");});setTimeout(()=>{k++;if(k<a.qs.length)ask();else fin();},j===-1?900:650);};
+      actCard.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answer(+b.dataset.j)));
+      actCard.querySelector(".opt").focus({preventScroll:true});
+    };
+    const fin=()=>{S.res.rapid=score;saveRes();const hi=score>=Math.ceil(a.qs.length*.75);
+      actCard.innerHTML=`<div class="eyebrow">Ronda rápida</div><h2>${score} de ${a.qs.length}</h2>${wrong.length?`<p>Repasa mañana:</p><ul style="margin:0;padding-left:20px">${wrong.map(w=>`<li>${esc(w)}</li>`).join("")}</ul>`:"<p>Pleno. Lo tienes.</p>"}${goBtn(false)}`;
+      wireGo(); feedback(hi?"hi":"lo",hi?sh.hi:sh.lo); renderStats();};
+    actCard.innerHTML=`<div class="eyebrow">Ronda rápida</div><h2>${a.qs.length} preguntas · ${a.secs||10} segundos cada una</h2><div class="btnrow"><button class="btn primary" type="button" id="rGo">Empezar la ronda</button></div>`;
+    $("rGo").addEventListener("click",ask); $("rGo").focus({preventScroll:true});
+  } else if(a.type==="blurt"){
+    actCard.innerHTML=`<div class="btnrow" style="justify-content:space-between"><span class="eyebrow">Vaciado de memoria</span><span class="counter" id="bt">${a.secs||90} s</span></div><div class="timer"><i id="tb"></i></div><h2>${esc(a.q)}</h2><label class="small" for="blurt">Sin mirar. Con su número si puedes.</label><textarea id="blurt" placeholder="${esc(a.placeholder||"")}"></textarea><div class="btnrow"><button class="btn primary" type="button" id="bDone">He terminado</button></div>`;
+    const ta=$("blurt"); ta.focus({preventScroll:true}); const T0=performance.now(), L=(a.secs||90)*1000; let tm;
+    const tick=()=>{if(!ta.isConnected)return;const left=L-(performance.now()-T0);$("tb").style.transform=`scaleX(${Math.max(0,left/L)})`;$("bt").textContent=Math.max(0,Math.ceil(left/1000))+" s";if(left<=0){done();return;}tm=requestAnimationFrame(tick);};
+    tm=requestAnimationFrame(tick);
+    const done=()=>{cancelAnimationFrame(tm);const hits=blurtCheck(ta.value,a.items);S.res.blurt=hits.length;saveRes();
+      actCard.innerHTML=`<div class="eyebrow">Vaciado de memoria</div><h2>Has recordado ${hits.length} de ${a.items.length}</h2><div class="gridb">${a.items.map(b=>`<div class="g${hits.includes(b[0])?" hit":""}"><b>${esc(b[0])}</b>${esc(b[1])}</div>`).join("")}</div><p class="small">Los que están en gris son tu prioridad para el próximo repaso.</p>${goBtn(false)}`;
+      wireGo(); feedback("fb",sh.fb); renderStats();};
+    $("bDone").addEventListener("click",done);
+  } else if(a.type==="end"){
+    const pre=S.res.pre||[], qs=PRE>=0?SHOTS[PRE].act.qs:[], n=pre.filter((x,k)=>qs[k]&&x===qs[k].a).length;
+    const rI=SHOTS.findIndex(s=>s.act&&s.act.type==="rapid"), bI=SHOTS.findIndex(s=>s.act&&s.act.type==="blurt");
+    actCard.innerHTML=`<div class="eyebrow">Clase terminada</div><h2>Tu plan de repaso ya está abajo</h2><p>${PRE>=0?`Reto inicial: ${pre.length?`${n}/${qs.length} acertadas antes de estudiar`:"sin responder"}. `:""}${rI>=0?`Ronda rápida: ${S.res.rapid??"–"}/${SHOTS[rI].act.qs.length}. `:""}${bI>=0?`Vaciado: ${S.res.blurt??"–"}/${SHOTS[bI].act.items.length}.`:""}</p><div class="btnrow"><button class="btn primary" type="button" id="eAgain">Ver otra vez</button>${rI>=0?'<button class="btn" type="button" id="eRapid">Repetir la ronda rápida</button>':""}${bI>=0?'<button class="btn" type="button" id="eBlurt">Repetir el vaciado</button>':""}</div>`;
+    $("eAgain").addEventListener("click",()=>goShot(0,0,true));
+    if(rI>=0)$("eRapid").addEventListener("click",()=>goShot(rI,999,true));
+    if(bI>=0)$("eBlurt").addEventListener("click",()=>goShot(bI,999,true));
+    S.playing=false; renderStats(); updateUI();
+  }
+  const f=actCard.querySelector(".opt,.chip,.btn"); if(f&&a.type!=="blurt"&&a.type!=="rapid")f.focus({preventScroll:true});
+  if(a.type!=="end")showSub("Te toca.");
+}
+function goBtn(auto){return `<div class="btnrow"><button class="btn primary" type="button" data-go data-auto="${auto?1:0}">Seguir ▸</button>${auto?'<span class="small">Sigue sola en unos segundos</span>':""}</div>`;}
+function wireGo(){const b=actCard.querySelector("[data-go]");if(b){b.addEventListener("click",()=>{S.playing=true;next();});b.focus({preventScroll:true});}}
+function closeAct(){actEl.hidden=true;actCard.innerHTML="";S.autoAt=0;}
+/* items del vaciado: [número, etiqueta, regex de palabras clave (sin tildes), consumir?] */
+function blurtCheck(txt,items){
+  let t=" "+txt.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")+" ";
+  const hits=new Set();
+  items.filter(it=>it[3]).forEach(it=>{const r=new RegExp(it[2],"g");if(r.test(t)){hits.add(it[0]);t=t.replace(new RegExp(it[2],"g")," ");}});
+  items.forEach(it=>{if(!it[3]&&new RegExp(it[2]).test(t))hits.add(it[0]);});
+  items.forEach(it=>{if(new RegExp("(^|[^0-9.])"+String(it[0]).replace(".","\\.")+"(?![0-9])").test(t))hits.add(it[0]);});
+  return items.map(it=>it[0]).filter(n=>hits.has(n));
+}
+
+/* ---- interfaz ---- */
+function saveRes(){LS.set("res",S.res);}
+const progEl=$("progress");
+SHOTS.forEach((s,i)=>{const b=document.createElement("button");b.type="button";b.className="seg"+(s.act?" has-act":"");b.style.flexGrow=Math.max(2,dur(i)+(s.act?4:0));b.title=`${i+1}. ${s.title}`;b.setAttribute("aria-label",`Ir a ${i+1}. ${s.title}`);b.appendChild(document.createElement("i"));
+  b.addEventListener("click",e=>{const r=b.getBoundingClientRect();const f=e.detail===0?0:Math.min(.98,Math.max(0,(e.clientX-r.left)/r.width));begin();goShot(i,f*dur(i),true);});progEl.appendChild(b);});
+function updateProgress(){const segs=progEl.children;for(let k=0;k<segs.length;k++){const f=segs[k].firstChild;f.style.width=k<S.i?"100%":k>S.i?"0%":(S.phase==="narr"?Math.min(100,S.t/dur(k)*100):100).toFixed(1)+"%";}}
+function renderIndex(){
+  $("index").innerHTML=GROUPS.map(g=>`<h3>${esc(g[0])}</h3><ul class="idxlist">${g[1].map(i=>`<li><button class="idx" type="button" data-i="${i}" aria-current="${i===S.i}"><span>${esc(SHOTS[i].title)}</span><span class="tag${SHOTS[i].act?" t-rec":""}">${esc(T[SHOTS[i].tech]||SHOTS[i].tech)}</span></button></li>`).join("")}</ul>`).join("");
+  $("index").querySelectorAll(".idx").forEach(b=>b.addEventListener("click",()=>{begin();goShot(+b.dataset.i,0,true);player.scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});}));
+}
+function renderStats(){
+  const qs=PRE>=0?SHOTS[PRE].act.qs:[], pre=S.res.pre;
+  const qi=SHOTS.map((s,i)=>s.act&&(s.act.type==="mcq"||s.act.type==="match")?i:-1).filter(i=>i>=0);
+  const done=qi.map(i=>S.res["m"+i]).filter(v=>v!==undefined);
+  const rI=SHOTS.findIndex(s=>s.act&&s.act.type==="rapid"), bI=SHOTS.findIndex(s=>s.act&&s.act.type==="blurt");
+  const cell=(v,l)=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  $("stats").innerHTML=(PRE>=0?cell(pre&&pre.length?`${pre.filter((x,k)=>x===qs[k].a).length}/${qs.length}`:"–","Pre-test"):"")+cell(done.length?`${done.filter(Boolean).length}/${done.length}`:"–","Pausas y casos")+(rI>=0?cell(S.res.rapid!==undefined?`${S.res.rapid}/${SHOTS[rI].act.qs.length}`:"–","Ronda rápida"):"")+(bI>=0?cell(S.res.blurt!==undefined?`${S.res.blurt}/${SHOTS[bI].act.items.length}`:"–","Vaciado de memoria"):"")+cell(`${Object.values(plan.done).filter(Boolean).length}/4`,"Repasos hechos");
+}
+const plan=LS.get("plan",null)||{start:null,done:{}};
+function renderPlan(){
+  const base=plan.start?new Date(plan.start):new Date();
+  $("plan").innerHTML=[1,3,7,14].map(d=>{const x=new Date(base);x.setDate(x.getDate()+d);return `<li><label for="rp${d}"><input type="checkbox" id="rp${d}" data-d="${d}" ${plan.done[d]?"checked":""}> Repaso +${d} ${d===1?"día":"días"}<span class="when">${fmt(x)}</span></label></li>`;}).join("");
+  $("plan").querySelectorAll("input").forEach(c=>c.addEventListener("change",()=>{plan.done[c.dataset.d]=c.checked;LS.set("plan",plan);renderStats();}));
+}
+function updateUI(){
+  $("icoPlay").style.display=S.playing?"none":""; $("icoPause").style.display=S.playing?"":"none";
+  $("bPlay").setAttribute("aria-label",S.playing?"Pausar":"Reproducir");
+  $("now").innerHTML=`<b>${S.i+1}/${SHOTS.length}</b> · ${esc(SHOTS[S.i].title)}`;
+  $("index").querySelectorAll(".idx").forEach(b=>b.setAttribute("aria-current",String(+b.dataset.i===S.i)));
+}
+function syncToggles(){$("bVoice").setAttribute("aria-pressed",String(S.voice));$("bSubs").setAttribute("aria-pressed",String(S.subs));subsEl.dataset.off=S.subs?"0":"1";}
+function begin(){if(S.started)return;S.started=true;$("startOv").hidden=true;if(!plan.start){plan.start=new Date().toISOString();LS.set("plan",plan);renderPlan();}}
+function play(){begin();S.playing=true;if(S.phase==="narr"){S.waitSince=performance.now();playClip("s"+S.i,S.t);}else if(S.phase==="fb"&&S.voice&&clip&&clip.indexOf("s"+S.i+"-")===0&&audio.paused&&!audio.ended){audio.play().catch(()=>{});}updateUI();}
+function pause(){S.playing=false;try{audio.pause();}catch(e){}updateUI();}
+$("startBtn").addEventListener("click",()=>{begin();goShot(0,0,true);});
+$("bPlay").addEventListener("click",()=>S.playing?pause():play());
+$("bNext").addEventListener("click",()=>{begin();goShot(Math.min(SHOTS.length-1,S.i+1),0,true);});
+$("bPrev").addEventListener("click",()=>{begin();goShot((S.phase==="narr"&&S.t>2)?S.i:Math.max(0,S.i-1),0,true);});
+$("bVoice").addEventListener("click",()=>{S.voice=!S.voice;syncToggles();if(!S.voice)stopAudio();else if(S.playing&&S.phase==="narr")playClip("s"+S.i,S.t);});
+$("bSubs").addEventListener("click",()=>{S.subs=!S.subs;syncToggles();});
+$("speed").addEventListener("change",e=>{S.rate=parseFloat(e.target.value);audio.defaultPlaybackRate=S.rate;audio.playbackRate=S.rate;});
+$("bFull").addEventListener("click",()=>{try{if(document.fullscreenElement)document.exitFullscreen();else if(player.requestFullscreen)player.requestFullscreen().catch(()=>{});}catch(e){}});
+document.addEventListener("keydown",e=>{
+  if(e.target.closest("input,select,textarea"))return;
+  if(e.target.closest("button")&&(e.key===" "||e.key==="Enter"))return;
+  if(e.key===" "||e.key==="k"||e.key==="K"){e.preventDefault();S.playing?pause():play();}
+  else if(e.key==="ArrowRight"){e.preventDefault();$("bNext").click();}
+  else if(e.key==="ArrowLeft"){e.preventDefault();$("bPrev").click();}
+  else if(e.key==="v"||e.key==="V")$("bVoice").click();
+  else if(e.key==="c"||e.key==="C")$("bSubs").click();
+  else if(e.key==="f"||e.key==="F")$("bFull").click();
+});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&S.playing&&S.phase==="narr")pause();});
+
+window.__motor={S,build,render,goShot,SHOTS,audio,get clip(){return clip}}; /* para pruebas automáticas */
+S.res=LS.get("res",{});
+fit(); build(0); S.t=dur(0); render(true); S.t=0;
+renderIndex(); renderPlan(); renderStats(); syncToggles(); updateUI(); updateProgress();
+requestAnimationFrame(frame);
+})();
+</script>

@@ -1,0 +1,6 @@
+node_modules/
+voces/
+capsulas/*/preview/
+__pycache__/
+# los vídeos montados sí se suben (el .gitignore raíz ignora "dist")
+!capsulas/*/dist/
