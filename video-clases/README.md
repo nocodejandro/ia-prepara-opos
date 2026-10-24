@@ -50,6 +50,8 @@ Por eso el guion **anuncia la pregunta** («Pausa activa. … ¿quién va antes?
 
 Requisitos: **Node 18+** y **Python 3.10+**.
 
+Lo más rápido: `bash video-clases/instalar.sh`. Instala todo, descarga la voz (con copia de reserva desde GitHub) y hace una prueba completa. Si prefieres hacerlo a mano:
+
 ```bash
 cd video-clases
 npm install                               # instala playwright (solo para previsualizar)
